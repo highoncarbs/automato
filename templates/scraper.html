@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<hr>
+<div class="is-mintcream new-scraper">
+<p class="has-text-weight-bold rubik is-size-5">RUN NEW SCRAPER</p>
+<br>
+<p class="notification rubik is-warning is-narrow is-size-6" ><span class="icon icon-btn"><i data-feather="info"></i></span>Enter either State or city only</p>
+
+<form action="/scraper" method="POST">
+  {{form.hidden_tag()}}
+<div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field">
+            <p class="control is-expanded has-icons-left">
+              {{ form.city(placeholder="City" , class="input") }}
+              <span class="icon is-small is-left">
+                <i data-feather="target"></i>
+              </span>
+            </p>
+          </div>
+          <div class="field">
+            <p class="control is-expanded has-icons-left">
+              {{ form.keyword(placeholder="Keyword" , class="input")}}
+              <span class="icon is-small is-left">
+                <i data-feather="bookmark"></i>
+              </span>
+            </p>
+          </div>
+
+          <div class="field">
+                <p class="control is-expanded">
+                  <button class="button is-black rubik is-fullwidth"><span class="icon icon-btn-in"><i data-feather="download-cloud"></i></span> Submit</button>
+                </p>
+              </div>
+        </div>
+      </div>
+</form>
+</div>
+<hr>
+<br>
+<div class="scrape-list">
+    <h3 class="is-size-5 has-text-weight-bold rubik">ALL SCRAPERS</h3>
+    <br>
+    <table class="table is-bordered table-container is-fullwidth table-scroll">
+        <thead >
+            <tr>
+                <th>Scraper Site</th>
+                <th>City</th>
+                <th>Keyword</th>
+                <th>Status</th>
+                <th>Action</th>
+
+            </tr>
+        </thead>
+        <tbody>
+          {% for s in scraper_list %}
+            <tr>
+              <td>{{ s.provider }}</td>
+              <td>{{ s.city }}</td>
+              <td>{{ s.keyword }}</td>
+              {% if s.status == 1|string %}
+              <td>Running</td>
+              <td><a class=" button is-small rubik is-info" href="{{url_for('task_pause' , task_id = s.id )}}">Pause</a> </td>
+              {% elif s.status ==  0|string %}
+              <td>Stopped</td>
+              <td><a class=" button is-small rubik is-primary" href="{{url_for('push_scraper_to_queue' , task_id = s.id )}}">Run</a> </td>
+              {% elif s.status ==  2|string %}
+              <td>Finished</td>
+              <td><a class=" button is-small rubik is-success is-disabled" href="">Done</a> </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+        
+{% endblock %}

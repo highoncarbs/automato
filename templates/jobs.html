@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<hr>
+<div class="notification is-light new-scraper">
+<p class="has-text-weight-bold rubik is-size-5">RUN NEW JOB</p>
+<br>
+<form action="/jobs" method="POST">
+  {{form.hidden_tag()}}
+<div class="field is-horizontal">
+        <div class="field-body">
+          <div class="field">
+            <p class="control is-expanded has-icons-left has-icons-right">
+              {{ form.city(placeholder="City" , class="input") }}
+              <span class="icon is-small is-left">
+                <i data-feather="target"></i>
+              </span>
+              <span class="icon is-small is-right">
+                <i data-feather="arrow-down"></i>
+              </span>
+            </p>
+          </div>
+
+          <div class="field">
+                <p class="control is-expanded">
+                  <button class="button is-black rubik is-fullwidth"><span class="icon icon-btn-in"><i data-feather="download-cloud"></i></span> Submit</button>
+                </p>
+              </div>
+        </div>
+      </div>
+</form>
+</div>
+<hr>
+<br>
+        <table class="table is-bordered table-container is-fullwidth">
+            <thead >
+                <tr>
+                    <th>Platform</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for j in job_list %}
+                <tr>
+                    <td>{{ j.provider}}</td>
+                    <td>{{ j.city}}</td>
+                    {% if j.status == 1|string %}
+                    <td>Running</td>
+                    <td><a class=" button is-small rubik is-info" href="{{url_for('task_pause' , task_id = j.id )}}">Pause</a> </td>
+                    {% elif j.status ==  0|string %}
+                    <td>Stopped</td>
+                    <td><a class=" button is-small rubik is-primary" href="{{url_for('push_job_to_queue' , task_id = j.id )}}">Run</a> </td>
+                    {% elif j.status ==  2|string %}
+                    <td>Finished</td>
+                    <td><a class=" button is-small rubik is-success is-disabled" href="">Done</a> </td>
+                    {% endif %}
+                    <td>{{ j.id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

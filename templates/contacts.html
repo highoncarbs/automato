@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="contact-list">
+    <nav class="navbar">
+        <div class="navbar-start">    
+    <h3 class="is-size-5 has-text-weight-bold rubik">ALL CONTACTS</h3>
+</div>
+<div class="navbar-end">
+    <div class="field is-horizontal">
+        <div class="field-body">
+            <div class="field">
+                <div class="control">
+                    <button class="button is-black rubik"><span class="icon icon-btn-in"><i data-feather="upload"></i></span>Export</button>
+                </div>
+            </div>
+            <div class="field">
+                    <div class="control">
+                        <button class="button is-black rubik"><span class="icon icon-btn-in"><i data-feather="filter"></i></span>Filter</button>
+                    </div>
+            </div>
+            <div class="field">
+                    <div class="control">
+                        <button class="button is-black rubik"><span class="icon icon-btn-in"><i data-feather="refresh-cw"></i></span>Refresh</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</nav>  
+<br>  
+
+{% if contacts_list %}
+<div class=" table-container" >
+        <table class="table is-bordered is-fullwidth">
+            <thead >
+                <tr>
+                    <th>Business Name</th>
+                    <th>City</th>
+                    <th>Ph #1</th>
+                    <th>Ph #2</th>
+                    <th>Address</th>
+    
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in contacts_list %}
+                <tr>
+                    <td>{{c.business_name}}</td>
+                    <td>{{c.city}}</td>
+                    <td>{{c.contact_one}}</td>
+                    <td>{{c.contact_two}}</td>
+                    
+                    <td>{{c.address}}</td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+<div class="notification is-light is-narrow">
+        <p class="is-size-5 rubik" style="text-align: center">
+            Please select either option<br>
+            <span style=".text-decoration: underline;" ><i class="icon icon-btn" data-feather="info"></i> Selecting <span class="has-text-weight-bold">Load All Contacts</span> may take some time for the page to load . Be patient !</span><br>
+            <br>
+            <span class="button" ><span class="icon icon-btn"><i data-feather="users"></i></span>Load all contacts</span> or <span class="button is-dark"><span class="icon icon-btn"><i data-feather="user"></i></span>Filter contacts</span><br>
+        </p>
+    </div>
+{% endif %}
+    </div>
+</div>
+{% endblock %}
