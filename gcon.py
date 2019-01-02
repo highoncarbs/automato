@@ -1,7 +1,7 @@
 import requests 
 import time
 
-API_KEY = 'AIzaSyDld0sTr_TV2-Qm4iwU1HIww46dW-7_kaA'
+API_KEY = '###'
 
 place_id_list = []
 
