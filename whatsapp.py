@@ -17,6 +17,7 @@ import pika
 import threading
 import functools
 import MySQLdb
+import json
 from app import db
 from model import contacts , job_task
 
@@ -35,7 +36,7 @@ mssg_8 = "Jaipur."
 mssg_9 = "+918875666619"
 
 chrome_path = r"C:\Users\padam\Downloads\chromedriver_win32\chromedriver.exe"
-
+global first_run_check
 first_run_check = 0
 
 credentials = pika.PlainCredentials('guest' , 'guest')
@@ -46,7 +47,7 @@ channel.queue_declare(queue='mssg_queue' , durable= True)
 channel.basic_qos(prefetch_count = 1)
 threads = []
 
-def global_init():
+def driver_init():
     global driver 
     driver = webdriver.Chrome(chrome_path , chrome_options= chrome_options)
 
@@ -158,10 +159,11 @@ def on_message(channel , method_frame ,header_frame , body , args):
 
 def whatsapp_send(num):
     driver.get('https://web.whatsapp.com/send?phone='+num+'')
+    wp_sent = db.session.query(contacts).filter_by(contact_one = str(num)).first()
+    global first_run_check
     if first_run_check is 0:
         time.sleep(10)
         first_run_check = 1 
-    wp_sent = db.session.query(contacts).filter_by(contact_one = str(num)).first()
     time.sleep(20)
     if check_valid_number():
         print("Inside message block")
@@ -173,7 +175,7 @@ def whatsapp_send(num):
         time.sleep(6) # setup for Leave page alert
         print("Wake Up , move to next")
     else:
-        wp_send.wp_cnt = -2
+        wp_sent.wp_cnt = -2
         db.session.commit()
         print("Not Valid : Unable to send to "+num) 
 
@@ -186,40 +188,91 @@ def send_messages(connection , channel , delivery_tag , body):
     city = mssg_data['city']
     task_id = mssg_data['task_id']
     meta = mssg_data['meta']
-    job_task = db.session.query(job_task).filter_by(id= task_id).first()
-    con_all = db.session.query(contacts).filter_by(city = city).all()
-    numbers = set([x for x in con_all.contact_one])
+    job = db.session.query(job_task).filter_by(id= task_id).first()
+    con_all = db.session.query(contacts).filter_by(city = city).filter((contacts.wp_cnt == 0) | (contacts.wp_cnt == -1)).all()
+    t_num = [x.contact_one for x in con_all]
+    numbers = list(set([x.contact_one for x in con_all]))
     numbers.remove('')
-    if meta is 0:
-        for num in numbers[:100]:    
-            if is_connected():
-                try:        
-                    whatsapp_send(num)
-                except Exception as e:
-                    wp_send.wp_cnt = -1 
-                    db.session.commit()
-                    print("Unable to send to "+num)
-                    print(str(e))
-            else:
-                job_task.meta = str(num)
-                db.session.commit()
-                print("Internet doesn't seem to be running! CLosing down send jobs!")
+    # for num in numbers[100:]:
+    #     if first_run_check is 0:
+    #         time.sleep(10)
+    #         first_run_check = 1        
+    #     if is_connected():
+    #         wp_sent = db.session.query(contacts).filter_by(contact_one = str(num)).first()
+    #         try:        
+    #             whatsapp_send(num)
+    #         except Exception as e:
+    #             wp_sent.wp_cnt = -1 
+    #             db.session.commit()
+    #             print("Unable to send to "+num)
+    #             print(str(e))
+    #     else:
+    #         job.meta = str(num)
+    #         db.session.commit()
+    #         print("Internet doesn't seem to be running! CLosing down send jobs!")
+
+
+    if not numbers:
+        try: 
+            cb = functools.partial(ack_message , channel , delivery_tag)
+            connection.add_callback_threadsafe(cb)        
+            job.status = 2 # Resume
+            db.session.commit()
+            driver.close()
+            print("Task Done")
+        except Exception as e:
+            print("Somethign Happeded - " + str(e))
     else:
-        index = numbers.index(str(job_task.meta))
-        new_numbers = numbers[index:index+100]
-        for num in new_numbers:    
+
+        for num in numbers[:100]:
+            check_sent = db.session.query(contacts).filter_by(contact_one = str(num)).first()
+            # if check_sent.wp_cnt != str(1) or str(-2) :     
             if is_connected():
+                wp_sent = db.session.query(contacts).filter_by(contact_one = str(num)).first()
                 try:        
                     whatsapp_send(num)
                 except Exception as e:
-                    wp_send.wp_cnt = -1 
+                    wp_sent.wp_cnt = -1 
                     db.session.commit()
                     print("Unable to send to "+num)
                     print(str(e))
             else:
-                job_task.meta = str(num)
+                job.meta = str(num)
                 db.session.commit()
                 print("Internet doesn't seem to be running! CLosing down send jobs!")
+            # else:
+            #     pass
+        
+
+        try: 
+            cb = functools.partial(ack_message , channel , delivery_tag)
+            connection.add_callback_threadsafe(cb)        
+            job.status = 3 # Resume
+            db.session.commit()
+            driver.close()
+            print("Task Done")
+        except Exception as e:
+            print("Somethign Happeded - " + str(e))
+    # else:
+    #     index = numbers.index(str(meta))
+    #     new_numbers = numbers[index:index+100]
+    #     for num in new_numbers: 
+    #         if check_sent.wp_cnt != str(1) :     
+    #             wp_sent = db.session.query(contacts).filter_by(contact_one = str(num)).first()   
+    #             if is_connected():
+    #                 try:        
+    #                     whatsapp_send(num)
+    #                 except Exception as e:
+    #                     wp_sent.wp_cnt = -1 
+    #                     db.session.commit()
+    #                     print("Unable to send to "+num)
+    #                     print(str(e))
+    #             else:
+    #                 job.meta = str(num)
+    #                 db.session.commit()
+    #                 print("Internet doesn't seem to be running! CLosing down send jobs!")
+    #         else:
+    #             pass
 
 threads = []
 on_message_callback = functools.partial(on_message , args=(connection , threads))
