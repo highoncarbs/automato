@@ -1,4 +1,4 @@
-from flask import Flask , render_template , g , redirect
+from flask import Flask , render_template , g , redirect , jsonify
 from flask_sqlalchemy import SQLAlchemy 
 import MySQLdb
 import pika 
@@ -49,7 +49,24 @@ def close_queue(error):
 
 @app.route('/' , methods = ['GET' , 'POST'])
 def home():
-    return render_template('home.html') , 200
+    
+    con_len = db.session.query(contacts).count()
+    city_len = db.session.query(contacts.city).distinct(contacts.city).count()
+
+    src_len = db.session.query(scrape_task).count()
+    src_fin = db.session.query(scrape_task).filter_by(status = str(2)).count()
+    src_unfin = db.session.query(scrape_task).filter_by(status = str(0)).count()
+    src_run = db.session.query(scrape_task).filter_by(status = str(1)).count()
+
+    job_len = db.session.query(job_task).count()
+    job_fin = db.session.query(job_task).filter_by(status = str(2)).count()
+    job_unfin = db.session.query(job_task).filter_by(status = str(3)).count()
+    print(job_unfin)
+    job_run = db.session.query(job_task).filter_by(status = str(1)).count()
+
+    return render_template('dash.html' , con_len = con_len , city_len = city_len , src_len = src_len , src_fin = src_fin ,\
+        src_unfin = src_unfin , src_run = src_run , job_len = job_len , job_fin = job_fin ,\
+        job_unfin = job_unfin , job_run = job_run) , 200
 
 @app.route('/scheduler' ,methods = ['GET' , 'POST'])
 def scheduler():
@@ -154,7 +171,7 @@ def push_job_to_queue(task_id):
         print("Ok")
         m.basic_publish(
             exchange='amq.direct',
-            routing_key='job_queue',
+            routing_key='mssg_queue',
             body=json.dumps(job_data),
             properties=pika.BasicProperties(
                 delivery_mode=2
@@ -167,3 +184,44 @@ def push_job_to_queue(task_id):
         mssg = "We ran into an error : " + str(e)
         print(mssg)
         return redirect('/jobs')
+
+@app.route('/job_results/<job_id>' , methods= ['POST' , 'GET'])
+def job_results(job_id):
+    try:
+        job_city = db.session.query(job_task).filter_by(id = str(job_id)).first().city
+        print(job_city)
+        success_all = db.session.query(contacts).filter_by(city = job_city).filter((contacts.wp_cnt == 1)).all()
+        invalid_all = db.session.query(contacts).filter_by(city = job_city).filter((contacts.wp_cnt == -2)).all()
+        jdnum_all = db.session.query(contacts).filter_by(city = job_city).filter((contacts.wp_cnt == 0)).all()
+        unable_all = db.session.query(contacts).filter_by(city = job_city).filter((contacts.wp_cnt == -1)).all()
+
+        # success_sent = [x if x.wp_cnt is 1 else None for x in contacts]
+        # invalid_sent = [x if x.wp_cnt is -2 else None for x in contacts]
+        # jd_number = [x if x.wp_cnt is 0 else None for x in contacts]
+        # unable_Sent = [x if x.wp_cnt is -1 else None for x in contacts]
+        
+        return jsonify({'success_all' : len(success_all) , 'invalid_all' : len(invalid_all)})
+    except Exception as e:
+        pass
+        return "Naah" + str(e)
+
+@app.route('/src_results/<job_id>' , methods= ['POST' , 'GET'])
+def src_results(job_id):
+    try:
+        src_city = db.session.query(scrape_task).filter_by(id = str(job_id)).first().city
+        print(src_city)
+        success_all = db.session.query(contacts).filter_by(city = src_city).all()
+        # success_sent = [x if x.wp_cnt is 1 else None for x in contacts]
+        # invalid_sent = [x if x.wp_cnt is -2 else None for x in contacts]
+        # jd_number = [x if x.wp_cnt is 0 else None for x in contacts]
+        # unable_Sent = [x if x.wp_cnt is -1 else None for x in contacts]
+        
+        return jsonify({'con_all' : len(success_all)})
+    except Exception as e:
+        pass
+        return "Naah" + str(e)
+@app.route('/task_report/<job_id>' , methods = ['POST' , 'GET'])
+def task_report(job_id):
+    # Endpoint for full report for JOB and TASK Results
+    # TO-DO for next release
+    pass
