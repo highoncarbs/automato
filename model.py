@@ -38,7 +38,7 @@ class job_task(db.Model):
     city = db.Column(db.String(50))
     status = db.Column(db.String(10))
     timestamp = db.Column(db.DateTime, index=True , default=datetime.utcnow)
-    meta = db.Column(db.String(500))
+    meta = db.Column(db.String(500) , default = str(0))
 
 class scrape_form(FlaskForm):  
     city = StringField('city' , validators = [InputRequired() , Optional() ]) 
