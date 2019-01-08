@@ -1,14 +1,17 @@
-from flask import Flask , render_template , g , redirect , jsonify
+from flask import Flask , render_template , g , redirect , jsonify , url_for , request
 from flask_sqlalchemy import SQLAlchemy 
 import MySQLdb
 import pika 
 import json 
+import os 
+from werkzeug import secure_filename
+
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
-from model import contacts , scrape_form , scrape_task , job_form , job_task
+from model import contacts , scrape_form , scrape_task , job_form , job_task , template , template_form
 
 
 def connect_queue():
@@ -76,6 +79,8 @@ def scheduler():
 def jobs():
     form = job_form()
     form.city.choices = [ (r.city , r.city ) for r in db.session.query(scrape_task) ]
+    form.keyword.choices = [(r.keyword , r.keyword) for r in db.session.query(scrape_task.keyword).distinct(scrape_task.keyword)]
+    form.campaign.choices = [(r.name , r.name) for r in db.session.query(template)]
 
     job_list = db.session.query(job_task).all()
     if form.validate_on_submit():
@@ -114,7 +119,7 @@ def scraper():
     scraper_list = db.session.query(scrape_task).all()
     print(scraper_list)
     if form.validate_on_submit():
-        city = form.city.data 
+        city = str(form.city.data).title() 
         keyword = form.keyword.data  
         provider = "Justdial"
         # Check if the city and keyword already exsists ?
@@ -205,12 +210,12 @@ def job_results(job_id):
         pass
         return "Naah" + str(e)
 
-@app.route('/src_results/<job_id>' , methods= ['POST' , 'GET'])
-def src_results(job_id):
+@app.route('/src_results/<job_id>/<keyword>' , methods= ['POST' , 'GET'])
+def src_results(job_id , keyword):
     try:
         src_city = db.session.query(scrape_task).filter_by(id = str(job_id)).first().city
         print(src_city)
-        success_all = db.session.query(contacts).filter_by(city = src_city).all()
+        success_all = db.session.query(contacts).filter_by(city = src_city).filter_by(keyword = keyword).all()
         # success_sent = [x if x.wp_cnt is 1 else None for x in contacts]
         # invalid_sent = [x if x.wp_cnt is -2 else None for x in contacts]
         # jd_number = [x if x.wp_cnt is 0 else None for x in contacts]
@@ -225,3 +230,58 @@ def task_report(job_id):
     # Endpoint for full report for JOB and TASK Results
     # TO-DO for next release
     pass
+
+
+UPLOAD_FOLDER = os.path.abspath('./static/images/uploads/')
+ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/templates' , methods = ['POST' , 'GET'])
+def templates():
+
+    temps = db.session.query(template).all()
+    form = template_form()
+    if form.validate_on_submit():
+        if request.method == 'POST':
+            file = request.files['img']
+            try:
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    img_temp = os.path.join(UPLOAD_FOLDER, filename) 
+                    file.save(img_temp)
+                    name = form.name.data
+                    mssg_1 = form.mssg_1.data 
+                    mssg_2 = form.mssg_2.data 
+                    mssg_3 = form.mssg_3.data 
+                    mssg_4 = form.mssg_4.data 
+                    mssg_5 = form.mssg_5.data 
+                    mssg_6 = form.mssg_6.data 
+                    mssg_7 = form.mssg_7.data 
+                    mssg_8 = form.mssg_8.data 
+                    print(mssg_8)
+                    new_temp = template(name = name , mssg_1 = mssg_1 , img_path = filename , mssg_2 = mssg_2 , mssg_3 = mssg_3 ,\
+                         mssg_4 = mssg_4, mssg_5 = mssg_5, mssg_6 = mssg_6, mssg_7 = mssg_7 , mssg_8 = mssg_8)
+                    db.session.add(new_temp)
+                    db.session.commit()
+                    mssg = "Template successfully added"
+                    print(mssg)
+                    return redirect(url_for('templates'))
+            except Exception as e:
+                print(str(e))
+    return render_template('templates.html' , form = form ,temps = temps) , 200
+
+@app.route('/del_temp/<id>' , methods=['POST' , 'GET'])
+def del_temp(id):
+    try:
+        temp = db.session.query(template).filter_by(id = id)
+        temp.delete()
+        db.session.commit()
+        mssg = "Template Deleted Successfully"
+        return redirect(url_for('templates'))
+    except Exception as e:
+        print(str(e))
+        return redirect(url_for('templates')) , 200

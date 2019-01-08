@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% block content %}
+<nav class="navbar is-grouped-multiline">
+    <div class="navbar-start">    
+<h3 class="is-size-5 has-text-weight-bold rubik">TEMPLATES</h3>
+</div>
+<div class="navbar-end">
+<div class="field is-horizontal">
+    <div class="field-body has-text-centered">
+        <div class="field ">
+            <div class="control">
+                <button class="button is-black rubik" id="new-temp"><span class="icon icon-btn-in"><i data-feather="plus"></i></span>NEW TEMPLATE</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</nav>
+<hr>
+<!-- Add Template modal -->
+<div class="modal" id="temp-form">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      
+        <div class="box has-text-centered" style="margin-bottom : 0px;">
+            <p class=" is-size-4 has-text-weight-bold ">New Template</p>
+            <p class=" subtitle has-text-grey rubik">The general template consists of a header image and 8 to 9 message lines. </p>
+            <br>
+            <form action="/templates" method="post" enctype="multipart/form-data">
+                {{form.hidden_tag()}}
+                <div class="field is-horizontal is-fullwidth">
+                    <div class="field-label is-normal">
+                      <label class="label">Campaign Name</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                            {{form.name(class="input" , placeholder="Campaign Name")}}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                <br>
+                <div class="file has-name is-fullwidth">
+                    <label class="file-label">
+                        {{form.img(class="file-input" , id="file-input-name")}}
+                        <span class="file-cta">
+                        <span class="file-icon">
+                          <i data-feather="upload"></i>
+                        </span>
+                        <span class="file-label">
+                          Choose a file…
+                        </span>
+                      </span>
+                      <span class="file-name has-text-grey " id="img-file-name">
+                        Image File
+                      </span>
+                      <script>
+                        var file = document.getElementById("file-input-name");
+                        file.onchange = function(){
+                            if(file.files.length > 0)
+                            {
+                        
+                              document.getElementById('img-file-name').innerHTML = file.files[0].name;
+                        
+                            }
+                        };
+                        
+                      </script>
+                    </label>
+                </div>
+                <br>
+                <span class="img-preview"></span>
+                
+
+                <div class="field is-horizontal is-fullwidth">
+                    <div class="field-label is-normal">
+                      <label class="label">Line 1</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                            {{form.mssg_1(class="input" , placeholder="Hi,")}}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+              
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                      <label class="label">Line 2</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                            {{form.mssg_2(class="input" , placeholder="We are Mfg. of exclusive Hand Block Printed Dress Materials , Dupatta ,Stole ,Sarees , Kurties ,Fabrics , Skirts & much more .")}}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                      <label class="label">Line 3</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                            {{form.mssg_3(class="input" , placeholder="Please visit www.jaitexart.com")}}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+               
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                      <label class="label">Line 4</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                            {{form.mssg_4(class="input" , placeholder="Our customers include Fabindia , Westside, Biba, Anita dongre and much more. If you are interested in wholesale purchase (minimum order RS 15,000). Please contact Us.")}}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                  
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                      <label class="label">Line 5</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                            {{form.mssg_5(class="input" , placeholder="Thanking You.")}}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                 
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                      <label class="label">Line 6</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                            {{form.mssg_6(class="input" , placeholder="Hemant Sethia")}}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                      <label class="label">Line 7</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                            {{form.mssg_7(class="input" , placeholder="Jai Texart , Jaipur")}}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+             
+                
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                      <label class="label">Line 8</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                            {{form.mssg_8(class="input" , placeholder="+918875666619")}}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                <br>  
+
+            <button class="button is-black rubik" type="submit"><span class="icon icon-btn"><i data-feather="plus-square"></i></span>ADD TEMPLATE</button> 
+            </form>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
+  </div>
+<script>
+  document.querySelector('#new-temp').addEventListener('click', function(event) {
+    event.preventDefault();
+    var modal = document.querySelector('#temp-form');  // assuming you have only 1
+    var html = document.querySelector('html');
+    modal.classList.add('is-active');
+    html.classList.add('is-clipped');
+  
+    document.querySelector('.modal-close').addEventListener('click', function(e) {
+        e.preventDefault();
+        modal.classList.remove('is-active');
+        html.classList.remove('is-clipped');
+      });
+
+    modal.querySelector('.modal-background').addEventListener('click', function(e) {
+      e.preventDefault();
+      modal.classList.remove('is-active');
+      html.classList.remove('is-clipped');
+
+
+    });
+
+  });
+</script>
+<!-- End Add template modal -->
+<br>
+<!-- Main content -->
+<div class="templates-list">
+    <div class="columns">
+        {% for temp in temps%}
+
+        <div class="column is-3">
+                <div class="card">
+                        <div class="card-image">
+                          <figure class="image">
+                            <img src="{{url_for('static' , filename = 'images/uploads/'+temp.img_path)}}" alt="Placeholder image">
+                          </figure>
+                        </div>
+                        <div class="card-content">
+                          <div class="media">
+                            <div class="media-content">
+                              <p class="title is-4">{{temp.name}}</p>
+                            </div>
+                          </div>
+                      
+                          <div class="content notification is-light">
+                            
+                                <p>{{temp.mssg_1}}<br>{{temp.mssg_2}}
+                                <br>{{temp.mssg_3}}
+                                <br>{{temp.mssg_4}}
+                                <br>{{temp.mssg_5}}
+                                <br>{{temp.mssg_6}}
+                                <br>{{temp.mssg_7}}
+                                <br>{{temp.mssg_8}} </p>                        
+                          </div>
+                          
+                        </div>
+                        <footer class="card-footer">
+                                <a href="" class="card-footer-item rubik has-text-weight-semibold"><span class="icon icon-btn"><i data-feather="edit"></i></span>EDIT</a>
+                                <a href="{{url_for('del_temp' , id=temp.id )}}" class="card-footer-item rubik has-text-grey  "><span class="icon icon-btn"><i data-feather="trash"></i></span> DELETE</a>
+                              </footer>  
+                    </div>
+
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
