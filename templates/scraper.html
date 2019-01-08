@@ -106,7 +106,7 @@
                   </div>
                   <script>
                      $(document).ready(function(){
-                      axios.post("{{url_for('src_results' , job_id = s.id)}}", 
+                      axios.post("{{url_for('src_results' , job_id = s.id , keyword = s.keyword)}}", 
                       )
                       .then(function (response) {
                           console.log(response.data );
