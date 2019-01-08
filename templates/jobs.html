@@ -8,6 +8,30 @@
   {{form.hidden_tag()}}
 <div class="field is-horizontal">
         <div class="field-body">
+            <div class="field">
+                <p class="control is-expanded has-icons-left has-icons-right">
+                  {{ form.campaign(placeholder="Campaign" , class="input") }}
+                  <span class="icon is-small is-left">
+                    <i data-feather="image"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i data-feather="arrow-down"></i>
+                  </span>
+                </p>
+              </div>
+
+              <div class="field">
+                  <p class="control is-expanded has-icons-left has-icons-right">
+                    {{ form.keyword(placeholder="Keyword" , class="input") }}
+                    <span class="icon is-small is-left">
+                      <i data-feather="anchor"></i>
+                    </span>
+                    <span class="icon is-small is-right">
+                      <i data-feather="arrow-down"></i>
+                    </span>
+                  </p>
+                </div>
+
           <div class="field">
             <p class="control is-expanded has-icons-left has-icons-right">
               {{ form.city(placeholder="City" , class="input") }}
