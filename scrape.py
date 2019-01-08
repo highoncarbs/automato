@@ -159,6 +159,8 @@ def data_is_extracted(connection, channel , delivery_tag , body):
         
         result_links , url_check  = scrape_page(city , keyword , str(page))
         last_page = page
+        print(result_links)
+        print(url_check)
         
         try:
                 if url_check and len(result_links) is not 0 : # While Url_check returns True
