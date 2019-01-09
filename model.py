@@ -22,7 +22,7 @@ class contacts(db.Model):
     link_hash = db.Column(db.String(150) , unique =True )
     data_hash = db.Column(db.String(150) , unique = True )
     keyword = db.Column(db.String(100))
-    campaign = db.Column(db.Integer)
+    # campaign = db.Column(db.Integer)
 
 class scrape_task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,14 +54,14 @@ class template(db.Model):
     id = db.Column(db.Integer , primary_key = True)
     name = db.Column(db.String(100))
     img_path = db.Column(db.String(200) )
-    mssg_1 = db.Column(db.String(50) , default = "Hi ,")
-    mssg_2 = db.Column(db.String(100) , default = "We are Mfg. of exclusive Hand Block Printed Dress Materials , Dupatta ,Stole ,Sarees , Kurties ,Fabrics , Skirts & much more .")
-    mssg_3 = db.Column(db.String(50) , default = "Please visit www.jaitexart.com")
-    mssg_4 = db.Column(db.String(100) , default = "Our customers include Fabindia , Westside, Biba, Anita dongre and much more. If you are interested in wholesale purchase (minimum order RS 15,000). Please contact Us.")
-    mssg_5 = db.Column(db.String(50) , default = "Thanking You")
-    mssg_6 = db.Column(db.String(50) , default = "Hemant Sethia")
-    mssg_7 = db.Column(db.String(50) , default = "Jai Texart , Jaipur")
-    mssg_8 = db.Column(db.String(50) , default = "+918875666619")
+    mssg_1 = db.Column(db.String(200) , default = "Hi ,")
+    mssg_2 = db.Column(db.String(200) , default = "We are Mfg. of exclusive Hand Block Printed Dress Materials , Dupatta ,Stole ,Sarees , Kurties ,Fabrics , Skirts & much more .")
+    mssg_3 = db.Column(db.String(200) , default = "Please visit www.jaitexart.com")
+    mssg_4 = db.Column(db.String(200) , default = "Our customers include Fabindia , Westside, Biba, Anita dongre and much more. If you are interested in wholesale purchase (minimum order RS 15,000). Please contact Us.")
+    mssg_5 = db.Column(db.String(200) , default = "Thanking You")
+    mssg_6 = db.Column(db.String(200) , default = "Hemant Sethia")
+    mssg_7 = db.Column(db.String(200) , default = "Jai Texart , Jaipur")
+    mssg_8 = db.Column(db.String(200) , default = "+918875666619")
 
 class template_form(FlaskForm):
     name = StringField('name' , validators=[InputRequired()])
