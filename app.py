@@ -5,14 +5,14 @@ import pika
 import json 
 import os 
 from werkzeug import secure_filename
-
+from flask_migrate import Migrate 
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
 from model import contacts , scrape_form , scrape_task , job_form , job_task , template , template_form
-
+migrate = Migrate(app , db)
 
 def connect_queue():
     if not hasattr(g , 'rabbitmq'):
@@ -262,9 +262,11 @@ def templates():
                     mssg_6 = form.mssg_6.data 
                     mssg_7 = form.mssg_7.data 
                     mssg_8 = form.mssg_8.data 
-                    print(mssg_8)
-                    new_temp = template(name = name , mssg_1 = mssg_1 , img_path = filename , mssg_2 = mssg_2 , mssg_3 = mssg_3 ,\
-                         mssg_4 = mssg_4, mssg_5 = mssg_5, mssg_6 = mssg_6, mssg_7 = mssg_7 , mssg_8 = mssg_8)
+                    if mssg_1 or mssg_2 or mssg_3 or mssg_4 or mssg_5 or mssg_6 or mssg_7 or mssg_8 is '' :
+                        new_temp = template(name = name ,img_path = filename )
+                    else:
+                        new_temp = template(name = name , mssg_1 = mssg_1 , img_path = filename , mssg_2 = mssg_2 , mssg_3 = mssg_3 ,\
+                            mssg_4 = mssg_4, mssg_5 = mssg_5, mssg_6 = mssg_6, mssg_7 = mssg_7 , mssg_8 = mssg_8)
                     db.session.add(new_temp)
                     db.session.commit()
                     mssg = "Template successfully added"
