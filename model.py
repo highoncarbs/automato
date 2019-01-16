@@ -6,6 +6,7 @@ from datetime import datetime
 from app import db
 
 class contacts(db.Model):
+    __searchable__ = ['business_name' , 'contact_one' , 'contact_two' , 'city']
     id = db.Column(db.Integer , primary_key = True)
     business_name = db.Column(db.String(250) , nullable = False )
     contact_one = db.Column(db.String(15))
@@ -22,7 +23,7 @@ class contacts(db.Model):
     link_hash = db.Column(db.String(150) , unique =True )
     data_hash = db.Column(db.String(150) , unique = True )
     keyword = db.Column(db.String(100))
-    # campaign = db.Column(db.Integer)
+    campaign = db.Column(db.Integer)
 
 class scrape_task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +40,7 @@ class job_task(db.Model):
     city = db.Column(db.String(50))
     status = db.Column(db.String(10))
     timestamp = db.Column(db.DateTime, index=True , default=datetime.utcnow)
+    keyword = db.Column(db.String(50))
     meta = db.Column(db.String(500) , default = str(0))
 
 class scrape_form(FlaskForm):  
