@@ -21,8 +21,20 @@
               </div>
 
               <div class="field">
+                <p class="control is-expanded has-icons-left has-icons-right">
+                  {{ form.city(placeholder="City" ,id="city_selector" ,class="input") }}
+                  <span class="icon is-small is-left">
+                    <i data-feather="target"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i data-feather="arrow-down"></i>
+                  </span>
+                </p>
+              </div>
+
+              <div class="field">
                   <p class="control is-expanded has-icons-left has-icons-right">
-                    {{ form.keyword(placeholder="Keyword" , class="input") }}
+                    {{ form.keyword(placeholder="Keyword" , id="keyword_selector" , class="input") }}
                     <span class="icon is-small is-left">
                       <i data-feather="anchor"></i>
                     </span>
@@ -32,17 +44,7 @@
                   </p>
                 </div>
 
-          <div class="field">
-            <p class="control is-expanded has-icons-left has-icons-right">
-              {{ form.city(placeholder="City" , class="input") }}
-              <span class="icon is-small is-left">
-                <i data-feather="target"></i>
-              </span>
-              <span class="icon is-small is-right">
-                <i data-feather="arrow-down"></i>
-              </span>
-            </p>
-          </div>
+         
 
           <div class="field">
                 <p class="control is-expanded">
@@ -52,6 +54,32 @@
         </div>
       </div>
 </form>
+<script>
+
+  $(document).ready(function(){
+    var $secondChoice = $("#keyword_selector");
+      $secondChoice.empty();  
+
+    var $firstchoice = $("#city_selector");
+    $firstchoice.index[0]=new Option("Select City","");
+  });
+  $('#city_selector').change(function(){
+
+      var $dropdown = $(this);
+      var $city = $dropdown.val();
+      $.getJSON("/jobcombo/"+$city+"" , function(data){
+        vals = data.options;
+        
+      var $secondChoice = $("#keyword_selector");
+      $secondChoice.empty();
+      $.each(vals, function(index, value) {
+      $secondChoice.append("<option>" + value + "</option>");
+      });
+      
+      });
+
+  });
+</script>
 </div>
 <hr>
 <br>

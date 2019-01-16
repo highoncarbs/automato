@@ -23,7 +23,23 @@
 			  crossorigin="anonymous"></script>
 </head>
 <body class="hero is-fullheight">
+    {% if mssg %}
+    <div class="snackbar has-background-warning animated fadeInDown ">
+        <div class=" level is-mobile container   " style="position: relative;">
+                <div class="level-left">
+                    <div class="level-item is-size-4 rubik has-text-weight-bold">
+                            <p>{{mssg}}</p>
 
+                    </div>
+                </div>
+                <div class="level-right">
+                    <div class="level-item tag is-large">
+                            <span class="icon"><i data-feather="x"></i></span>
+                    </div>
+            </div>
+    </div>
+    </div>
+    {% endif %}
     <div class="columns is-fullheight is-marginless ">
         <div class="column is-2 is-sidebar-menu is-fixed    is-hidden-mobile">
             <div class="brand" style="margin-bottom : 5rem;">
@@ -73,7 +89,21 @@
         </div>
     </div>
 </div>
-
+<script>
+    $(document).ready( function() {
+        setTimeout(function(){
+            $(".snackbar").addClass("animated fadeOutUp");
+        }, 3000);
+       
+      });
+      $.ajax({
+        type: "POST",
+        url: "{{url_for('mssg_del')}}",
+        
+      }).done(function() {
+         console.log("session['mssg'] is empty")
+      });
+</script>
  
 <script>
     feather.replace()
