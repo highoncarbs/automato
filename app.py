@@ -1,11 +1,15 @@
-from flask import Flask , render_template , g , redirect , jsonify , url_for , request
+from flask import Flask , render_template , g , redirect , jsonify , url_for , request , session
 from flask_sqlalchemy import SQLAlchemy 
 import MySQLdb
 import pika 
 import json 
 import os 
+import csv
 from werkzeug import secure_filename
 from flask_migrate import Migrate 
+# from whoosh.analysis import StemmingAnalyzer 
+import flask_whooshalchemy 
+import datetime
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -13,6 +17,9 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 from model import contacts , scrape_form , scrape_task , job_form , job_task , template , template_form
 migrate = Migrate(app , db)
+
+global visit
+visit = 0
 
 def connect_queue():
     if not hasattr(g , 'rabbitmq'):
@@ -52,7 +59,13 @@ def close_queue(error):
 
 @app.route('/' , methods = ['GET' , 'POST'])
 def home():
-    
+
+    global visit 
+    if visit is 0:
+        visit = 1
+        session['mssg'] = " 👋   Hello there !"
+    else:
+        session['mssg'] = ""
     con_len = db.session.query(contacts).count()
     city_len = db.session.query(contacts.city).distinct(contacts.city).count()
 
@@ -69,39 +82,43 @@ def home():
 
     return render_template('dash.html' , con_len = con_len , city_len = city_len , src_len = src_len , src_fin = src_fin ,\
         src_unfin = src_unfin , src_run = src_run , job_len = job_len , job_fin = job_fin ,\
-        job_unfin = job_unfin , job_run = job_run) , 200
+        job_unfin = job_unfin , job_run = job_run , mssg = session['mssg']) , 200
 
 @app.route('/scheduler' ,methods = ['GET' , 'POST'])
 def scheduler():
     return render_template('scheduler.html') , 200
 
+
+
 @app.route('/jobs' ,methods = ['GET' , 'POST'])
 def jobs():
     form = job_form()
-    form.city.choices = [ (r.city , r.city ) for r in db.session.query(scrape_task) ]
+    def_city = ('0' , 'Select City')
+
+    form.city.choices = [def_city] + [ (r.city , r.city ) for r in db.session.query(scrape_task) ]
+
     form.keyword.choices = [(r.keyword , r.keyword) for r in db.session.query(scrape_task.keyword).distinct(scrape_task.keyword)]
     form.campaign.choices = [(r.name , r.name) for r in db.session.query(template)]
 
     job_list = db.session.query(job_task).all()
     if form.validate_on_submit():
         city = form.city.data 
+        keyword = form.keyword.data 
         provider = "Whatsapp"
         # Check if the city and keyword already exsists ?
-        check_one = db.session.query(job_task).filter_by(city = city , provider = provider).first()
+        check_one = db.session.query(job_task).filter_by(city = city , provider = provider , keyword = keyword).first()
         if check_one is None:
-            new_job = job_task(city = city  , provider = provider , status = str(0) , meta = str(''))
+            new_job = job_task(city = city  , provider = provider , status = str(0) , meta = str('') , keyword = keyword)
             db.session.add(new_job)
             db.session.commit()
-            mssg = "Scraper added to list."
-            print(mssg)
+            session['mssg'] = " 👍 Job added to list."
             return redirect('/jobs')
         else:
-            mssg = "Scraper already exsists. You can rerun the scraper from the list below , or run a new scraper with different parameters." 
-            print(mssg)
+            session['mssg'] = " 🙃 Job already exsists. You can re-run the job from the list below , or run a new job with different parameters."
             return redirect('/jobs')
     else:
         print(form.errors)
-    return render_template('jobs.html' , form= form , mssg = None , job_list = job_list) , 200
+    return render_template('jobs.html' , form= form , job_list = job_list , mssg = session['mssg']) , 200
 
 @app.route('/contacts' ,methods = ['GET' , 'POST'])
 def contacts_call():
@@ -128,14 +145,13 @@ def scraper():
             new_scraper =scrape_task(city = city , keyword = keyword , provider = provider , status = str(0) , meta = str(1))
             db.session.add(new_scraper)
             db.session.commit()
-            mssg = "Scraper added to list."
-            print(mssg)
+            session['mssg'] = " 👍 Scraper added to list."
+            
             return redirect('/scraper')
         else:
-            mssg = "Scraper already exsists. You can rerun the scraper from the list below , or run a new scraper with different parameters." 
-            print(mssg)
+            session['mssg'] = " 🙃 Job already exsists. You can re-run the job from the list below , or run a new job with different parameters."
             return redirect('/scraper')
-    return render_template('scraper.html' , form= form , mssg = None ,scraper_list = scraper_list) , 200
+    return render_template('scraper.html' , form= form  ,scraper_list = scraper_list , mssg = session['mssg']) , 200
 
 
 @app.route('/push_scraper_to_queue/<task_id>' , methods = ['POST' , 'GET'])
@@ -157,6 +173,8 @@ def push_scraper_to_queue(task_id):
         )
         task.status = 1
         db.session.commit()
+        session['mssg'] = " 👷 Will start scraping {} for {} soon .".format()
+
         return redirect('/scraper')
     except Exception as e:
         mssg = "We ran into an error : " + str(e)
@@ -170,10 +188,8 @@ def push_job_to_queue(task_id):
     # Runs only one task a time 
     try:
         task = db.session.query(job_task).filter_by(id = task_id).first()
-        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id}
+        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id , 'keyword' : task.keywordS}
         m = get_mssg_queue()
-        print(m)
-        print("Ok")
         m.basic_publish(
             exchange='amq.direct',
             routing_key='mssg_queue',
@@ -194,7 +210,6 @@ def push_job_to_queue(task_id):
 def job_results(job_id):
     try:
         job_city = db.session.query(job_task).filter_by(id = str(job_id)).first().city
-        print(job_city)
         success_all = db.session.query(contacts).filter_by(city = job_city).filter((contacts.wp_cnt == 1)).all()
         invalid_all = db.session.query(contacts).filter_by(city = job_city).filter((contacts.wp_cnt == -2)).all()
         jdnum_all = db.session.query(contacts).filter_by(city = job_city).filter((contacts.wp_cnt == 0)).all()
@@ -214,7 +229,6 @@ def job_results(job_id):
 def src_results(job_id , keyword):
     try:
         src_city = db.session.query(scrape_task).filter_by(id = str(job_id)).first().city
-        print(src_city)
         success_all = db.session.query(contacts).filter_by(city = src_city).filter_by(keyword = keyword).all()
         # success_sent = [x if x.wp_cnt is 1 else None for x in contacts]
         # invalid_sent = [x if x.wp_cnt is -2 else None for x in contacts]
@@ -287,3 +301,74 @@ def del_temp(id):
     except Exception as e:
         print(str(e))
         return redirect(url_for('templates')) , 200
+
+
+@app.route('/jobcombo/<city>' , methods = ['POST' , 'GET'])
+def jobcombo(city):
+    job_city = city
+    keyword = [r.keyword for r in db.session.query(scrape_task.keyword).distinct(scrape_task.keyword).filter((scrape_task.city == str(city))).all()]
+    print(keyword)
+    return jsonify({'options' : keyword})
+
+@app.route('/message/session' , methods=['POST'])
+def mssg_del():
+    session['mssg'] = ""
+    return jsonify({'mssg' :'Emptying session mssg' })
+
+@app.route('/export/all' , methods=['POST'])
+def export_all():
+
+    backup_folder = os.path.abspath('./backups')
+    con_all = db.session.query(contacts)
+    jobs = db.session.query(job_task)
+    scrape = db.session.query(scrape_task)
+
+    folder_date = datetime.datetime.now()
+    folder_name = str(folder_date.strftime("%c"))
+    folder_name = folder_name.replace(" " , "_").replace(":" , "-")
+
+    try:
+        backup_fol = backup_folder + '\\' + folder_name
+        os.makedirs(backup_fol)
+        backup_con = backup_fol +  '\\contacts.csv'
+        backup_job = backup_fol +  '\\jobs.csv'
+        backup_scrape = backup_fol +  '\\scrape.csv'
+
+        with open(backup_con, 'w') as contacts_file:
+            outcsv = csv.writer(contacts_file, delimiter=',',quotechar='"', quoting = csv.QUOTE_MINIMAL)
+
+            header = contacts.__table__.columns.keys()
+
+            outcsv.writerow(header)     
+
+            for record in con_all.all():
+                outcsv.writerow([getattr(record, c) for c in header ])
+        
+        with open(backup_job , 'w') as job_file:
+            outcsv_j = csv.writer(job_file, delimiter=',',quotechar='"', quoting = csv.QUOTE_MINIMAL)
+
+            header = job_task.__table__.columns.keys()
+
+            outcsv_j.writerow(header)     
+
+            for record in jobs.all():
+                outcsv_j.writerow([getattr(record, c) for c in header ])
+        
+        with open(backup_scrape, 'w') as job_file:
+            outcsv = csv.writer(job_file, delimiter=',',quotechar='"', quoting = csv.QUOTE_MINIMAL)
+
+            header = scrape_task.__table__.columns.keys()
+
+            outcsv.writerow(header)     
+
+            for record in scrape.all():
+                outcsv.writerow([getattr(record, c) for c in header ])
+        
+            
+        #     return "Success"
+        # except Exception as e:
+        #     print(str(e))
+        # return ""
+    except Exception as e:
+        print(str(e))
+    return "UH"
