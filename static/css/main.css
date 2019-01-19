@@ -1,6 +1,14 @@
 body{
     font-family: Roboto;
 }
+
+.snackbar{
+    position: fixed;
+    width: 100%;
+    line-height: 100px;
+    z-index:    100;
+    border-bottom: 2px solid #eee;
+}
 .rubik{
     font-family: Rubik;
 }
@@ -53,3 +61,4 @@ body{
     background-color: whitesmoke;
     /* border: 2px solid rgba(0,0,0,0.1); */
 }
+
