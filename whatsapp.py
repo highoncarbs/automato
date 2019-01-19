@@ -117,7 +117,7 @@ def send_photo():
     attach.click()
 
     photo = driver.find_element_by_css_selector('#main > header > div._1i0-u > div > div.rAUz7._3TbsN > span > div > div > ul > li:nth-child(1) > input[type="file"]').send_keys('C:\\Users\\padam\\Pictures\\wpimage.jpg')
-    time.sleep(1)
+    time.sleep(3)
     photo_send = driver.find_element_by_css_selector('#app > div > div > div.MZIyP > div._3q4NP._1Iexl > span > div > span > div > div > div._2sNbV._3ySAH > span:nth-child(3) > div > div').click()
  
 def is_connected():
@@ -188,6 +188,7 @@ def send_messages(connection , channel , delivery_tag , body):
     city = mssg_data['city']
     task_id = mssg_data['task_id']
     meta = mssg_data['meta']
+    # keyword = mssg_data['keyword']
     job = db.session.query(job_task).filter_by(id= task_id).first()
     con_all = db.session.query(contacts).filter_by(city = city).filter((contacts.wp_cnt == 0) | (contacts.wp_cnt == -1)).all()
     t_num = [x.contact_one for x in con_all]
