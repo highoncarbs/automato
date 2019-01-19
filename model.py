@@ -76,3 +76,6 @@ class template_form(FlaskForm):
     mssg_6 = StringField('mssg_6')
     mssg_7 = StringField('mssg_7')
     mssg_8 = StringField('mssg_8')
+
+class import_file(FlaskForm):
+    data_file = FileField('data_file' , validators=[InputRequired()])
