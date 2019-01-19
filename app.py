@@ -7,6 +7,7 @@ import os
 import csv
 from werkzeug import secure_filename
 from flask_migrate import Migrate 
+import requests
 # from whoosh.analysis import StemmingAnalyzer 
 import flask_whooshalchemy 
 import datetime
@@ -15,7 +16,7 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
-from model import contacts , scrape_form , scrape_task , job_form , job_task , template , template_form
+from model import contacts , scrape_form , import_file , scrape_task , job_form , job_task , template , template_form
 migrate = Migrate(app , db)
 
 global visit
@@ -188,7 +189,7 @@ def push_job_to_queue(task_id):
     # Runs only one task a time 
     try:
         task = db.session.query(job_task).filter_by(id = task_id).first()
-        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id , 'keyword' : task.keywordS}
+        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id}
         m = get_mssg_queue()
         m.basic_publish(
             exchange='amq.direct',
@@ -315,7 +316,7 @@ def mssg_del():
     session['mssg'] = ""
     return jsonify({'mssg' :'Emptying session mssg' })
 
-@app.route('/export/all' , methods=['POST'])
+@app.route('/export/all' , methods=['POST' , 'GET'])
 def export_all():
 
     backup_folder = os.path.abspath('./backups')
@@ -365,10 +366,22 @@ def export_all():
                 outcsv.writerow([getattr(record, c) for c in header ])
         
             
-        #     return "Success"
-        # except Exception as e:
-        #     print(str(e))
-        # return ""
+        session['mssg'] = "Backup successfully saved"
+        return redirect(url_for('settings')) , 200
     except Exception as e:
-        print(str(e))
-    return "UH"
+        session['mssg'] = "Error creating backup - "+str(e)
+        return redirect(url_for('settings')) , 200
+
+
+@app.route('/settings' , methods=['POST' , 'GET'])
+def settings():
+    form = import_file()
+    if form.validate_on_submit():
+        if request.method == 'POST':
+            imp_file = request.files['data_file']
+            print(request.form)
+            if 'contact' in request.form['import-con']:
+                pass
+            else:
+                session['mssg'] = "OFF pa"
+    return render_template('settings.html' , mssg = session['mssg'] , form=form) , 200
