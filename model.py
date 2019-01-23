@@ -24,6 +24,7 @@ class contacts(db.Model):
     data_hash = db.Column(db.String(150) , unique = True )
     keyword = db.Column(db.String(100))
     campaign = db.Column(db.Integer)
+    keyword_used = db.Column(db.String(200))
 
 class scrape_task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
