@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
-from model import contacts , scrape_form , import_file , scrape_task , job_form , job_task , template , template_form
+from model import contacts , scrape_form , import_file , scrape_task , job_form , job_task , template , template_form , contact_search , contact_filter
 migrate = Migrate(app , db)
 
 global visit
@@ -124,7 +124,10 @@ def jobs():
 @app.route('/contacts' ,methods = ['GET' , 'POST'])
 def contacts_call():
     # contacts_list = db.session.query(contacts).all()
-    return render_template('contacts.html' ) , 200
+    form_search = contact_search()
+    form_filter = contact_filter()
+    form_filter.city.choices = [ (r.city , r.city ) for r in db.session.query(scrape_task.city).distinct(scrape_task.city).all() ]
+    return render_template('contacts.html' , form_search= form_search  , form_filter = form_filter) , 200
 
 @app.route('/task_pause' , methods = ['POST'])
 def task_pause(task_id):
@@ -378,10 +381,17 @@ def settings():
     form = import_file()
     if form.validate_on_submit():
         if request.method == 'POST':
-            imp_file = request.files['data_file']
-            print(request.form)
+            file = request.files['data_file']
+            filename = secure_filename(file.filename)
+            img_temp = os.path.join(UPLOAD_FOLDER, 'temp',filename) 
+            file.save(img_temp)
             if 'contact' in request.form['import-con']:
-                pass
+                print("in")
+                with open(img_temp, 'r') as csv_file:
+                    rea = csv.reader(csv_file)
+                    header = next(rea)
+                    print(rea)
+                    session['mssg'] = header
             else:
                 session['mssg'] = "OFF pa"
     return render_template('settings.html' , mssg = session['mssg'] , form=form) , 200
