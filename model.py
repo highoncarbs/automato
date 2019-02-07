@@ -1,4 +1,4 @@
-from wtforms import StringField , SelectField , FileField
+from wtforms import StringField , SelectField , FileField , SelectMultipleField
 from wtforms.validators import InputRequired , Optional
 from flask_wtf import FlaskForm 
 from datetime import datetime
@@ -80,3 +80,9 @@ class template_form(FlaskForm):
 
 class import_file(FlaskForm):
     data_file = FileField('data_file' , validators=[InputRequired()])
+
+class contact_search(FlaskForm):
+    search = StringField('search' , validators = [InputRequired()])
+
+class contact_filter(FlaskForm):
+    city = SelectMultipleField('city' , coerce =int)
