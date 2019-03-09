@@ -7,6 +7,8 @@ import os
 import csv
 from werkzeug import secure_filename
 from flask_migrate import Migrate 
+# from flask.ext.migrate import Migrate, MigrateCommand
+
 import requests
 # from whoosh.analysis import StemmingAnalyzer 
 import flask_whooshalchemy 
@@ -16,7 +18,10 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
+
 from model import contacts , scrape_form , import_file , scrape_task , job_form , job_task , template , template_form , contact_search , contact_filter
+
+
 migrate = Migrate(app , db)
 
 global visit
@@ -100,16 +105,17 @@ def jobs():
 
     form.keyword.choices = [(r.keyword , r.keyword) for r in db.session.query(scrape_task.keyword).distinct(scrape_task.keyword)]
     form.campaign.choices = [(r.name , r.name) for r in db.session.query(template)]
-
     job_list = db.session.query(job_task).all()
     if form.validate_on_submit():
         city = form.city.data 
         keyword = form.keyword.data 
         provider = "Whatsapp"
+        campaign = form.campaign.data
+        print(campaign)
         # Check if the city and keyword already exsists ?
         check_one = db.session.query(job_task).filter_by(city = city , provider = provider , keyword = keyword).first()
         if check_one is None:
-            new_job = job_task(city = city  , provider = provider , status = str(0) , meta = str('') , keyword = keyword)
+            new_job = job_task(city = city  , provider = provider , status = str(0) , meta = str('') , keyword = keyword , template = campaign)
             db.session.add(new_job)
             db.session.commit()
             session['mssg'] = " 👍 Job added to list."
@@ -192,7 +198,11 @@ def push_job_to_queue(task_id):
     # Runs only one task a time 
     try:
         task = db.session.query(job_task).filter_by(id = task_id).first()
-        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id}
+        template_set = db.session.query(template).filter_by(name =task.template).first()
+        # some_result = db.session.query(template).filter_by(id=task.id).first().as_dict()
+        customer_dict = dict((col, getattr(template_set, col)) for col in template_set.__table__.columns.keys())
+        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id , 'payload' : customer_dict} 
+        print(job_data)
         m = get_mssg_queue()
         m.basic_publish(
             exchange='amq.direct',
@@ -210,6 +220,19 @@ def push_job_to_queue(task_id):
         print(mssg)
         return redirect('/jobs')
 
+@app.route('/job/delete/<job_id>' , methods=["POST" , "GET"])
+def job_delete(job_id):
+    try:
+        db.session.query(job_task).filter_by(id= int(job_id)).delete()
+        db.session.commit();
+        session["mssg"] = "Job "+str(job_id)+" Deleted succesfully"
+        return redirect('/jobs')
+    except Exception as e :
+        mssg = "We ran into an error : " + str(e)
+        session["mssg"]
+        return redirect('/jobs')
+
+        
 @app.route('/job_results/<job_id>' , methods= ['POST' , 'GET'])
 def job_results(job_id):
     try:

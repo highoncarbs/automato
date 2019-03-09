@@ -43,6 +43,8 @@ class job_task(db.Model):
     timestamp = db.Column(db.DateTime, index=True , default=datetime.utcnow)
     keyword = db.Column(db.String(50))
     meta = db.Column(db.String(500) , default = str(0))
+    template = db.Column(db.String(100))
+
 
 class scrape_form(FlaskForm):  
     city = StringField('city' , validators = [InputRequired() , Optional() ]) 
@@ -86,3 +88,10 @@ class contact_search(FlaskForm):
 
 class contact_filter(FlaskForm):
     city = SelectMultipleField('city' , coerce =int)
+
+class Users(db.Model):
+    id = db.Column(db.Integer ,  primary_key = True) 
+    username = db.Column(db.String(50))
+    email = db.Column(db.String(50))
+    password = db.Column(db.String(250))
+    
