@@ -67,3 +67,9 @@ body{
     background-color: black;
 }
 
+.template-mssg{
+    padding: 1rem;
+    background-color:#F5FFFA;
+    /* border: 1px solid rgba(144, 103, 255, 0) ; */
+    border-radius: 3px;
+}
