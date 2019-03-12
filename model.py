@@ -98,3 +98,8 @@ class Users(db.Model):
 class LoginForm(FlaskForm):
     username = StringField('username')
     password = StringField('password')
+
+class SignupForm(FlaskForm):
+    username = StringField('username')
+    password = StringField('password')
+    email = StringField('email')
