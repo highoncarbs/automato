@@ -95,3 +95,6 @@ class Users(db.Model):
     email = db.Column(db.String(50))
     password = db.Column(db.String(250))
     
+class LoginForm(FlaskForm):
+    username = StringField('username')
+    password = StringField('password')

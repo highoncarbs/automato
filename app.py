@@ -19,7 +19,8 @@ app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
 
-from model import contacts , scrape_form , import_file , scrape_task , job_form , job_task , template , template_form , contact_search , contact_filter
+from model import contacts , scrape_form , import_file , scrape_task , job_form , job_task , template , template_form , contact_search , contact_filter ,\
+    LoginForm , Users
 
 
 migrate = Migrate(app , db)
@@ -62,6 +63,11 @@ def close_queue(error):
     if hasattr(g , 'rabbitmq'):
         g.rabbitmq.close()
 
+
+@app.route('/login', methods=['GET' , 'POST'])
+def login():
+    form = LoginForm()
+    return render_template('login.html' , form = form) , 200
 
 @app.route('/' , methods = ['GET' , 'POST'])
 def home():
