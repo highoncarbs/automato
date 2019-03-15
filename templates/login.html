@@ -68,7 +68,7 @@
                     <h3 class="title">Log in <span class="has-text-grey-light">to automato</span></h3>
                     <br>
                     <div class="form">
-                        <form method="POST" action="">
+                        <form method="POST" action="{{ url_for('login')}}">
                             {{form.hidden_tag()}}
                             <div class="field">
                                 <label class="label">Username</label>
@@ -97,7 +97,7 @@
                         </form>
                         <br>
                         <div class="notification is-warning">
-                            <a class="rubik has-text-weight-bold">New to automato , register here for a new account.</a>
+                            <a href="{{ url_for('signup')}}" class="rubik has-text-weight-bold">New to automato , register here for a new account.</a>
                         </div>
                     </div>
 

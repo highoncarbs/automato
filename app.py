@@ -7,6 +7,8 @@ import os
 import csv
 from werkzeug import secure_filename
 from flask_migrate import Migrate 
+from flask_login import LoginManager , login_user  , login_required , logout_user , current_user 
+from werkzeug.security import generate_password_hash, check_password_hash
 # from flask.ext.migrate import Migrate, MigrateCommand
 
 import requests
@@ -24,6 +26,10 @@ from model import contacts , scrape_form , import_file , scrape_task , job_form 
 
 
 migrate = Migrate(app , db)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 global visit
 visit = 0
@@ -64,15 +70,82 @@ def close_queue(error):
         g.rabbitmq.close()
 
 
-@app.route('/login', methods=['GET' , 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    """
     form = LoginForm()
-    return render_template('login.html' , form = form) , 200
+    mssg = ""
+    session['mssg'] = ""
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user:
+            if check_password_hash(user.password, form.password.data):
+                login_user(user)
 
-@app.route('/signup', methods=['GET' , 'POST'])
+                return redirect(url_for('index'))
+            else:
+                session['mssg'] = "Invalid Username or Password";
+                return render_template('login.html', subtitle="Login", form=form, mssg= session['mssgs'])
+        else:
+            session['mssg'] = "Invalid Username or Password";
+            return render_template('login.html', subtitle="Login", form=form, mssg= session['mssgs'])
+    return render_template('login.html', subtitle="Login", form=form, mssg= session['mssgs']), 200
+
+
+@app.route('/signup' , methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
-    return render_template('register.html' , form = form) , 200
+    mssg = ""
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email = form.email.data).first()
+        if user is None:
+            hashed_pass = generate_password_hash(form.password.data , method='sha256')
+            new_user = Users(username = form.username.data , email = form.email.data , password = hashed_pass)
+            # user_table = UserTableCreator(form.email.data)
+            # Base.metadata.create_all(engine)        
+            db.session.add(new_user)
+            db.session.commit()
+            db.session.close()
+            return redirect(url_for('login'))
+        else:
+            session['mssg'] = "Invalid Username or Password";
+
+            return render_template('register.html' , form = form ,subtitle = "Signup" ,mssg = session['mssg'])
+
+    return render_template('register.html' , subtitle = "Signup" , form = form , mssg =session['mssg'] ),200
+
+@app.route('/forgot' , methods=['GET', 'POST'])
+def forgot():
+    return render_template('login.html' , subtitle = "Forgot"),200
+
+@app.route('/user' , methods=['GET' , 'POST'])
+@login_required
+def user():
+    '''
+        User setup done here
+        - Username
+        - Email for sending
+        - Delete Account
+        - Reset data
+        - Export data 
+    '''
+    user = current_user.username 
+
+    return render_template('settings.html' ,user=user),200
+
+
+@app.route
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
 
 @app.route('/' , methods = ['GET' , 'POST'])
 def home():

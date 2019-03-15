@@ -73,3 +73,7 @@ body{
     /* border: 1px solid rgba(144, 103, 255, 0) ; */
     border-radius: 3px;
 }
+
+.column.no-scroll {
+    overflow: auto;
+  }

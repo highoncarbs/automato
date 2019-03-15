@@ -68,7 +68,7 @@
                     <h3 class="title">Register <span class="has-text-grey-light">for automato</span></h3>
                     <br>
                     <div class="form">
-                        <form method="POST" action="">
+                        <form method="POST" action="{{ url_for('signup')}}">
                             {{form.hidden_tag()}}
                             <div class="field">
                                 <label class="label">Username</label>
