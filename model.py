@@ -1,7 +1,8 @@
-from wtforms import StringField , SelectField , FileField , SelectMultipleField
+from wtforms import StringField , SelectField , FileField , SelectMultipleField , PasswordField
 from wtforms.validators import InputRequired , Optional
 from flask_wtf import FlaskForm 
 from datetime import datetime
+from flask_login import UserMixin
 
 from app import db
 
@@ -10,11 +11,11 @@ from app import db
 
 class LoginForm(FlaskForm):
     username = StringField('username')
-    password = StringField('password')
+    password = PasswordField('password')
 
 class SignupForm(FlaskForm):
     username = StringField('username')
-    password = StringField('password')
+    password = PasswordField('password')
     email = StringField('email')
 
 class scrape_form(FlaskForm):  
@@ -25,6 +26,9 @@ class job_form(FlaskForm):
     city = SelectField('city' , coerce = str) 
     keyword = SelectField('keyword' , coerce = str)
     campaign = SelectField('campaign' , coerce = str)
+
+class project_form(FlaskForm):
+    name = StringField('name')
 
 class template_form(FlaskForm):
     name = StringField('name' , validators=[InputRequired()])
@@ -42,7 +46,7 @@ class template_form(FlaskForm):
 
 contact_template_assoc = db.Table('contact_template_assoc' ,
     db.Column('contact_id' , db.Integer , db.ForeignKey('contacts.id')),
-    db.Column('template_id' , db.Integer , db.ForeignKey('tempalate.id')),
+    db.Column('template_id' , db.Integer , db.ForeignKey('template.id')),
 )
 
 user_projects_assoc = db.Table('user_projects_assoc' ,
@@ -99,7 +103,7 @@ class template(db.Model):
 # project =  Projects( ... add inputs ... )
 # project.users.append( user )
 
-class Users(db.Model):
+class Users(db.Model , UserMixin):
     id = db.Column(db.Integer ,  primary_key = True) 
     username = db.Column(db.String(50))
     email = db.Column(db.String(50))
@@ -108,6 +112,7 @@ class Users(db.Model):
     # Also for adding by admin , to a project 
     projects = db.relationship('Project' , secondary= user_projects_assoc , backref= db.backref('users' , lazy = 'dynamic'))
     flag_active = db.Column(db.Boolean , default = False)
+    meta = db.Column(db.String(500))
 
 # Proejct Model
 # one to many

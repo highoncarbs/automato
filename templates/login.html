@@ -26,6 +26,10 @@
         href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.css">
     <link type="text/css" rel="stylesheet"
         href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.default.css">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static' , filename='images/favicons/apple-touch-icon.png')}}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static' , filename='images/favicons/favicon-32x32.png')}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static' , filename='images/favicons/favicon-16x16.png')}}">
+    <link rel="manifest" href="{{ url_for('static' , filename='images/favicons/site.webmanifest')}}">
 
 </head>
 
@@ -49,8 +53,8 @@
     </div>
     {% endif %}
     <div class="container">
-        <div class="columns is-centered is-marginless is-fullwidth ">
-            <div class="column is-2  is-hidden-touch">
+        <div class="columns is-centered">
+            <div class="column is-half-tablet has-text-centered ">
                 <div class="brand" style="margin-bottom : 5rem;">
                     <p class="title has-text-black rubik " style="letter-spacing: -2px;">automato</p>
                 </div>
@@ -58,12 +62,10 @@
 
             </div>
         </div>
-        <div class="columns is-main-content is-mobile is-centered">
+        <div class="columns is-centered">
 
             <!-- Content -->
-
-
-            <div class="column is-one-quarter">
+            <div class="column is-one-quarter-desktop is-half-tablet">
                 <div class="box is-primary">
                     <h3 class="title">Log in <span class="has-text-grey-light">to automato</span></h3>
                     <br>

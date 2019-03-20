@@ -22,7 +22,7 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 from model import contacts , scrape_form , import_file , scrape_task , job_form , job_task , template , template_form , contact_search , contact_filter ,\
-    LoginForm , Users , SignupForm
+    LoginForm , Users , SignupForm ,  project_form , Project
 
 
 migrate = Migrate(app , db)
@@ -33,6 +33,9 @@ login_manager.login_view = 'login'
 
 global visit
 visit = 0
+
+global project
+project = 0
 
 def connect_queue():
     if not hasattr(g , 'rabbitmq'):
@@ -75,28 +78,31 @@ def login():
     """
     """
     form = LoginForm()
-    mssg = ""
     session['mssg'] = ""
     if form.validate_on_submit():
-        user = Users.query.filter_by(email=form.email.data).first()
+        user = Users.query.filter_by(username=form.username.data).first()
         if user:
             if check_password_hash(user.password, form.password.data):
-                login_user(user)
-
-                return redirect(url_for('index'))
+                if(user.flag_active):
+                    login_user(user)
+                elif(user.username is 'admin'):
+                    login_user(user)
+                else:
+                    return render_template('activate.html' , user = user.username) , 200
+                return redirect(url_for('projects'))
             else:
                 session['mssg'] = "Invalid Username or Password";
-                return render_template('login.html', subtitle="Login", form=form, mssg= session['mssgs'])
+                return render_template('login.html', subtitle="Login", form=form, mssg= session['mssg]'])
         else:
             session['mssg'] = "Invalid Username or Password";
-            return render_template('login.html', subtitle="Login", form=form, mssg= session['mssgs'])
-    return render_template('login.html', subtitle="Login", form=form, mssg= session['mssgs']), 200
+            return render_template('login.html', subtitle="Login", form=form, mssg= session['mssg'])
+    return render_template('login.html', subtitle="Login", form=form, mssg= session['mssg']), 200
 
 
 @app.route('/signup' , methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
-    mssg = ""
+    session['mssg'] =  ""
     if form.validate_on_submit():
         user = Users.query.filter_by(email = form.email.data).first()
         if user is None:
@@ -119,6 +125,34 @@ def signup():
 def forgot():
     return render_template('login.html' , subtitle = "Forgot"),200
 
+@app.route('/projects' , methods = ['POST' , 'GET'])
+@login_required
+def projects():
+    
+    form = project_form()
+    project_list = Project.query.all()
+    user_projects = [x if user in x.users else None for x in project_list]
+    print(user_projects)
+    if request.method == 'POST':
+        try :
+            user = Users.query.filter_by(id = current_user.id).first()
+            check_proj = Project.query.filter_by(name = form.name.data).filter_by().first()
+            
+            if(check_proj and user in check_proj.users.all()):
+                session['mssg'] = "Project {} canot be created. You already have a project with that name.".format(form.name.data)
+                return render_template('projects.html' , form=form , mssg= session['mssg'])
+            else:
+                new_proj = Project(name = form.name.data)
+                new_proj.users.append(user)
+                db.session.add(new_proj)
+                db.session.commit()
+                session['mssg'] = "Project {} created. Browse in the sidebar.".format(form.name.data)
+                return render_template('projects.html' , form=form , mssg= session['mssg'])
+        except Exception as e:
+            session['mssg'] = "Something went wrong : "+ str(e)    
+            return render_template('projects.html' , form=form , mssg= session['mssg'])
+    return render_template('projects.html' , form = form) , 200
+
 @app.route('/user' , methods=['GET' , 'POST'])
 @login_required
 def user():
@@ -134,8 +168,15 @@ def user():
 
     return render_template('settings.html' ,user=user),200
 
+@login_required
+def curr_project(setProject):
+    global project
 
-@app.route
+    if setProject:
+        project = setProject
+    
+    return project
+    
 @app.route('/logout')
 @login_required
 def logout():

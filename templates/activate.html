@@ -27,9 +27,9 @@
     <link type="text/css" rel="stylesheet"
         href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.default.css">
         <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static' , filename='images/favicons/apple-touch-icon.png')}}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static' , filename='images/favicons/favicon-32x32.png')}}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static' , filename='images/favicons/favicon-16x16.png')}}">
-        <link rel="manifest" href="{{ url_for('static' , filename='images/favicons/site.webmanifest')}}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static' , filename='images/favicons/favicon-32x32.png')}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static' , filename='images/favicons/favicon-16x16.png')}}">
+    <link rel="manifest" href="{{ url_for('static' , filename='images/favicons/site.webmanifest')}}">
 
 </head>
 
@@ -65,49 +65,18 @@
         <div class="columns is-centered">
 
             <!-- Content -->
-
-
             <div class="column is-one-quarter-desktop is-half-tablet">
                 <div class="box is-primary">
-                    <h3 class="title">Register <span class="has-text-grey-light">for automato</span></h3>
+                    <p class="is-size-6 rubik has-text-weight-bold"> Hey , {{user.title()}} ! Thanks for joining automato. 👋
+                    </p>
                     <br>
-                    <div class="form">
-                        <form method="POST" action="{{ url_for('signup')}}">
-                            {{form.hidden_tag()}}
-                            <div class="field">
-                                <label class="label">Username</label>
-                                <div class="control">
-                                    {{form.username(class="input" , placeholder="Enter Username")}}
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label class="label">Email</label>
-                                <div class="control">
-                                    {{form.email(class="input" , placeholder="Your Email ID")}}
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label class="label">Password</label>
-                                <div class="control">
-                                    {{form.password(class="input" , placeholder="Your Password")}}
-                                </div>
-                            </div>
-                                <br>
-                            <div class="field">
-                                <div class="control">
-                                    <button class="button is-black" type="submit"><span class="icon icon-btn-in"><i
-                                                data-feather="user-plus"></i></span> Sign Up</button>
-                                </div>
-                                
-                            </div>
-
-                        </form>
-                        <br>
-                        <div class="notification is-warning">
-                            <a href="{{ url_for('login') }}" class="rubik has-text-weight-bold">Already registerd ? Log In here.</a>
-                        </div>
-                    </div>
-
+                    <p> We are pleasured to have you on board. 
+                        But it seems that your account hasn't been activated yet. Please contact your admin to activate your account.
+                    </p>
+                    <br><p> Cheers!  </p>
+                    <br>
+                    <a href="{{url_for('login')}}" class="button is-black" type="submit"><span class="icon icon-btn-in"><i
+                        data-feather="arrow-left"></i></span> Back to Login</a>
                 </div>
             </div>
 

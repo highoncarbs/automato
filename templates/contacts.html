@@ -3,199 +3,236 @@
 
 <div class="contact-list">
     <nav class="navbar">
-        <div class="navbar-start">    
-    <h3 class="is-size-5 has-text-weight-bold rubik">ALL CONTACTS</h3>
-</div>
-<div class="navbar-end">
-    <div class="field is-horizontal">
-        <div class="field-body">
-                <div class="field">
-                <form action="" method="POST">
-                        {{form_search.hidden_tag()}}
-                        <div class="field has-addons">
-                    
-                        <div class="control is-inline-block">
-                          {{form_search.search(class="input", placeholder = "Find contact" , type="text")}}
-                        </div>
-                        <div class="control is-inline-block">
-                          <a class="button is-black rubik">
-                                <span class="icon icon-btn-in"><i data-feather="search"></i></span>
-                            Search
-                          </a>
-                        </div>
-                      </div>
-                      </form>
-                </div   >
-            <div class="field">
-                <div class="control">
-                    <button class="button is-black rubik"><span class="icon icon-btn-in"><i data-feather="upload"></i></span>Export</button>
-                </div>
-            </div>
-            <div class="field">
-                    <div class="control">
-                        <button class="button is-black rubik" id="filter_btn"><span class="icon icon-btn-in"><i data-feather="filter"></i></span>Filter</button>
+        <div class="navbar-start">
+            <h3 class="is-size-5 has-text-weight-bold rubik">ALL CONTACTS</h3>
+        </div>
+        <div class="navbar-end">
+            <div class="field is-horizontal">
+                <div class="field-body">
+                    <div class="field">
+                        <form action="" method="POST">
+                            {{form_search.hidden_tag()}}
+                            <div class="field has-addons">
+
+                                <div class="control is-inline-block">
+                                    {{form_search.search(class="input", placeholder = "Find contact" , type="text")}}
+                                </div>
+                                <div class="control is-inline-block">
+                                    <a class="button is-black rubik">
+                                        <span class="icon icon-btn-in"><i data-feather="search"></i></span>
+                                        Search
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal" id="con_filter_modal">
-                        <div class="modal-background"></div>
-                        <div class="modal-content">
-                          <div class="box">
-                            <p class="is-size-4 has-text-weight-bold rubik has-text-centered">Filter Contacts</p>
-                            <p class="is-size-6 has-text-centered is-grey-light">Filter contacts from multiple available filters below.</p>
-                            <hr style="margin-bottom:0 ; border:2px;">
-                                <div class="content ">
+                    <div class="field">
+                        <div class="buttons">
+                            <button class="button is-black rubik"><span class="icon icon-btn-in"><i
+                                        data-feather="upload"></i></span>Export</button>
+                            <button class="button is-black rubik" id="filter_btn"><span class="icon icon-btn-in"><i
+                                        data-feather="filter"></i></span>Filter</button>
+                            <button class="button is-black rubik"><span class="icon icon-btn-in"><i
+                                        data-feather="refresh-cw"></i></span>Refresh</button>
+                            <div class="modal" id="con_filter_modal">
+                                <div class="modal-background"></div>
+                                <div class="modal-content">
+                                    <div class="box">
+                                        <p class="is-size-4 has-text-weight-bold rubik has-text-centered">Filter
+                                            Contacts
+                                        </p>
+                                        <p class="is-size-6 has-text-centered is-grey-light">Filter contacts from
+                                            multiple
+                                            available filters below.</p>
+                                        <hr style="margin-bottom:0 ; border:2px;">
+                                        <div class="content ">
 
 
-                                        <nav class="tabs is-centered is-boxed">
-                                            <div class="container">
-                                          <ul>
-                                            <li class="tab is-active" onclick="openTab(event,'content-city')"><a><span>City</span></a></li>
-                                            <li class="tab" onclick="openTab(event,'content-camp')"><a><span>Campaign</span></a><li>
-                                            <li class="tab" onclick="openTab(event,'content-tags')"><a><span>Tags</span></a></li>
-                                            <li class="tab" onclick="openTab(event,'content-prov')"><a><span>Providers</span></a></li>
-                                            <li class="tab" onclick="openTab(event,'content-keys')"><a><span>Keywords</span></a></li>
-                                        </div>
-                                          </ul>
-                                        </nav>
-                                        <div class="is-fullwidth" style="border-bottom:1px rbga(0,0,0,0.5);"></div>
+                                            <nav class="tabs is-centered is-boxed">
+                                                <div class="container">
+                                                    <ul>
+                                                        <li class="tab is-active"
+                                                            onclick="openTab(event,'content-city')">
+                                                            <a><span>City</span></a></li>
+                                                        <li class="tab" onclick="openTab(event,'content-camp')">
+                                                            <a><span>Campaign</span></a>
+                                                        <li>
+                                                        <li class="tab" onclick="openTab(event,'content-tags')">
+                                                            <a><span>Tags</span></a></li>
+                                                        <li class="tab" onclick="openTab(event,'content-prov')">
+                                                            <a><span>Providers</span></a></li>
+                                                        <li class="tab" onclick="openTab(event,'content-keys')">
+                                                            <a><span>Keywords</span></a></li>
+                                                </div>
+                                                </ul>
+                                            </nav>
+                                            <div class="is-fullwidth" style="border-bottom:1px rbga(0,0,0,0.5);"></div>
 
-                                        <div class="content-tab  is-centered has-text-centered ">
+                                            <div class="content-tab  is-centered has-text-centered ">
                                                 <div class="tab-pane is-fullwidth" id="content-city">
-                                                    <p class="tag is-light is-medium is-fullwidth has-text-centered "><span class="icon icon-btn-in"><i data-feather="check-square"></i></span>Select cities from below :</p>
+                                                    <p class="tag is-light is-medium is-fullwidth has-text-centered ">
+                                                        <span class="icon icon-btn-in"><i
+                                                                data-feather="check-square"></i></span>Select cities
+                                                        from
+                                                        below :</p>
                                                     <br>
                                                     <div class="columns is-mobile is-centered">
-                                                            <div class="column is-half">
-                                                                    <div class="notification is-light is-centered">
-                                                                            <div class="select is-multiple is-fullwidth " style="z-index=90">{{form_filter.city(id="filter_city_con " , class="rubik" , style="width:50%;")}}
-                                                                            </div>
+                                                        <div class="column is-half">
+                                                            <div class="notification is-light is-centered">
+                                                                <div class="select is-multiple is-fullwidth "
+                                                                    style="z-index=90">
+                                                                    {{form_filter.city(id="filter_city_con " , class="rubik" , style="width:50%;")}}
+                                                                </div>
                                                             </div>
-                                                          </div>
-                                                    <!--  -->
-                                                    
+                                                        </div>
+                                                        <!--  -->
+
                                                     </div>
                                                     <script>
-                                                            $(function() {
-                                                                $('select').selectize();
-                                                              });
+                                                        $(function () {
+                                                            $('select').selectize();
+                                                        });
                                                     </script>
 
-                                                    </div>
                                                 </div>
-                                                <div class="tab-pane is-fullwidth has-text-centered " id="content-camp" style="display:none">
-                                                        <p class="tag is-info is-medium is-fullwidth has-text-centered "><span class="icon icon-btn-in"><i data-feather="check-square"></i></span>Select campaings from below :</p>
+                                            </div>
+                                            <div class="tab-pane is-fullwidth has-text-centered " id="content-camp"
+                                                style="display:none">
+                                                <p class="tag is-info is-medium is-fullwidth has-text-centered "><span
+                                                        class="icon icon-btn-in"><i
+                                                            data-feather="check-square"></i></span>Select campaings from
+                                                    below :</p>
 
-
-                                                </div>
-                                                <div class="tab-pane  is-fullwidth has-text-centered" id="content-tags" style="display:none">
-                                                        <p class="tag is-primary is-medium is-fullwidth has-text-centered "><span class="icon icon-btn-in"><i data-feather="check-square"></i></span>Select tags from below :</p>
-
-                                                </div>
-                                                <div class="tab-pane  is-fullwidth has-text-centered" id="content-prov" style="display:none">
-                                                        <p class="tag is-warning is-medium is-fullwidth has-text-centered "><span class="icon icon-btn-in"><i data-feather="check-square"></i></span>Select providers from below :</p>
-
-                                                </div>
-                                                <div class="tab-pane  is-fullwidth has-text-centered" id="content-keys" style="display:none">
-                                                        <p class="tag is-light is-medium is-fullwidth has-text-centered "><span class="icon icon-btn-in"><i data-feather="check-square"></i></span>Select keywords from below :</p>
-
-                                                </div>
 
                                             </div>
+                                            <div class="tab-pane  is-fullwidth has-text-centered" id="content-tags"
+                                                style="display:none">
+                                                <p class="tag is-primary is-medium is-fullwidth has-text-centered ">
+                                                    <span class="icon icon-btn-in"><i
+                                                            data-feather="check-square"></i></span>Select tags from
+                                                    below :
+                                                </p>
+
+                                            </div>
+                                            <div class="tab-pane  is-fullwidth has-text-centered" id="content-prov"
+                                                style="display:none">
+                                                <p class="tag is-warning is-medium is-fullwidth has-text-centered ">
+                                                    <span class="icon icon-btn-in"><i
+                                                            data-feather="check-square"></i></span>Select providers from
+                                                    below :</p>
+
+                                            </div>
+                                            <div class="tab-pane  is-fullwidth has-text-centered" id="content-keys"
+                                                style="display:none">
+                                                <p class="tag is-light is-medium is-fullwidth has-text-centered "><span
+                                                        class="icon icon-btn-in"><i
+                                                            data-feather="check-square"></i></span>Select keywords from
+                                                    below :</p>
+
+                                            </div>
+
+                                        </div>
                                         <script>
-                                                function openTab(evt, tabName) {
-                                                    var i, x, tablinks;
-                                                    x = document.getElementsByClassName("tab-pane");
-                                                    for (i = 0; i < x.length; i++) {
-                                                        x[i].style.display = "none";
-                                                    }
-                                                    tablinks = document.getElementsByClassName("tab");
-                                                    for (i = 0; i < x.length; i++) {
-                                                        tablinks[i].className = tablinks[i].className.replace(" is-active", "");
-                                                    }
-                                                    document.getElementById(tabName).style.display = "block";
-                                                    evt.currentTarget.className += " is-active";
-                                                  }
+                                            function openTab(evt, tabName) {
+                                                var i, x, tablinks;
+                                                x = document.getElementsByClassName("tab-pane");
+                                                for (i = 0; i < x.length; i++) {
+                                                    x[i].style.display = "none";
+                                                }
+                                                tablinks = document.getElementsByClassName("tab");
+                                                for (i = 0; i < x.length; i++) {
+                                                    tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+                                                }
+                                                document.getElementById(tabName).style.display = "block";
+                                                evt.currentTarget.className += " is-active";
+                                            }
                                         </script>
 
-                                </div> 
-                                   
-                          </div>
+                                    </div>
+
+                                </div>
+
+                                <button class="modal-close is-large" aria-label="close"></button>
+                            </div>
+
+                            <script>
+                                document.querySelector('#filter_btn').addEventListener('click', function (event) {
+                                    event.preventDefault();
+                                    var modal = document.querySelector('#con_filter_modal');  // assuming you have only 1
+                                    var html = document.querySelector('html');
+                                    modal.classList.add('is-active');
+                                    html.classList.add('is-clipped');
+
+                                    document.querySelector('.modal-close').addEventListener('click', function (e) {
+                                        e.preventDefault();
+                                        modal.classList.remove('is-active');
+                                        html.classList.remove('is-clipped');
+                                    });
+
+                                    modal.querySelector('.modal-background').addEventListener('click', function (e) {
+                                        e.preventDefault();
+                                        modal.classList.remove('is-active');
+                                        html.classList.remove('is-clipped');
+
+
+                                    });
+
+                                });
+                            </script>
                         </div>
-                        <button class="modal-close is-large" aria-label="close"></button>
-                      </div>
-                      <script>
-                        document.querySelector('#filter_btn').addEventListener('click', function(event) {
-                            event.preventDefault();
-                            var modal = document.querySelector('#con_filter_modal');  // assuming you have only 1
-                            var html = document.querySelector('html');
-                            modal.classList.add('is-active');
-                            html.classList.add('is-clipped');
-                          
-                            document.querySelector('.modal-close').addEventListener('click', function(e) {
-                                e.preventDefault();
-                                modal.classList.remove('is-active');
-                                html.classList.remove('is-clipped');
-                              });
-                      
-                            modal.querySelector('.modal-background').addEventListener('click', function(e) {
-                              e.preventDefault();
-                              modal.classList.remove('is-active');
-                              html.classList.remove('is-clipped');
-    
-      
-                            });
-    
-                          });
-                      </script>
-            </div>
-            <div class="field">
-                    <div class="control">
-                        <button class="button is-black rubik"><span class="icon icon-btn-in"><i data-feather="refresh-cw"></i></span>Refresh</button>
                     </div>
+
+
+                </div>
             </div>
         </div>
-    </div>
+</nav>
 </div>
 
-</nav>  
-<br>  
+<br>
 
 {% if contacts_list %}
-<div class=" table-container" >
-        <table class="table is-bordered is-fullwidth">
-            <thead >
-                <tr>
-                    <th>Business Name</th>
-                    <th>City</th>
-                    <th>Ph #1</th>
-                    <th>Ph #2</th>
-                    <th>Address</th>
-    
-                </tr>
-            </thead>
-            <tbody>
-                {% for c in contacts_list %}
-                <tr>
-                    <td>{{c.business_name}}</td>
-                    <td>{{c.city}}</td>
-                    <td>{{c.contact_one}}</td>
-                    <td>{{c.contact_two}}</td>
-                    
-                    <td>{{c.address}}</td>
+<div class=" table-container">
+    <table class="table is-bordered is-fullwidth">
+        <thead>
+            <tr>
+                <th>Business Name</th>
+                <th>City</th>
+                <th>Ph #1</th>
+                <th>Ph #2</th>
+                <th>Address</th>
 
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in contacts_list %}
+            <tr>
+                <td>{{c.business_name}}</td>
+                <td>{{c.city}}</td>
+                <td>{{c.contact_one}}</td>
+                <td>{{c.contact_two}}</td>
+
+                <td>{{c.address}}</td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% else %}
 <div class="notification is-light is-narrow">
-        <p class="is-size-5 rubik" style="text-align: center">
-            Please select either option<br>
-            <span style="text-decoration: underline;" ><i class="icon icon-btn" data-feather="info"></i> Selecting <span class="has-text-weight-bold">Load All Contacts</span> may take some time for the page to load . Be patient !</span><br>
-            <br>
-            <span class="button" ><span class="icon icon-btn"><i data-feather="users"></i></span>Load all contacts</span> or <span class="button is-dark"><span class="icon icon-btn"><i data-feather="user"></i></span>Filter contacts</span><br>
-        </p>
-    </div>
+    <p class="is-size-5 rubik" style="text-align: center">
+        Please select either option<br>
+        <span style="text-decoration: underline;"><i class="icon icon-btn" data-feather="info"></i> Selecting <span
+                class="has-text-weight-bold">Load All Contacts</span> may take some time for the page to load . Be
+            patient !</span><br>
+        <br>
+        <span class="button"><span class="icon icon-btn"><i data-feather="users"></i></span>Load all contacts</span> or
+        <span class="button is-dark"><span class="icon icon-btn"><i data-feather="user"></i></span>Filter
+            contacts</span><br>
+    </p>
+</div>
 {% endif %}
-    </div>
+</div>
 </div>
 {% endblock %}
