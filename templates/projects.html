@@ -38,7 +38,7 @@
     <div class="snackbar has-background-warning animated fadeInDown ">
         <div class=" level is-mobile container   " style="position: relative;">
             <div class="level-left">
-                <div class="level-item is-size-4 rubik has-text-weight-bold">
+                <div class="level-item is-size-6 rubik has-text-weight-bold">
                     <p>{{mssg}}</p>
 
                 </div>
@@ -136,9 +136,11 @@
                 <a class="button is-fullwidth is-black new-project"><span class="icon icon-btn"><i
                             data-feather="plus"></i></span>
                     Create Project</a>
-                <br>
-                <ul class="menu-list is-size-5  has-text-weight-bold roboto">
-                    <li><a><span class="icon icon-btn"><i data-feather="target"></i></span> Project #1</a></li>
+                <hr>
+                <ul class="menu-list is-size-6  has-text-weight-bold roboto">
+                    {% for p in projects %}
+                    <li><a><span class="icon icon-btn"><i data-feather="target"></i></span> {{p.name}}</a></li>
+                    {% endfor %}
                 </ul>
             </aside>
 

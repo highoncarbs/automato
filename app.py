@@ -128,30 +128,28 @@ def forgot():
 @app.route('/projects' , methods = ['POST' , 'GET'])
 @login_required
 def projects():
-    
+    user = Users.query.filter_by(id = current_user.id).first()
     form = project_form()
     project_list = Project.query.all()
     user_projects = [x if user in x.users else None for x in project_list]
-    print(user_projects)
     if request.method == 'POST':
         try :
-            user = Users.query.filter_by(id = current_user.id).first()
             check_proj = Project.query.filter_by(name = form.name.data).filter_by().first()
             
             if(check_proj and user in check_proj.users.all()):
                 session['mssg'] = "Project {} canot be created. You already have a project with that name.".format(form.name.data)
-                return render_template('projects.html' , form=form , mssg= session['mssg'])
+                return redirect('projects')
             else:
                 new_proj = Project(name = form.name.data)
                 new_proj.users.append(user)
                 db.session.add(new_proj)
                 db.session.commit()
                 session['mssg'] = "Project {} created. Browse in the sidebar.".format(form.name.data)
-                return render_template('projects.html' , form=form , mssg= session['mssg'])
+                return redirect('projects')
         except Exception as e:
             session['mssg'] = "Something went wrong : "+ str(e)    
-            return render_template('projects.html' , form=form , mssg= session['mssg'])
-    return render_template('projects.html' , form = form) , 200
+            return redirect('projects')
+    return render_template('projects.html' , form = form , projects = user_projects , mssg = session['mssg']) , 200
 
 @app.route('/user' , methods=['GET' , 'POST'])
 @login_required
