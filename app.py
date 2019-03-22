@@ -1,6 +1,5 @@
 from flask import Flask , render_template , g , redirect , jsonify , url_for , request , session
 from flask_sqlalchemy import SQLAlchemy 
-import MySQLdb
 import pika 
 import json 
 import os 
@@ -11,9 +10,7 @@ from flask_login import LoginManager , login_user  , login_required , logout_use
 from werkzeug.security import generate_password_hash, check_password_hash
 # from flask.ext.migrate import Migrate, MigrateCommand
 
-import requests
 # from whoosh.analysis import StemmingAnalyzer 
-import flask_whooshalchemy 
 import datetime
 
 app = Flask(__name__)
@@ -35,7 +32,7 @@ global visit
 visit = 0
 
 global project
-project = 0
+project = -1
 
 def connect_queue():
     if not hasattr(g , 'rabbitmq'):
@@ -167,14 +164,20 @@ def user():
     return render_template('settings.html' ,user=user),200
 
 @login_required
-def curr_project(setProject):
+def set_curr_project(setProject):
     global project
 
     if setProject:
         project = setProject
-    
+    else:
+        project = -1
     return project
     
+@login_required
+def curr_project():
+    global project
+    return project
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -185,39 +188,51 @@ def logout():
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
-
+@login_required
 @app.route('/' , methods = ['GET' , 'POST'])
 def home():
 
-    global visit 
-    if visit is 0:
-        visit = 1
-        session['mssg'] = " 👋   Hello there !"
-    else:
-        session['mssg'] = ""
-    con_len = db.session.query(contacts).count()
-    city_len = db.session.query(contacts.city).distinct(contacts.city).count()
+        if (int(curr_project()) > 0):
+            project_active = Project.query.filter_by(id = int(curr_project())).first()
+            print(project_active)
+            global visit 
+            if visit is 0:
+                visit = 1
+                session['mssg'] = " 👋   Hello there !"
+            else:
+                session['mssg'] = ""
+            # Show only for the current project 
 
-    src_len = db.session.query(scrape_task).count()
-    src_fin = db.session.query(scrape_task).filter_by(status = str(2)).count()
-    src_unfin = db.session.query(scrape_task).filter_by(status = str(0)).count()
-    src_run = db.session.query(scrape_task).filter_by(status = str(1)).count()
+            con_len = db.session.query(contacts).count()
+            city_len = db.session.query(contacts.city).distinct(contacts.city).count()
 
-    job_len = db.session.query(job_task).count()
-    job_fin = db.session.query(job_task).filter_by(status = str(2)).count()
-    job_unfin = db.session.query(job_task).filter_by(status = str(3)).count()
-    print(job_unfin)
-    job_run = db.session.query(job_task).filter_by(status = str(1)).count()
+            src_len = db.session.query(scrape_task).count()
+            src_fin = db.session.query(scrape_task).filter_by(status = str(2)).count()
+            src_unfin = db.session.query(scrape_task).filter_by(status = str(0)).count()
+            src_run = db.session.query(scrape_task).filter_by(status = str(1)).count()
 
-    return render_template('dash.html' , con_len = con_len , city_len = city_len , src_len = src_len , src_fin = src_fin ,\
-        src_unfin = src_unfin , src_run = src_run , job_len = job_len , job_fin = job_fin ,\
-        job_unfin = job_unfin , job_run = job_run , mssg = session['mssg']) , 200
+            job_len = db.session.query(job_task).count()
+            job_fin = db.session.query(job_task).filter_by(status = str(2)).count()
+            job_unfin = db.session.query(job_task).filter_by(status = str(3)).count()
+            print(job_unfin)
+            job_run = db.session.query(job_task).filter_by(status = str(1)).count()
+
+            return render_template('dash.html' , con_len = con_len , city_len = city_len , src_len = src_len , src_fin = src_fin ,\
+                src_unfin = src_unfin , src_run = src_run , job_len = job_len , job_fin = job_fin ,\
+                job_unfin = job_unfin , job_run = job_run , mssg = session['mssg'] , curr_project= curr_project()) , 200
+        else:
+            session['mssg'] = "No project selected . Redirecting to Projects page."
+            return redirect('projects') , 200
+
+@login_required
+@app.route('/update_project/<id>' , methods= ['GET' , 'POST'])
+def update_project_and_route(id):
+    set_curr_project(id)
+    return redirect(url_for('home'))
 
 @app.route('/scheduler' ,methods = ['GET' , 'POST'])
 def scheduler():
     return render_template('scheduler.html') , 200
-
-
 
 @app.route('/jobs' ,methods = ['GET' , 'POST'])
 def jobs():
@@ -389,6 +404,7 @@ def src_results(job_id , keyword):
     except Exception as e:
         pass
         return "Naah" + str(e)
+
 @app.route('/task_report/<job_id>' , methods = ['POST' , 'GET'])
 def task_report(job_id):
     # Endpoint for full report for JOB and TASK Results

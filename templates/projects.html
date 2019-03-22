@@ -26,10 +26,13 @@
         href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.css">
     <link type="text/css" rel="stylesheet"
         href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.default.css">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static' , filename='images/favicons/apple-touch-icon.png')}}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static' , filename='images/favicons/favicon-32x32.png')}}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static' , filename='images/favicons/favicon-16x16.png')}}">
-        <link rel="manifest" href="{{ url_for('static' , filename='images/favicons/site.webmanifest')}}">
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static' , filename='images/favicons/apple-touch-icon.png')}}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static' , filename='images/favicons/favicon-32x32.png')}}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static' , filename='images/favicons/favicon-16x16.png')}}">
+    <link rel="manifest" href="{{ url_for('static' , filename='images/favicons/site.webmanifest')}}">
 
 </head>
 
@@ -54,7 +57,7 @@
     <div class="navbar is-hidden-desktop ">
         <div class="container" style="    background-color: mintcream; border-bottom: 2px solid rgba(0,0,0,0.1);">
             <div class="navbar-brand has-background-black " style="padding-left:1rem;">
-                <a class="navbar-item " href="{{url_for('home')}}" style="font-weight:bold;">
+                <a class="navbar-item " href="" style="font-weight:bold;">
                     <div class="brand">
                         <p class="title rubik has-text-white" style="letter-spacing: -2px;">a</p>
                     </div>
@@ -73,17 +76,15 @@
                         <p class="menu-label">
                             PROJECTS
                         </p>
+                        <a class="button is-fullwidth is-black new-project"><span class="icon icon-btn"><i
+                                    data-feather="plus"></i></span>
+                            Create Project</a>
+                        <hr>
                         <ul class="menu-list is-size-5  has-text-weight-bold roboto">
+                            {% for p in projects %}
                             <li><a href="{{url_for('home')}}"><span class="icon icon-btn"><i
-                                            data-feather="zap"></i></span> Dashboard</a></li>
-                            <li><a href="{{url_for('contacts_call')}}"><span class="icon icon-btn"><i
-                                            data-feather="hash"></i></span> Contacts</a></li>
-                            <li><a href="{{url_for('scraper')}}"><span class="icon icon-btn"><i
-                                            data-feather="database"></i></span> Scrapers</a></li>
-                            <li><a href="{{url_for('jobs')}}"><span class="icon icon-btn"><i
-                                            data-feather="send"></i></span> Jobs</a></li>
-                            <li><a href="{{url_for('templates')}}"><span class="icon icon-btn"><i
-                                            data-feather="image"></i></span> Templates</a></li>
+                                            data-feather="target"></i></span> {{p.name}}</a></li>
+                            {% endfor %}
                         </ul>
                     </aside>
 
@@ -139,7 +140,8 @@
                 <hr>
                 <ul class="menu-list is-size-6  has-text-weight-bold roboto">
                     {% for p in projects %}
-                    <li><a><span class="icon icon-btn"><i data-feather="target"></i></span> {{p.name}}</a></li>
+                    <li><a href="{{url_for('update_project_and_route' , id = p.id) }}"><span class="icon icon-btn"><i
+                                    data-feather="target"></i></span> {{p.name}}</a></li>
                     {% endfor %}
                 </ul>
             </aside>
@@ -161,7 +163,8 @@
                 <ul class="menu-list is-size-5  has-text-weight-bold roboto">
                     <li><a href="{{url_for('settings')}}"><span class="icon icon-btn"><i
                                     data-feather="settings"></i></span> Settings</a></li>
-                    <li><a href="{{url_for('logout')}}"><span class="icon icon-btn"><i data-feather="log-out"></i></span> Log Out</a></li>
+                    <li><a href="{{url_for('logout')}}"><span class="icon icon-btn"><i
+                                    data-feather="log-out"></i></span> Log Out</a></li>
                 </ul>
             </aside>
 
@@ -174,8 +177,8 @@
                     <div class="notification is-light has-text-centered">
                         <p><span class="icon"><i data-feather="info"></i></span></p>
                         <p class="rubik ">Select your projects on the side bar or Create a </p><br>
-                            <a class="button rubik new-project2"><span class="icon icon-btn-in"><i
-                                        data-feather="plus"></i></span> New Project</a>
+                        <a class="button rubik new-project2"><span class="icon icon-btn-in"><i
+                                    data-feather="plus"></i></span> New Project</a>
                     </div>
                     <hr>
                     <p class="is-size-5 has-text-weight-bold rubik">Recent Projects</p>
@@ -190,83 +193,85 @@
         <div class="modal-background"></div>
         <div class="modal-content">
             <div class="box ">
-                    <p class=" is-size-4 has-text-weight-bold has-text-centered">New Project</p>
-                    <p class=" subtitle has-text-grey rubik has-text-centered">Create a new Project. Add Members. Market Away! </p>
-                    <br>
-                    <div class="form">
-                            <form method="POST" action="{{ url_for('projects')}}">
-                                {{form.hidden_tag()}}
-                                <div class="field">
-                                    <label class="label">Project Name</label>
-                                    <div class="control">
-                                        {{form.name(class="input" , placeholder="Enter Project Name")}}
-                                    </div>
-                                </div>
-                                                                <div class="field">
-                                    <div class="control">
-                                        <button class="button is-black" type="submit"><span class="icon icon-btn-in"><i
-                                                    data-feather="plus-circle"></i></span> Create</button>
-                                    </div>
-                                    
-                                </div>
-    
-                            </form>
-                            <br>
-                            <div class="notification is-warning">
-                                <p class="rubik has-text-weight-bold ">Add members to your Project. Share your project name around.</a>
+                <p class=" is-size-4 has-text-weight-bold has-text-centered">New Project</p>
+                <p class=" subtitle has-text-grey rubik has-text-centered">Create a new Project. Add Members. Market
+                    Away! </p>
+                <br>
+                <div class="form">
+                    <form method="POST" action="{{ url_for('projects')}}">
+                        {{form.hidden_tag()}}
+                        <div class="field">
+                            <label class="label">Project Name</label>
+                            <div class="control">
+                                {{form.name(class="input" , placeholder="Enter Project Name")}}
                             </div>
                         </div>
+                        <div class="field">
+                            <div class="control">
+                                <button class="button is-black" type="submit"><span class="icon icon-btn-in"><i
+                                            data-feather="plus-circle"></i></span> Create</button>
+                            </div>
+
+                        </div>
+
+                    </form>
+                    <br>
+                    <div class="notification is-warning">
+                        <p class="rubik has-text-weight-bold ">Add members to your Project. Share your project name
+                            around.</a>
+                    </div>
+                </div>
             </div>
         </div>
         <button class="modal-close is-large" aria-label="close"></button>
     </div>
     <script>
-            document.querySelector('.new-project').addEventListener('click', function(event) {
-              event.preventDefault();
-              var modal = document.querySelector('#project-form');  // assuming you have only 1
-              var html = document.querySelector('html');
-              modal.classList.add('is-active');
-              html.classList.add('is-clipped');
-            
-              document.querySelector('.modal-close').addEventListener('click', function(e) {
-                  e.preventDefault();
-                  modal.classList.remove('is-active');
-                  html.classList.remove('is-clipped');
-                });
-          
-              modal.querySelector('.modal-background').addEventListener('click', function(e) {
+        document.querySelector('.new-project').addEventListener('click', function (event) {
+            event.preventDefault();
+            var modal = document.querySelector('#project-form');  // assuming you have only 1
+            var html = document.querySelector('html');
+            modal.classList.add('is-active');
+            html.classList.add('is-clipped');
+
+            document.querySelector('.modal-close').addEventListener('click', function (e) {
                 e.preventDefault();
                 modal.classList.remove('is-active');
                 html.classList.remove('is-clipped');
-          
-          
-              });
-          
             });
 
-            document.querySelector('.new-project2').addEventListener('click', function(event) {
-                event.preventDefault();
-                var modal = document.querySelector('#project-form');  // assuming you have only 1
-                var html = document.querySelector('html');
-                modal.classList.add('is-active');
-                html.classList.add('is-clipped');
-              
-                document.querySelector('.modal-close').addEventListener('click', function(e) {
-                    e.preventDefault();
-                    modal.classList.remove('is-active');
-                    html.classList.remove('is-clipped');
-                  });
-            
-                modal.querySelector('.modal-background').addEventListener('click', function(e) {
-                  e.preventDefault();
-                  modal.classList.remove('is-active');
-                  html.classList.remove('is-clipped');
-            
-            
-                });
-            
-              });
-          </script>
+            modal.querySelector('.modal-background').addEventListener('click', function (e) {
+                e.preventDefault();
+                modal.classList.remove('is-active');
+                html.classList.remove('is-clipped');
+
+
+            });
+
+        });
+
+        document.querySelector('.new-project2').addEventListener('click', function (event) {
+            event.preventDefault();
+            var modal = document.querySelector('#project-form');  // assuming you have only 1
+            var html = document.querySelector('html');
+            modal.classList.add('is-active');
+            html.classList.add('is-clipped');
+
+            document.querySelector('.modal-close').addEventListener('click', function (e) {
+                e.preventDefault();
+                modal.classList.remove('is-active');
+                html.classList.remove('is-clipped');
+            });
+
+            modal.querySelector('.modal-background').addEventListener('click', function (e) {
+                e.preventDefault();
+                modal.classList.remove('is-active');
+                html.classList.remove('is-clipped');
+
+
+            });
+
+        });
+    </script>
     <script>
         $(document).ready(function () {
             setTimeout(function () {
