@@ -92,7 +92,7 @@ def login():
                 return redirect(url_for('projects'))
             else:
                 session['mssg'] = "Invalid Username or Password";
-                return render_template('login.html', subtitle="Login", form=form, mssg= session['mssg]'])
+                return render_template('login.html', subtitle="Login", form=form, mssg= session['mssg'])
         else:
             session['mssg'] = "Invalid Username or Password";
             return render_template('login.html', subtitle="Login", form=form, mssg= session['mssg'])
@@ -115,7 +115,7 @@ def signup():
             db.session.close()
             return redirect(url_for('login'))
         else:
-            session['mssg'] = "Invalid Username or Password";
+            session['mssg'] = "Email ID already in use. Please login";
 
             return render_template('register.html' , form = form ,subtitle = "Signup" ,mssg = session['mssg'])
 
