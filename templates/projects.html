@@ -134,10 +134,11 @@
                 <p class="menu-label">
                     PROJECTS
                 </p>
-                <a class="button is-fullwidth is-black new-project"><span class="icon icon-btn"><i
+                <a class="button is-fullwidth is-black " id="new-project"><span class="icon icon-btn"><i
                             data-feather="plus"></i></span>
                     Create Project</a>
                 <hr>
+                
                 <ul class="menu-list is-size-6  has-text-weight-bold roboto">
                     {% for p in projects %}
                     <li><a href="{{url_for('update_project_and_route' , id = p.id) }}"><span class="icon icon-btn"><i
@@ -226,7 +227,7 @@
         <button class="modal-close is-large" aria-label="close"></button>
     </div>
     <script>
-        document.querySelector('.new-project').addEventListener('click', function (event) {
+        document.querySelector('#new-project').addEventListener('click', function (event) {
             event.preventDefault();
             var modal = document.querySelector('#project-form');  // assuming you have only 1
             var html = document.querySelector('html');

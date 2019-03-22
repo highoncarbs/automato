@@ -177,6 +177,11 @@ def set_curr_project(setProject):
 def curr_project():
     global project
     return project
+        
+@login_required
+def curr_proj_ins():
+    global project
+    return Project.query.filter_by(id = int(project)).first()
 
 @app.route('/logout')
 @login_required
@@ -191,10 +196,11 @@ def load_user(user_id):
 @login_required
 @app.route('/' , methods = ['GET' , 'POST'])
 def home():
-
+        project_list = Project.query.all()
+        user_projects = list([x if current_user in x.users else None for x in project_list])
+        print(user_projects)
         if (int(curr_project()) > 0):
             project_active = Project.query.filter_by(id = int(curr_project())).first()
-            print(project_active)
             global visit 
             if visit is 0:
                 visit = 1
@@ -214,15 +220,18 @@ def home():
             job_len = db.session.query(job_task).count()
             job_fin = db.session.query(job_task).filter_by(status = str(2)).count()
             job_unfin = db.session.query(job_task).filter_by(status = str(3)).count()
-            print(job_unfin)
             job_run = db.session.query(job_task).filter_by(status = str(1)).count()
 
             return render_template('dash.html' , con_len = con_len , city_len = city_len , src_len = src_len , src_fin = src_fin ,\
                 src_unfin = src_unfin , src_run = src_run , job_len = job_len , job_fin = job_fin ,\
-                job_unfin = job_unfin , job_run = job_run , mssg = session['mssg'] , curr_project= curr_project()) , 200
+                job_unfin = job_unfin , job_run = job_run , mssg = session['mssg'] , p_list = user_projects) , 200
         else:
             session['mssg'] = "No project selected . Redirecting to Projects page."
             return redirect('projects') , 200
+
+@app.context_processor
+def inject_project():
+    return dict( curr_project = curr_project() , curr_project_ins = curr_proj_ins())
 
 @login_required
 @app.route('/update_project/<id>' , methods= ['GET' , 'POST'])

@@ -26,9 +26,12 @@
         href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.css">
     <link type="text/css" rel="stylesheet"
         href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.default.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static' , filename='images/favicons/apple-touch-icon.png')}}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static' , filename='images/favicons/favicon-32x32.png')}}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static' , filename='images/favicons/favicon-16x16.png')}}">
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static' , filename='images/favicons/apple-touch-icon.png')}}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static' , filename='images/favicons/favicon-32x32.png')}}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static' , filename='images/favicons/favicon-16x16.png')}}">
     <link rel="manifest" href="{{ url_for('static' , filename='images/favicons/site.webmanifest')}}">
 </head>
 
@@ -126,35 +129,39 @@
         <div class="column is-2 is-sidebar-menu is-fixed  is-hidden-touch">
             <div class="brand" style="margin-bottom : 5rem;">
                 <p class="title has-text-black rubik " style="letter-spacing: -2px;">automato</p>
+                <p class="menu-label">
+                    Current Project
+                </p>
                 <div class="project-select rubik ">
-                        <div class="dropdown is-hoverable">
-                                <div class="dropdown-trigger">
-                                  <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                                    <span class="rubik">Bagru Summer</span>
-                                    <span class="icon is-small">
-                                      <i data-feather="arrow-down" aria-hidden="true"></i>
-                                    </span>
-                                  </button>
-                                </div>
-                                <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                  <div class="dropdown-content">
-                                    <a href="#" class="dropdown-item">
-                                      SANGANER SUMMER
-                                    </a>
-                                    <a class="dropdown-item">
-                                     WORKSHOP CAMP
-                                    </a>
-                                    <a href="#" class="dropdown-item is-active">
-                                        OTHER
-                                    </a>
-                                    
-                                    <hr class="dropdown-divider">
-                                    <a href="#" class="dropdown-item">
-                                        All Projects
-                                    </a>
-                                  </div>
-                                </div>
+                    <div class="dropdown is-hoverable">
+                        <div class="dropdown-trigger">
+                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                                <span class="rubik">{{curr_proj_ins}}</span>
+                                <span class="icon is-small">
+                                    <i data-feather="arrow-down" aria-hidden="true"></i>
+                                </span>
+                            </button>
                         </div>
+                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                            <div class="dropdown-content">
+                                <!-- {% if p_list|length == 0%}
+                                {% else %} -->
+                                {% for p in p_list %}
+                                <a href="{{ url_for('update_project_and_route' , id = p.id )}}" class="dropdown-item">
+                                    {{ p.name }}
+                                </a>
+                                {% endfor %}
+                                <!-- {% endif %} -->
+
+
+
+                                <hr class="dropdown-divider">
+                                <a href="{{ url_for('projects')}}" class="dropdown-item">
+                                    All Projects
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
