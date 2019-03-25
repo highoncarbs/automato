@@ -319,7 +319,7 @@ def jobs():
         return render_template('jobs.html', form= form, job_list = job_list, mssg = session['mssg'] , user_projects = get_projects()), 200
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
-        return redirect('projects'), 200
+        return redirect('projects')
 @login_required
 @app.route('/user-settings', methods = ['GET', 'POST'])
 def user_settings():
@@ -329,10 +329,15 @@ def user_settings():
 @app.route('/contacts', methods = ['GET', 'POST'])
 def contacts_call():
     # contacts_list = db.session.query(contacts).all()
-    form_search = contact_search()
-    form_filter = contact_filter()
-    form_filter_city =  db.session.query(scrape_task.city).distinct(scrape_task.city).all()
-    return render_template('contacts.html', form_search= form_search, form_filter = form_filter , form_filter_city = form_filter_city), 200
+    if (int(curr_project()) > 0):
+
+        form_search = contact_search()
+        form_filter = contact_filter()
+        form_filter_city =  db.session.query(scrape_task.city).distinct(scrape_task.city).all()
+        return render_template('contacts.html', form_search= form_search, form_filter = form_filter , form_filter_city = form_filter_city), 200
+    else:
+        session['mssg'] = "No project selected . Redirecting to Projects page."
+        return redirect('projects')
 
 @login_required
 @app.route('/task_pause', methods = ['POST'])
@@ -347,26 +352,30 @@ def scraper():
     form = scrape_form()
     scraper_list = db.session.query(scrape_task).all()
     print(scraper_list)
-    if form.validate_on_submit():
-        city= str(form.city.data).title()
-        keyword= form.keyword.data
-        provider = "Justdial"
-        # Check if the city and keyword already exsists ?
-        check_one = db.session.query(scrape_task).filter_by(city = city, keyword = keyword, provider = provider).first()
-        if check_one is None:
-            project_curr = db.session.query(Project).filter_by(id = int(curr_project())).first()
-            print(project_curr)
-            new_scraper= scrape_task(city = city, keyword = keyword, provider = provider, status = str(0), meta = str(1) , project_sc = project_curr)
-            db.session.add(new_scraper)
-            db.session.commit()
-            session['mssg'] = " 👍 Scraper added to list."
+    if (int(curr_project()) > 0):
 
-            return redirect('/scraper')
-        else:
-            session['mssg'] = " 🙃 Job already exsists. You can re-run the job from the list below , or run a new job with different parameters."
-            return redirect('/scraper')
-    return render_template('scraper.html', form= form, scraper_list = scraper_list, mssg = session['mssg']), 200
+        if form.validate_on_submit():
+            city= str(form.city.data).title()
+            keyword= form.keyword.data
+            provider = "Justdial"
+            # Check if the city and keyword already exsists ?
+            check_one = db.session.query(scrape_task).filter_by(city = city, keyword = keyword, provider = provider).first()
+            if check_one is None:
+                project_curr = db.session.query(Project).filter_by(id = int(curr_project())).first()
+                print(project_curr)
+                new_scraper= scrape_task(city = city, keyword = keyword, provider = provider, status = str(0), meta = str(1) , project_sc = project_curr)
+                db.session.add(new_scraper)
+                db.session.commit()
+                session['mssg'] = " 👍 Scraper added to list."
 
+                return redirect('/scraper')
+            else:
+                session['mssg'] = " 🙃 Job already exsists. You can re-run the job from the list below , or run a new job with different parameters."
+                return redirect('/scraper')
+        return render_template('scraper.html', form= form, scraper_list = scraper_list, mssg = session['mssg']), 200
+    else:
+        session['mssg'] = "No project selected . Redirecting to Projects page."
+        return redirect('projects')
 
 @login_required
 @app.route('/push_scraper_to_queue/<task_id>', methods = ['POST', 'GET'])
@@ -495,39 +504,43 @@ def allowed_file(filename):
 @login_required
 @app.route('/templates' , methods = ['POST' , 'GET'])
 def templates():
+    if (int(curr_project()) > 0):
 
-    temps = db.session.query(template).all()
-    form = template_form()
-    if form.validate_on_submit():
-        if request.method == 'POST':
-            file = request.files['img']
-            try:
-                if file and allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-                    img_temp = os.path.join(UPLOAD_FOLDER, filename) 
-                    file.save(img_temp)
-                    name = form.name.data
-                    mssg_1 = form.mssg_1.data 
-                    mssg_2 = form.mssg_2.data 
-                    mssg_3 = form.mssg_3.data 
-                    mssg_4 = form.mssg_4.data 
-                    mssg_5 = form.mssg_5.data 
-                    mssg_6 = form.mssg_6.data 
-                    mssg_7 = form.mssg_7.data 
-                    mssg_8 = form.mssg_8.data 
-                    if mssg_1 or mssg_2 or mssg_3 or mssg_4 or mssg_5 or mssg_6 or mssg_7 or mssg_8 is '' :
-                        new_temp = template(name = name ,img_path = filename )
-                    else:
-                        new_temp = template(name = name , mssg_1 = mssg_1 , img_path = filename , mssg_2 = mssg_2 , mssg_3 = mssg_3 ,\
-                            mssg_4 = mssg_4, mssg_5 = mssg_5, mssg_6 = mssg_6, mssg_7 = mssg_7 , mssg_8 = mssg_8)
-                    db.session.add(new_temp)
-                    db.session.commit()
-                    mssg = "Template successfully added"
-                    print(mssg)
-                    return redirect(url_for('templates'))
-            except Exception as e:
-                print(str(e))
-    return render_template('templates.html' , form = form ,temps = temps) , 200
+        temps = db.session.query(template).all()
+        form = template_form()
+        if form.validate_on_submit():
+            if request.method == 'POST':
+                file = request.files['img']
+                try:
+                    if file and allowed_file(file.filename):
+                        filename = secure_filename(file.filename)
+                        img_temp = os.path.join(UPLOAD_FOLDER, filename) 
+                        file.save(img_temp)
+                        name = form.name.data
+                        mssg_1 = form.mssg_1.data 
+                        mssg_2 = form.mssg_2.data 
+                        mssg_3 = form.mssg_3.data 
+                        mssg_4 = form.mssg_4.data 
+                        mssg_5 = form.mssg_5.data 
+                        mssg_6 = form.mssg_6.data 
+                        mssg_7 = form.mssg_7.data 
+                        mssg_8 = form.mssg_8.data 
+                        if mssg_1 or mssg_2 or mssg_3 or mssg_4 or mssg_5 or mssg_6 or mssg_7 or mssg_8 is '' :
+                            new_temp = template(name = name ,img_path = filename )
+                        else:
+                            new_temp = template(name = name , mssg_1 = mssg_1 , img_path = filename , mssg_2 = mssg_2 , mssg_3 = mssg_3 ,\
+                                mssg_4 = mssg_4, mssg_5 = mssg_5, mssg_6 = mssg_6, mssg_7 = mssg_7 , mssg_8 = mssg_8)
+                        db.session.add(new_temp)
+                        db.session.commit()
+                        mssg = "Template successfully added"
+                        print(mssg)
+                        return redirect(url_for('templates'))
+                except Exception as e:
+                    print(str(e))
+        return render_template('templates.html' , form = form ,temps = temps) , 200
+    else:
+        session['mssg'] = "No project selected . Redirecting to Projects page."
+        return redirect('projects')
 
 @login_required
 @app.route('/del_temp/<id>' , methods=['POST' , 'GET'])
@@ -618,20 +631,25 @@ def export_all():
 @login_required
 @app.route('/settings' , methods=['POST' , 'GET'])
 def settings():
-    form = import_file()
-    if form.validate_on_submit():
-        if request.method == 'POST':
-            file = request.files['data_file']
-            filename = secure_filename(file.filename)
-            img_temp = os.path.join(UPLOAD_FOLDER, 'temp',filename) 
-            file.save(img_temp)
-            if 'contact' in request.form['import-con']:
-                print("in")
-                with open(img_temp, 'r') as csv_file:
-                    rea = csv.reader(csv_file)
-                    header = next(rea)
-                    print(rea)
-                    session['mssg'] = header
-            else:
-                session['mssg'] = "OFF pa"
-    return render_template('extra.html' , mssg = session['mssg'] , form=form) , 200
+    if (int(curr_project()) > 0):
+
+        form = import_file()
+        if form.validate_on_submit():
+            if request.method == 'POST':
+                file = request.files['data_file']
+                filename = secure_filename(file.filename)
+                img_temp = os.path.join(UPLOAD_FOLDER, 'temp',filename) 
+                file.save(img_temp)
+                if 'contact' in request.form['import-con']:
+                    print("in")
+                    with open(img_temp, 'r') as csv_file:
+                        rea = csv.reader(csv_file)
+                        header = next(rea)
+                        print(rea)
+                        session['mssg'] = header
+                else:
+                    session['mssg'] = "OFF pa"
+        return render_template('extra.html' , mssg = session['mssg'] , form=form) , 200
+    else:
+        session['mssg'] = "No project selected . Redirecting to Projects page."
+        return redirect('projects')
