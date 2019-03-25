@@ -64,7 +64,9 @@ body{
 }
 
 
-
+.button{
+    font-family : 'Rubik' !important;
+}
 
 .template-mssg{
     padding: 1rem;
