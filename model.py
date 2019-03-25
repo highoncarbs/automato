@@ -1,4 +1,4 @@
-from wtforms import StringField , SelectField , FileField , SelectMultipleField , PasswordField
+from wtforms import StringField , SelectField , FileField , SelectMultipleField , PasswordField , SubmitField
 from wtforms.validators import InputRequired , Optional
 from flask_wtf import FlaskForm 
 from datetime import datetime
@@ -29,6 +29,11 @@ class job_form(FlaskForm):
 
 class project_form(FlaskForm):
     name = StringField('name')
+    submit1 = SubmitField('submit')
+
+class driver_path_form(FlaskForm):
+    path = StringField('path')
+    submit2 = SubmitField('submit')
 
 class template_form(FlaskForm):
     name = StringField('name' , validators=[InputRequired()])
