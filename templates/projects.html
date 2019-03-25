@@ -37,6 +37,36 @@
 </head>
 
 <body class="hero is-fullheight">
+    {% if show_setup %}
+    <div class="modal is-active animated fadeIn" id="setup_modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="box ">
+                <p class="rubik has-text-centered title is-back">Some inital checks..</p>
+                <br>
+                <p>For automator to do it's job , it requires a software called Selenium Web driver which <br>automates
+                    the messaging actions on various platforms.</p>
+                <br>
+                <a class="button is-info rubik"
+                    href="https://chromedriver.storage.googleapis.com/index.html?path=74.0.3729.6/"><span
+                        class="icon icon-btn"><i data-feather="download"></i></span>Download here</a>
+                <br>
+                <br>
+                <p>Remember the loction of the downloaded software , and enter the softwares path below. That's it ! 🎉
+                </p>
+                <br>
+                <form action="{{url_for('projects')}}" method= "POST">
+                    {{ path_form.hidden_tag()}}
+                    {{ path_form.path(class="input" ,placeholder="Path to webdriver : C:/Users/john/Downloads/chrome-driver.exe") }}
+                    <br>
+                    <br>
+                    {{path_form.submit2(class="button is-black" , value='Submit') }}
+                </form>
+            </div>
+            <button class="modal-close is-large" aria-label="close"></button>
+        </div>
+    </div>
+    {% endif %}
     {% if mssg %}
     <div class="snackbar has-background-warning animated fadeInDown ">
         <div class=" level is-mobile container   " style="position: relative;">
@@ -81,10 +111,13 @@
                             Create Project</a>
                         <hr>
                         <ul class="menu-list is-size-5  has-text-weight-bold roboto">
-                            {% for p in projects %}
-                            <li><a href="{{url_for('home')}}"><span class="icon icon-btn"><i
-                                            data-feather="target"></i></span> {{p.name}}</a></li>
-                            {% endfor %}
+                                {% for p in projects %}
+                                <li><a href="{{ url_for('update_project_and_route' , id = p.id )}}">
+                                    <span class="icon icon-btn"><i data-feather="hash"></i></span> 
+                                                {{p.name}}
+                                            
+                                    </a></li>
+                                {% endfor %}
                         </ul>
                     </aside>
 
@@ -101,10 +134,10 @@
 
                     <aside class="menu is-fixed-bottom">
                         <p class="menu-label">
-                            User
+                            User - {{ current_user.username }}
                         </p>
                         <ul class="menu-list is-size-5  has-text-weight-bold roboto">
-                            <li><a href="{{url_for('settings')}}"><span class="icon icon-btn"><i
+                            <li><a href="{{url_for('user_settings')}}"><span class="icon icon-btn"><i
                                             data-feather="settings"></i></span> Settings</a></li>
                             <li><a class=""><span class="icon icon-btn"><i data-feather="log-out"></i></span> Log
                                     Out</a></li>
@@ -138,11 +171,20 @@
                             data-feather="plus"></i></span>
                     Create Project</a>
                 <hr>
-                
+
                 <ul class="menu-list is-size-6  has-text-weight-bold roboto">
+
                     {% for p in projects %}
-                    <li><a href="{{url_for('update_project_and_route' , id = p.id) }}"><span class="icon icon-btn"><i
-                                    data-feather="target"></i></span> {{p.name}}</a></li>
+                    <li><a href="{{ url_for('update_project_and_route' , id = p.id )}}">
+                            <div class="columns is-gapless">
+                                <div class="column ">
+                                    <span class="icon is-small"><i data-feather="hash"></i></span>
+                                </div>
+                                <div class="column is-10">
+                                    {{p.name}}
+                                </div>
+                            </div>
+                        </a></li>
                     {% endfor %}
                 </ul>
             </aside>
@@ -159,10 +201,10 @@
 
             <aside class="menu is-fixed-bottom">
                 <p class="menu-label">
-                    User
+                    User - {{ current_user.username }}
                 </p>
                 <ul class="menu-list is-size-5  has-text-weight-bold roboto">
-                    <li><a href="{{url_for('settings')}}"><span class="icon icon-btn"><i
+                    <li><a href="{{url_for('user_settings')}}"><span class="icon icon-btn"><i
                                     data-feather="settings"></i></span> Settings</a></li>
                     <li><a href="{{url_for('logout')}}"><span class="icon icon-btn"><i
                                     data-feather="log-out"></i></span> Log Out</a></li>
@@ -209,8 +251,7 @@
                         </div>
                         <div class="field">
                             <div class="control">
-                                <button class="button is-black" type="submit"><span class="icon icon-btn-in"><i
-                                            data-feather="plus-circle"></i></span> Create</button>
+                                {{form.submit1(class="button is-black" , value='Create')}}
                             </div>
 
                         </div>
@@ -272,6 +313,25 @@
             });
 
         });
+
+        var setup_modal = document.querySelector('#setup_modal');
+        var html = document.querySelector('html');
+        document.querySelector('.modal-close').addEventListener('click', function (e) {
+            e.preventDefault();
+            setup_modal.classList.remove('is-active');
+            html.classList.remove('is-clipped');
+        });
+
+        modal.querySelector('.modal-background').addEventListener('click', function (e) {
+            e.preventDefault();
+            setup_modal.classList.remove('is-active');
+            html.classList.remove('is-clipped');
+
+
+        });
+
+
+
     </script>
     <script>
         $(document).ready(function () {

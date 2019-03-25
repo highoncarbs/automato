@@ -37,123 +37,93 @@
                             <div class="modal" id="con_filter_modal">
                                 <div class="modal-background"></div>
                                 <div class="modal-content">
-                                    <div class="box">
-                                        <p class="is-size-4 has-text-weight-bold rubik has-text-centered">Filter
-                                            Contacts
-                                        </p>
-                                        <p class="is-size-6 has-text-centered is-grey-light">Filter contacts from
-                                            multiple
-                                            available filters below.</p>
-                                        <hr style="margin-bottom:0 ; border:2px;">
-                                        <div class="content ">
-
-
-                                            <nav class="tabs is-centered is-boxed">
-                                                <div class="container">
-                                                    <ul>
-                                                        <li class="tab is-active"
-                                                            onclick="openTab(event,'content-city')">
-                                                            <a><span>City</span></a></li>
-                                                        <li class="tab" onclick="openTab(event,'content-camp')">
-                                                            <a><span>Campaign</span></a>
-                                                        <li>
-                                                        <li class="tab" onclick="openTab(event,'content-tags')">
-                                                            <a><span>Tags</span></a></li>
-                                                        <li class="tab" onclick="openTab(event,'content-prov')">
-                                                            <a><span>Providers</span></a></li>
-                                                        <li class="tab" onclick="openTab(event,'content-keys')">
-                                                            <a><span>Keywords</span></a></li>
-                                                </div>
+                                    <div class="box ">
+                                        <p class="is-size-4 has-text-weight-bold has-text-centered">Filter contacts</p>
+                                        <hr>
+                                        <nav class="tabs is-toggle is-fullwidth rubik">
+                                            <div class="container">
+                                                <ul>
+                                                    <li class="tab is-active" onclick="openTab(event,'City')"><a><span
+                                                                class="icon icon-btn-in"><i
+                                                                    data-feather="globe"></i></span>City</a></li>
+                                                    <li class="tab" onclick="openTab(event,'Tags')"><a><span
+                                                                class="icon icon-btn-in"><i
+                                                                    data-feather="tag"></i></span>Tags</a></li>
+                                                    <li class="tab " onclick="openTab(event,'Provider')"><a><span
+                                                                class="icon icon-btn-in"><i
+                                                                    data-feather="send"></i></span>Provider</a></li>
+                                                    <li class="tab " onclick="openTab(event,'Campaigns')"><a><span
+                                                                class="icon icon-btn-in"><i
+                                                                    data-feather="image"></i></span>Campaigns</a></li>
+                                                    <li class="tab " onclick="openTab(event,'Keywords')"><a><span
+                                                                class="icon icon-btn-in"><i
+                                                                    data-feather="bookmark"></i></span>Keywords</a></li>
                                                 </ul>
-                                            </nav>
-                                            <div class="is-fullwidth" style="border-bottom:1px rbga(0,0,0,0.5);"></div>
+                                            </div>
+                                        </nav>
 
-                                            <div class="content-tab  is-centered has-text-centered ">
-                                                <div class="tab-pane is-fullwidth" id="content-city">
-                                                    <p class="tag is-light is-medium is-fullwidth has-text-centered ">
-                                                        <span class="icon icon-btn-in"><i
-                                                                data-feather="check-square"></i></span>Select cities
-                                                        from
-                                                        below :</p>
-                                                    <br>
-                                                    <div class="columns is-mobile is-centered">
-                                                        <div class="column is-half">
-                                                            <div class="notification is-light is-centered">
-                                                                <div class="select is-multiple is-fullwidth "
-                                                                    style="z-index=90">
-                                                                    {{form_filter.city(id="filter_city_con " , class="rubik" , style="width:50%;")}}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!--  -->
-
-                                                    </div>
-                                                    <script>
-                                                        $(function () {
-                                                            $('select').selectize();
-                                                        });
-                                                    </script>
-
+                                        <div id="City" class="content-tab is-size-5">
+                                            <div class="notification is-light">
+                                                <div class="buttons selection">
+                                                    {% for p in form_filter_city %}
+                                                    <span class="button">{{p.name}}</span>
+                                                    {% endfor %}
                                                 </div>
                                             </div>
-                                            <div class="tab-pane is-fullwidth has-text-centered " id="content-camp"
-                                                style="display:none">
-                                                <p class="tag is-info is-medium is-fullwidth has-text-centered "><span
-                                                        class="icon icon-btn-in"><i
-                                                            data-feather="check-square"></i></span>Select campaings from
-                                                    below :</p>
-
-
-                                            </div>
-                                            <div class="tab-pane  is-fullwidth has-text-centered" id="content-tags"
-                                                style="display:none">
-                                                <p class="tag is-primary is-medium is-fullwidth has-text-centered ">
-                                                    <span class="icon icon-btn-in"><i
-                                                            data-feather="check-square"></i></span>Select tags from
-                                                    below :
-                                                </p>
-
-                                            </div>
-                                            <div class="tab-pane  is-fullwidth has-text-centered" id="content-prov"
-                                                style="display:none">
-                                                <p class="tag is-warning is-medium is-fullwidth has-text-centered ">
-                                                    <span class="icon icon-btn-in"><i
-                                                            data-feather="check-square"></i></span>Select providers from
-                                                    below :</p>
-
-                                            </div>
-                                            <div class="tab-pane  is-fullwidth has-text-centered" id="content-keys"
-                                                style="display:none">
-                                                <p class="tag is-light is-medium is-fullwidth has-text-centered "><span
-                                                        class="icon icon-btn-in"><i
-                                                            data-feather="check-square"></i></span>Select keywords from
-                                                    below :</p>
-
-                                            </div>
+                                        </div>
+                                        <div id="Provider" class="content-tab" style="display: none">
 
                                         </div>
-                                        <script>
-                                            function openTab(evt, tabName) {
-                                                var i, x, tablinks;
-                                                x = document.getElementsByClassName("tab-pane");
-                                                for (i = 0; i < x.length; i++) {
-                                                    x[i].style.display = "none";
-                                                }
-                                                tablinks = document.getElementsByClassName("tab");
-                                                for (i = 0; i < x.length; i++) {
-                                                    tablinks[i].className = tablinks[i].className.replace(" is-active", "");
-                                                }
-                                                document.getElementById(tabName).style.display = "block";
-                                                evt.currentTarget.className += " is-active";
-                                            }
-                                        </script>
+                                        <div id="Tags" class="content-tab" style="display: none">
 
+                                        </div>
+                                        <div id="Keywords" class="content-tab" style="display: none">
+
+                                        </div>
+                                        <div id="Campaigns" class="content-tab" style="display: none">
+                                                <div class="notification is-light">
+                                                        <div class="buttons selection">
+                                                            {% for p in user_projects %}
+                                                            <span class="button">{{p.name}}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                        </div>
+                                        <br>
                                     </div>
 
                                 </div>
 
                                 <button class="modal-close is-large" aria-label="close"></button>
                             </div>
+                            <!-- Script for Tabs -->
+                            <script>
+                                
+                                $(document).ready( function selectFilter(evt){
+                                    
+                                    const btnsfltr = document.querySelectorAll('.selection .button');
+                                    for (const btn of btnsfltr) {
+                                        btn.addEventListener("click" , function(){
+                                            $(this).toggleClass("is-black");
+                                        });
+                                        };  
+                                    }
+                                 );
+                                
+                                function openTab(evt, tabName) {
+                                    var i, x, tablinks;
+                                    x = document.getElementsByClassName("content-tab");
+                                    for (i = 0; i < x.length; i++) {
+                                        x[i].style.display = "none";
+                                    }
+                                    tablinks = document.getElementsByClassName("tab");
+                                    for (i = 0; i < x.length; i++) {
+                                        tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+                                    }
+                                    document.getElementById(tabName).style.display = "block";
+                                    evt.currentTarget.className += " is-active";
+                                }
+                            </script>
 
                             <script>
                                 document.querySelector('#filter_btn').addEventListener('click', function (event) {
@@ -186,7 +156,7 @@
                 </div>
             </div>
         </div>
-</nav>
+    </nav>
 </div>
 
 <br>
@@ -221,7 +191,7 @@
 </div>
 {% else %}
 <div class="notification is-light is-narrow">
-    <p class="is-size-5 rubik" style="text-align: center">
+    <p class="is-size-6 rubik" style="text-align: center">
         Please select either option<br>
         <span style="text-decoration: underline;"><i class="icon icon-btn" data-feather="info"></i> Selecting <span
                 class="has-text-weight-bold">Load All Contacts</span> may take some time for the page to load . Be
