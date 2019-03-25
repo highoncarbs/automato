@@ -110,7 +110,7 @@
                                     data-feather="plus"></i></span>
                             Create Project</a>
                         <hr>
-                        <div class="project_list" style="overflow-y:scroll; height:200px;">
+                        <div class="project_list" {% if user_projects|length > 4 %} style="overflow-y:scroll; height:200px;" {% endif %}>
                             <ul class="menu-list is-size-5  has-text-weight-bold roboto">
                                 {% for p in projects %}
                                 <li><a href="{{ url_for('update_project_and_route' , id = p.id )}}"><span
@@ -171,7 +171,7 @@
                             data-feather="plus"></i></span>
                     Create Project</a>
                 <hr>
-                <div class="project_list" style="overflow-y:scroll; height:200px;">
+                <div class="project_list" {% if user_projects|length > 4 %} style="overflow-y:scroll; height:200px;" {% endif %} >
                     <ul class="menu-list is-size-5  has-text-weight-bold roboto">
 
                         {% for p in projects %}
