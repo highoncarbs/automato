@@ -55,7 +55,7 @@
                 <p>Remember the loction of the downloaded software , and enter the softwares path below. That's it ! 🎉
                 </p>
                 <br>
-                <form action="{{url_for('projects')}}" method= "POST">
+                <form action="{{url_for('projects')}}" method="POST">
                     {{ path_form.hidden_tag()}}
                     {{ path_form.path(class="input" ,placeholder="Path to webdriver : C:/Users/john/Downloads/chrome-driver.exe") }}
                     <br>
@@ -106,19 +106,19 @@
                         <p class="menu-label">
                             PROJECTS
                         </p>
-                        <a class="button is-fullwidth is-black new-project"><span class="icon icon-btn"><i
+                        <a class="button is-fullwidth is-black new-project3"><span class="icon icon-btn"><i
                                     data-feather="plus"></i></span>
                             Create Project</a>
                         <hr>
-                        <ul class="menu-list is-size-5  has-text-weight-bold roboto">
+                        <div class="project_list" style="overflow-y:scroll; height:200px;">
+                            <ul class="menu-list is-size-5  has-text-weight-bold roboto">
                                 {% for p in projects %}
-                                <li><a href="{{ url_for('update_project_and_route' , id = p.id )}}">
-                                    <span class="icon icon-btn"><i data-feather="hash"></i></span> 
-                                                {{p.name}}
-                                            
-                                    </a></li>
+                                <li><a href="{{ url_for('update_project_and_route' , id = p.id )}}"><span
+                                            class="icon icon-btn"><i data-feather="folder"></i></span> {{ p.name }}</a>
+                                </li>
                                 {% endfor %}
-                        </ul>
+                            </ul>
+                        </div>
                     </aside>
 
                     <aside class="menu" style="margin-bottom:3rem;">
@@ -171,22 +171,16 @@
                             data-feather="plus"></i></span>
                     Create Project</a>
                 <hr>
+                <div class="project_list" style="overflow-y:scroll; height:200px;">
+                    <ul class="menu-list is-size-5  has-text-weight-bold roboto">
 
-                <ul class="menu-list is-size-6  has-text-weight-bold roboto">
+                        {% for p in projects %}
+                        <li><a href="{{ url_for('update_project_and_route' , id = p.id )}}"><span
+                                    class="icon icon-btn"><i data-feather="folder"></i></span> {{ p.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-                    {% for p in projects %}
-                    <li><a href="{{ url_for('update_project_and_route' , id = p.id )}}">
-                            <div class="columns is-gapless">
-                                <div class="column ">
-                                    <span class="icon is-small"><i data-feather="hash"></i></span>
-                                </div>
-                                <div class="column is-10">
-                                    {{p.name}}
-                                </div>
-                            </div>
-                        </a></li>
-                    {% endfor %}
-                </ul>
             </aside>
 
             <aside class="menu" style="margin-bottom:3rem;">
@@ -314,6 +308,28 @@
 
         });
 
+        document.querySelector('.new-project3').addEventListener('click', function (event) {
+            event.preventDefault();
+            var modal = document.querySelector('#project-form');  // assuming you have only 1
+            var html = document.querySelector('html');
+            modal.classList.add('is-active');
+            html.classList.add('is-clipped');
+
+            document.querySelector('.modal-close').addEventListener('click', function (e) {
+                e.preventDefault();
+                modal.classList.remove('is-active');
+                html.classList.remove('is-clipped');
+            });
+
+            modal.querySelector('.modal-background').addEventListener('click', function (e) {
+                e.preventDefault();
+                modal.classList.remove('is-active');
+                html.classList.remove('is-clipped');
+
+
+            });
+
+        });
         var setup_modal = document.querySelector('#setup_modal');
         var html = document.querySelector('html');
         document.querySelector('.modal-close').addEventListener('click', function (e) {
