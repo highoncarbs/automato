@@ -217,7 +217,7 @@ def curr_proj_ins():
 @login_required
 def get_projects():
     project_list = Project.query.all()
-    user_projects = list([x if current_user in x.users else None for x in project_list])
+    user_projects = list([x for x in project_list if current_user in x.users])
     
     return user_projects
 
@@ -333,7 +333,7 @@ def contacts_call():
 
         form_search = contact_search()
         form_filter = contact_filter()
-        form_filter_city =  db.session.query(scrape_task.city).distinct(scrape_task.city).all()
+        form_filter_city =  set([x.city for x in db.session.query(scrape_task.city).all()])
         return render_template('contacts.html', form_search= form_search, form_filter = form_filter , form_filter_city = form_filter_city), 200
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
