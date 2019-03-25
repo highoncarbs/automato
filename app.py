@@ -237,7 +237,7 @@ def home():
 
 
         project_list = Project.query.all()
-        user_projects = list([x if current_user in x.users else None for x in project_list])
+        user_projects = list([x for x in project_list if current_user in x.users ])
         print(user_projects)
 
         if (int(curr_project()) > 0):
