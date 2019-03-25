@@ -34,11 +34,13 @@
                                         data-feather="filter"></i></span>Filter</button>
                             <button class="button is-black rubik"><span class="icon icon-btn-in"><i
                                         data-feather="refresh-cw"></i></span>Refresh</button>
-                            <div class="modal" id="con_filter_modal">
+                            <div class="modal animated fadeIn" id="con_filter_modal">
                                 <div class="modal-background"></div>
                                 <div class="modal-content">
                                     <div class="box ">
                                         <p class="is-size-4 has-text-weight-bold has-text-centered">Filter contacts</p>
+                                        <p class="is-size-5 has-text-centered">Make selections below. Dark buttons means
+                                            selected.</p>
                                         <hr>
                                         <nav class="tabs is-toggle is-fullwidth rubik">
                                             <div class="container">
@@ -52,9 +54,7 @@
                                                     <li class="tab " onclick="openTab(event,'Provider')"><a><span
                                                                 class="icon icon-btn-in"><i
                                                                     data-feather="send"></i></span>Provider</a></li>
-                                                    <li class="tab " onclick="openTab(event,'Campaigns')"><a><span
-                                                                class="icon icon-btn-in"><i
-                                                                    data-feather="image"></i></span>Campaigns</a></li>
+
                                                     <li class="tab " onclick="openTab(event,'Keywords')"><a><span
                                                                 class="icon icon-btn-in"><i
                                                                     data-feather="bookmark"></i></span>Keywords</a></li>
@@ -62,7 +62,7 @@
                                             </div>
                                         </nav>
 
-                                        <div id="City" class="content-tab is-size-5">
+                                        <div id="City" class="content-tab is-size-5 animated fadeInUp">
                                             <div class="notification is-light">
                                                 <div class="buttons selection">
                                                     {% for p in form_filter_city %}
@@ -71,25 +71,38 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="Provider" class="content-tab" style="display: none">
+                                        <div id="Provider" class="content-tab animated fadeInUp" style="display: none">
+                                            <div class="notification is-light">
+                                                <div class="buttons selection">
+                                                    {% for p in form_filter_provider %}
+                                                    <span class="button">{{p}}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="Tags" class="content-tab animated fadeInUp" style="display: none">
+                                            <div class="notification is-light">
+                                                <div class="buttons selection">
+                                                    {% for p in form_filter_tags %}
+                                                    <span class="button">{{p}}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="Keywords" class="content-tab animated fadeInUp" style="display: none">
+                                            <div class="notification is-light">
+                                                <div class="buttons selection">
+                                                    {% for p in form_filter_keywords %}
+                                                    <span class="button">{{p}}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                        </div>
-                                        <div id="Tags" class="content-tab" style="display: none">
-
-                                        </div>
-                                        <div id="Keywords" class="content-tab" style="display: none">
-
-                                        </div>
-                                        <div id="Campaigns" class="content-tab" style="display: none">
-                                                <div class="notification is-light">
-                                                        <div class="buttons selection">
-                                                            {% for p in user_projects %}
-                                                            <span class="button">{{p.name}}</span>
-                                                            {% endfor %}
-                                                        </div>
-                                                    </div>
-                                        </div>
                                         <br>
+                                        <a class="button is-black is-fullwidth" id="submit_filter"><span
+                                                class="icon icon-btn"><i data-feather="check-square"></i></span>Set
+                                            Filter</a>
                                     </div>
 
                                 </div>
@@ -98,56 +111,120 @@
                             </div>
                             <!-- Script for Tabs -->
                             <script>
-                                
-                                $(document).ready( function selectFilter(evt){
-                                    
-                                    const btnsfltr = document.querySelectorAll('.selection .button');
-                                    for (const btn of btnsfltr) {
-                                        btn.addEventListener("click" , function(){
-                                            $(this).toggleClass("is-black");
-                                        });
-                                        };  
+
+                                // Script for Sending filters to Contacts
+                                // href="{{ url_for('contact_filter')}}"
+                                $('#submit_filter').click(function () {
+                                    tagfltr = $('#Tags .selection').children();
+                                    keyfltr = $('#Keyword .selection').children();
+                                    cityfltr = $('#City .selection').children();
+                                    provfltr = $('#Provider .selection').children();
+
+                                    var cityarry = []
+                                    var tagarry = []
+                                    var keyarry = []
+                                    var provarry = []
+
+                                    for (var i = 0; i < cityfltr.length; i++) {
+                                        if (cityfltr[i].classList.contains('is-black')) {
+                                            cityarry.push(cityfltr[i].innerHTML);
+                                        }
                                     }
-                                 );
-                                
-                                function openTab(evt, tabName) {
-                                    var i, x, tablinks;
-                                    x = document.getElementsByClassName("content-tab");
-                                    for (i = 0; i < x.length; i++) {
-                                        x[i].style.display = "none";
+
+                                    for (var i = 0; i < tagfltr.length; i++) {
+                                        if (tagfltr[i].classList.contains('is-black')) {
+                                            tagarry.push(tagfltr[i].innerHTML);
+                                        }
                                     }
-                                    tablinks = document.getElementsByClassName("tab");
-                                    for (i = 0; i < x.length; i++) {
-                                        tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+
+                                    for (var i = 0; i < keyfltr.length; i++) {
+                                        if (keyfltr[i].classList.contains('is-black')) {
+                                            keyarry.push(keyfltr[i].innerHTML);
+                                        }
                                     }
-                                    document.getElementById(tabName).style.display = "block";
-                                    evt.currentTarget.className += " is-active";
-                                }
-                            </script>
 
-                            <script>
-                                document.querySelector('#filter_btn').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    var modal = document.querySelector('#con_filter_modal');  // assuming you have only 1
-                                    var html = document.querySelector('html');
-                                    modal.classList.add('is-active');
-                                    html.classList.add('is-clipped');
+                                    for (var i = 0; i < provfltr.length; i++) {
+                                        if (provfltr[i].classList.contains('is-black')) {
+                                            provarry.push(provfltr[i].innerHTML);
+                                        }
+                                    }
 
-                                    document.querySelector('.modal-close').addEventListener('click', function (e) {
-                                        e.preventDefault();
-                                        modal.classList.remove('is-active');
-                                        html.classList.remove('is-clipped');
-                                    });
+                                    jsonPayload = []
+                                    var item = {}
+                                    item['city'] = cityarry;
+                                    item['tags'] = tagarry;
+                                    item['keywords'] = keyarry;
+                                    item['provider'] = provarry;
+                                    jsonPayload.push(item);
+                                    console.log(jsonPayload);
 
-                                    modal.querySelector('.modal-background').addEventListener('click', function (e) {
-                                        e.preventDefault();
-                                        modal.classList.remove('is-active');
-                                        html.classList.remove('is-clipped');
+                                    $.ajax({
+                                        url: "/contacts_filter",
+                                        data: JSON.stringify(jsonPayload),
+                                        contentType: 'application/json; charset=utf-8',
+                                        dataType: 'json',
+                                        type: 'POST',
+                                        success: function () {
+                                            var modal = document.querySelector('#con_filter_modal');  // assuming you have only 1
+                                            var html = document.querySelector('html');
 
-
+                                           
+                                                modal.classList.remove('is-active');
+                                                html.classList.remove('is-clipped');
+                                           
+                                        }
                                     });
 
                                 });
+
+                                    $(document).ready(function selectFilter(evt) {
+                                        var payload = {}
+                                        const btnsfltr = document.querySelectorAll('.selection .button');
+                                        for (const btn of btnsfltr) {
+                                            btn.addEventListener("click", function () {
+                                                $(this).toggleClass("is-black");
+                                            });
+                                        };
+                                    });
+
+                                    function openTab(evt, tabName) {
+                                        var i, x, tablinks;
+                                        x = document.getElementsByClassName("content-tab");
+                                        for (i = 0; i < x.length; i++) {
+                                            x[i].style.display = "none";
+                                        }
+                                        tablinks = document.getElementsByClassName("tab");
+                                        for (i = 0; i < x.length; i++) {
+                                            tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+                                        }
+                                        document.getElementById(tabName).style.display = "block";
+                                        evt.currentTarget.className += " is-active";
+                                    }
+                            </script>
+
+                            <script>
+                                    document.querySelector('#filter_btn').addEventListener('click', function (event) {
+                                        event.preventDefault();
+                                        var modal = document.querySelector('#con_filter_modal');  // assuming you have only 1
+                                        var html = document.querySelector('html');
+                                        modal.classList.add('is-active');
+                                        html.classList.add('is-clipped');
+
+                                        document.querySelector('.modal-close').addEventListener('click', function (e) {
+                                            e.preventDefault();
+                                            modal.classList.remove('is-active');
+                                            html.classList.remove('is-clipped');
+                                        });
+
+                                        modal.querySelector('.modal-background').addEventListener('click', function (e) {
+                                            e.preventDefault();
+                                            modal.classList.remove('is-active');
+                                            html.classList.remove('is-clipped');
+
+
+                                        });
+
+                                    });
                             </script>
                         </div>
                     </div>

@@ -334,10 +334,22 @@ def contacts_call():
         form_search = contact_search()
         form_filter = contact_filter()
         form_filter_city =  set([x.city for x in db.session.query(scrape_task.city).all()])
-        return render_template('contacts.html', form_search= form_search, form_filter = form_filter , form_filter_city = form_filter_city), 200
+        form_filter_keyword =  set([x.keyword for x in db.session.query(scrape_task.keyword).all()])
+        form_filter_tags =  set([x.keyword for x in db.session.query(scrape_task.keyword).all()])
+
+        return render_template('contacts.html', form_search= form_search, form_filter = form_filter , form_filter_city = form_filter_city , form_filter_keyword = form_filter_keyword ,form_filter_tags = form_filter_tags), 200
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return redirect('projects')
+
+@login_required
+@app.route('/contacts_filter' , methods = ['POST'])
+def contact_filter():
+    if (int(curr_project()) > 0):
+        return jsonify({ 'mssg' : "Okay recireved "+ str(request.json)})
+    else:
+        session['mssg'] = "No project selected . Redirecting to Projects page."
+        return jsonify({ 'mssg' : "Else gone"+ str(request.json)})
 
 @login_required
 @app.route('/task_pause', methods = ['POST'])
