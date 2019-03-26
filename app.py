@@ -198,19 +198,16 @@ def set_curr_project(setProject):
     if setProject:
         project = setProject
     else:
-        project = -1
+        project = 0
     return int(project)
 
 
-@login_required
 def curr_project():
-    global project
     return int(project)
 
 
 @login_required
 def curr_proj_ins():
-    global project
     return Project.query.filter_by(id=int(project)).first()
 
 
@@ -231,6 +228,7 @@ def logout():
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
+
 @login_required
 @app.route('/', methods = ['GET', 'POST'])
 def home():
@@ -238,10 +236,10 @@ def home():
 
         project_list = Project.query.all()
         user_projects = list([x for x in project_list if current_user in x.users ])
-        print(user_projects)
-
-        if (int(curr_project()) > 0):
-            project_active = Project.query.filter_by(id = int(curr_project())).first()
+        c_p = curr_project()
+        print(c_p)
+        if (int(c_p) > 0):
+            project_active = Project.query.filter_by(id = int(c_p)).first()
             global visit
             if visit is 0:
                 visit = 1
@@ -357,7 +355,7 @@ def task_pause(task_id):
     # Destroys the queue and the message
     pass
 
-@login_required
+
 @login_required
 @app.route('/scraper', methods = ['GET', 'POST'])
 def scraper():
@@ -518,8 +516,11 @@ def allowed_file(filename):
 def templates():
     if (int(curr_project()) > 0):
 
-        temps = db.session.query(template).all()
         form = template_form()
+        c_p = int(curr_project())
+        project_active = Project.query.filter_by(id = int(c_p)).first()
+        temps = project_active.template
+
         if form.validate_on_submit():
             if request.method == 'POST':
                 file = request.files['img']
@@ -537,11 +538,15 @@ def templates():
                         mssg_6 = form.mssg_6.data 
                         mssg_7 = form.mssg_7.data 
                         mssg_8 = form.mssg_8.data 
+
                         if mssg_1 or mssg_2 or mssg_3 or mssg_4 or mssg_5 or mssg_6 or mssg_7 or mssg_8 is '' :
                             new_temp = template(name = name ,img_path = filename )
+                            project_active.template.append(new_temp)
                         else:
                             new_temp = template(name = name , mssg_1 = mssg_1 , img_path = filename , mssg_2 = mssg_2 , mssg_3 = mssg_3 ,\
                                 mssg_4 = mssg_4, mssg_5 = mssg_5, mssg_6 = mssg_6, mssg_7 = mssg_7 , mssg_8 = mssg_8)
+                            project_active.template.append(new_temp)
+
                         db.session.add(new_temp)
                         db.session.commit()
                         mssg = "Template successfully added"
@@ -558,8 +563,10 @@ def templates():
 @app.route('/del_temp/<id>' , methods=['POST' , 'GET'])
 def del_temp(id):
     try:
-        temp = db.session.query(template).filter_by(id = id)
-        temp.delete()
+        temp = db.session.query(template).filter_by(id = id).first()
+        c_p = int(curr_project())
+        project_active = Project.query.filter_by(id = int(c_p)).first()
+        project_active.template.remove(temp)
         db.session.commit()
         mssg = "Template Deleted Successfully"
         return redirect(url_for('templates'))
