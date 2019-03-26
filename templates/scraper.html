@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <hr>
+<!-- Header Form - Scraper Submit -->
 <div class="is-mintcream new-scraper">
   <p class="has-text-weight-bold rubik is-size-5">RUN NEW SCRAPER</p>
   <br>
@@ -38,11 +39,16 @@
     </div>
   </form>
 </div>
+<!-- END Header Form - Scraper Submit -->
+
 <hr>
 <br>
+
 <div class="scrape-list">
   <h3 class="is-size-5 has-text-weight-bold rubik">ALL SCRAPERS</h3>
   <br>
+
+  <!-- Toggle Tabs -->
   <nav class="tabs is-toggle is-fullwidth rubik has-text-weight-bold">
     <div class="container">
       <ul>
@@ -55,9 +61,11 @@
       </ul>
     </div>
   </nav>
+  <!-- END Toggle Tabs -->
+  
   <br>
-  <!-- Scrape data table below -->
 
+  <!-- Scrape data table below -->
 
   <div id="Paused" class="content-tab">
     <table class="table is-bordered table-container is-fullwidth table-scroll">
@@ -198,9 +206,10 @@
           <td>{{ s.keyword }}</td>
 
           <td>Stopped</td>
+
           <td><a class=" button is-small rubik is-primary has-text-weight-bold" id="scrape-notice-{{loop.index}}"><span
                 class="icon icon-btn-in"><i data-feather="play-circle"></i></span>Run</a>
-            <a href="{{url_for('job_delete' , job_id = s.id )}}"
+            <a href="{{url_for('scraper_delete' , task_id = s.id )}}"
               class=" button is-small rubik is-danger has-text-weight-bold" id="src-results-{{loop.index}}"><span
                 class="icon icon-btn-in"><i data-feather="trash"></i></span>Delete</a>
           </td>
@@ -212,11 +221,12 @@
             <div class="modal-content">
               <div class="box has-text-centered" style="margin-bottom : 0px;">
                 <p class="rubik has-text-weight-bold is-size-5">Ready . Set . Go!</p>
-                
+
                 <img src="{{url_for('static' , filename = 'images/run.gif' )}}" />
                 <br>
-                <p class="is-size-6 notification is-warning rubik has-text-weight-bold">Please check that you have a steady internet connection.</p>
-<br>
+                <p class="is-size-6 notification is-warning rubik has-text-weight-bold">Please check that you have a
+                  steady internet connection.</p>
+                <br>
                 <a class=" button rubik is-primary has-text-weight-bold"
                   href="{{url_for('push_scraper_to_queue' , task_id = s.id )}}"><span class="icon icon-btn-in"><i
                       data-feather="play-circle"></i></span>Run</a>
@@ -224,6 +234,8 @@
               <button class="modal-close is-large" aria-label="close"></button>
             </div>
           </div>
+
+          <!-- Scrape Results Modal -->
 
           <div class="modal" id="modal-src-{{loop.index}}">
             <div class="modal-background"></div>
@@ -261,6 +273,7 @@
             </div>
             <button class="modal-close is-large" aria-label="close"></button>
           </div>
+          <!-- Scapre Results Modal JS Code -->
           <script>
             document.querySelector('#scrape-notice-{{loop.index}}').addEventListener('click', function (event) {
               event.preventDefault();
