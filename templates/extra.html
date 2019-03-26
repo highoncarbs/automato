@@ -6,6 +6,27 @@
 </div>
 </nav>
 <br>
+<div class="notification is-light ">
+  <div class="level ">
+      <div class="level-right">
+          <div class="level-item rubik has-text-weight-bold">
+          DELETE
+      </div>
+      </div>
+      <div class="level-left">
+          <div class="level-item">
+            <p class="">Delete <span class="rubik has-text-weight-bold" >{{curr_project_ins.name}}</span> for  <span class="rubik has-text-weight-bold" > {{ current_user.username }} </span>.</p>
+          </div>
+      </div>
+      <div class="level-left">
+          <div class="item">
+              <a class="button is-danger rubik" href="{{ url_for('del_project' , id = curr_project_ins.id )}}"><span class="icon icon-btn-in"><i data-feather="trash"></i> </span> Delete   <span class="has-text-weight-bold" style="padding-left:7px;">{{curr_project_ins.name }}</span></span></a>
+          </div>
+      </div>
+  </div>
+  
+</div>
+<br>
 <div class="notification is-light">
     <div class="level">
         <div class="level-right">
