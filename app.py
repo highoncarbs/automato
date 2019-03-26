@@ -174,7 +174,15 @@ def projects():
             return redirect('projects')
     return render_template('projects.html', form=form, projects=user_projects, mssg=session['mssg'], path_form=path_form), 200
 
-
+@login_required
+@app.route('/del_project/<id>' , methods=['POST' , 'GET'])
+def del_project(id):
+    project_active = Project.query.filter_by( id = int(curr_project())).first()
+    current_user.projects.remove(project_active)
+    db.session.commit()
+    session['mssg'] = "Project " + project_active.name + " has been removed for you. Cheers!"
+    return redirect('projects')
+    
 @app.route('/user', methods=['GET', 'POST'])
 @login_required
 def user():
