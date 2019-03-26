@@ -1,5 +1,7 @@
 # Scraper Worker - RabbitMQ 
 
+# TODO SOmethign is not right , after adding the project contacts append scenes
+
 from selenium import webdriver 
 import time 
 import MySQLdb
@@ -12,6 +14,7 @@ import model
 import threading
 import functools
 from model import contacts , scrape_task
+from app import curr_proj_ins
 
 RABBITMQ_HOST = 'localhost'
 _DELIVERY_MODE_PERSISTENT=2
@@ -171,24 +174,29 @@ def data_is_extracted(connection, channel , delivery_tag , body):
                         check_one = db.session.query(contacts).filter_by(link_hash = enc_link) # Checks if encoded URL already exsists
                         name , phone_no , phone_no_2 , address , website , tag = get_data(str(res)) 
                         name = str(name)
-
                         enc_data = hashlib.md5(str(phone_no).encode('utf-8') + str(phone_no_2).encode('utf-8')).hexdigest() # Encodes data into md5 hash
                         new_data = model.contacts(business_name = name , contact_one = phone_no ,
                                     contact_two = phone_no_2  , address = address , website = website,
                                     tag = tag, link_hash = enc_link , data_hash = enc_data , url = str(res) , provider = "Justdial" , city = city , keyword = keyword)
-                        
+                        curr_proj_ins.contacts.append(new_data)
                         try:
                             if check_one.first():
                                 if check_one.filter_by(data_hash = enc_data).filter_by(link_hash = enc_link).first() is None :    
                                     db.session.add(new_data)
                                     db.session.commit()
+                                    print('okay done')
                                 else:
+                                    print('not done , already there')
                                     pass
+
                             else:
+                                print('okay very new')
+
                                 db.session.add(new_data)
                                 db.session.commit()
                         
                         except:
+                            print('couldnt do shit')
                             db.session.rollback()
                 else:
                     break
