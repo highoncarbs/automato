@@ -182,7 +182,7 @@ def del_project(id):
     db.session.commit()
     session['mssg'] = "Project " + project_active.name + " has been removed for you. Cheers!"
     return redirect('projects')
-    
+
 @app.route('/user', methods=['GET', 'POST'])
 @login_required
 def user():
@@ -256,15 +256,15 @@ def home():
                 session['mssg'] = ""
             # Show only for the current project
 
-            con_len = db.session.query(contacts).count()
-            city_len = db.session.query(contacts.city).distinct(contacts.city).count()
+            con_len = len(project_active.contact)
+            city_len = len(set([x.city for x in project_active.scrapers ]))
 
-            src_len = db.session.query(scrape_task).count()
+            src_len = len(project_active.scrapers)
             src_fin = db.session.query(scrape_task).filter_by(status = str(2)).count()
             src_unfin = db.session.query(scrape_task).filter_by(status = str(0)).count()
             src_run = db.session.query(scrape_task).filter_by(status = str(1)).count()
 
-            job_len = db.session.query(job_task).count()
+            job_len = len(project_active.jobs)
             job_fin = db.session.query(job_task).filter_by(status = str(2)).count()
             job_unfin = db.session.query(job_task).filter_by(status = str(3)).count()
             job_run = db.session.query(job_task).filter_by(status = str(1)).count()
@@ -299,10 +299,11 @@ def jobs():
         def_city= ('0', 'Select City')
         print(get_projects())
         form.city.choices = [def_city] + [(r.city, r.city) for r in db.session.query(scrape_task)]
+        project_curr = db.session.query(Project).filter_by(id = int(curr_project())).first()
 
         form.keyword.choices= [(r.keyword, r.keyword) for r in db.session.query(scrape_task.keyword).distinct(scrape_task.keyword)]
         form.campaign.choices= [(r.name, r.name) for r in db.session.query(template)]
-        job_list = db.session.query(job_task).all()
+        job_list = project_curr.jobs
         if form.validate_on_submit():
             city= form.city.data
             keyword= form.keyword.data
@@ -313,6 +314,7 @@ def jobs():
             check_one = db.session.query(job_task).filter_by(city = city, provider = provider, keyword = keyword).first()
             if check_one is None:
                 new_job= job_task(city = city, provider = provider, status = str(0), meta = str(''), keyword = keyword, template = campaign)
+                project_curr.jobs.append(new_job)
                 db.session.add(new_job)
                 db.session.commit()
                 session['mssg'] = " 👍 Job added to list."
@@ -368,7 +370,9 @@ def task_pause(task_id):
 @app.route('/scraper', methods = ['GET', 'POST'])
 def scraper():
     form = scrape_form()
-    scraper_list = db.session.query(scrape_task).all()
+    c_p = curr_project()
+    project_curr = db.session.query(Project).filter_by(id = int(c_p)).first()
+    scraper_list = list(project_curr.scrapers)
     print(scraper_list)
     if (int(curr_project()) > 0):
 
@@ -379,9 +383,8 @@ def scraper():
             # Check if the city and keyword already exsists ?
             check_one = db.session.query(scrape_task).filter_by(city = city, keyword = keyword, provider = provider).first()
             if check_one is None:
-                project_curr = db.session.query(Project).filter_by(id = int(curr_project())).first()
-                print(project_curr)
                 new_scraper= scrape_task(city = city, keyword = keyword, provider = provider, status = str(0), meta = str(1) , project_sc = project_curr)
+                project_curr.scrapers.append(new_scraper)
                 db.session.add(new_scraper)
                 db.session.commit()
                 session['mssg'] = " 👍 Scraper added to list."
