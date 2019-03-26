@@ -31,7 +31,7 @@ global visit
 visit = 0
 
 global project
-project = -1
+project = 0
 
 
 def connect_queue():
@@ -199,13 +199,13 @@ def set_curr_project(setProject):
         project = setProject
     else:
         project = -1
-    return project
+    return int(project)
 
 
 @login_required
 def curr_project():
     global project
-    return project
+    return int(project)
 
 
 @login_required

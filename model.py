@@ -64,6 +64,12 @@ contact_projects_assoc = db.Table('contact_projects_assoc' ,
     db.Column('project_id' , db.Integer , db.ForeignKey('project.id')),
 )
 
+template_projects_assoc = db.Table('template_projects_assoc' ,
+    db.Column('template_id' , db.Integer , db.ForeignKey('template.id')),
+    db.Column('project_id' , db.Integer , db.ForeignKey('project.id')),
+)
+
+
 # Contact Template
 class contacts(db.Model):
     __searchable__ = ['business_name' , 'contact_one' , 'contact_two' , 'city']
@@ -107,7 +113,7 @@ class template(db.Model):
 # Many to Many save
 # project =  Projects( ... add inputs ... )
 # project.users.append( user )
-
+# to clear n to n rel , user project.users.clear() to remove all users from current project
 class Users(db.Model , UserMixin):
     id = db.Column(db.Integer ,  primary_key = True) 
     username = db.Column(db.String(50))
@@ -125,12 +131,14 @@ class Users(db.Model , UserMixin):
 # db.session.add()
 # db.session.commit()
 
-class Project(db.Model):
+class Project(db.Model):    
     id = db.Column(db.Integer , primary_key = True)
     name = db.Column(db.String(50))
     contact = db.relationship('contacts' , secondary = contact_projects_assoc , backref=db.backref("project" , lazy= 'dynamic' ))
-    scrapers = db.relationship('scrape_task' , backref="project_sc")
-    jobs = db.relationship('job_task' , backref="project_jo")
+    scrapers = db.relationship('scrape_task' , backref="project_sc" , cascade="all, delete-orphan")
+    jobs = db.relationship('job_task' , backref="project_jo" , cascade="all, delete-orphan")
+    template = db.relationship('template' , secondary = template_projects_assoc , backref=db.backref("project" , lazy= 'dynamic' ))
+
 
 # Tasks Model
 class scrape_task(db.Model):
