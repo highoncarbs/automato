@@ -363,6 +363,7 @@ def contact_filter():
 @app.route('/task_pause', methods = ['POST'])
 def task_pause(task_id):
     # Destroys the queue and the message
+    # TODO implement empty queue and save last page to meta
     pass
 
 
@@ -460,8 +461,10 @@ def push_job_to_queue(task_id):
 @app.route('/job/delete/<job_id>' , methods=["POST" , "GET"])
 def job_delete(job_id):
     try:
-        db.session.query(job_task).filter_by(id= int(job_id)).delete()
-        db.session.commit();
+        project_active = Project.query.filter_by(id = int(curr_project())).first()
+        job = db.session.query(job_task).filter_by(id= int(job_id)).first()
+        project_active.jobs.remove(job)
+        db.session.commit()
         session["mssg"] = "Job "+str(job_id)+" Deleted succesfully"
         return redirect('/jobs')
     except Exception as e :
@@ -469,7 +472,20 @@ def job_delete(job_id):
         session["mssg"]
         return redirect('/jobs')
 
-        
+@login_required
+@app.route('/scraper/delete/<task_id>' , methods=["POST" , "GET"])
+def scraper_delete(task_id):
+    try:
+        project_active = Project.query.filter_by(id = int(curr_project())).first()
+        job = db.session.query(job_task).filter_by(id= int(task_id)).first()
+        project_active.scrapers.remove(job)
+        db.session.commit()
+        session["mssg"] = "Scrape Task :  "+str(task_id)+" Deleted succesfully"
+        return redirect(url_for('scraper'))
+    except Exception as e :
+        session["mssg"] = "We ran into an error : " + str(e)
+        return redirect(url_for('scraper'))
+ 
 @login_required
 @app.route('/job_results/<job_id>' , methods= ['POST' , 'GET'])
 def job_results(job_id):
