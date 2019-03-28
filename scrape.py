@@ -13,8 +13,8 @@ import json
 import model
 import threading
 import functools
-from model import contacts , scrape_task
-from app import curr_proj_ins
+from model import contacts , scrape_task , Project
+from app import curr_project
 
 RABBITMQ_HOST = 'localhost'
 _DELIVERY_MODE_PERSISTENT=2
@@ -157,49 +157,53 @@ def data_is_extracted(connection, channel , delivery_tag , body):
     meta = search_data['page']
     task_id = search_data['task_id']
     last_page = 0
+    project_active  = Project.query.filter_by(id = int(search_data['project'])).first()
     task = db.session.query(scrape_task).filter_by(id = task_id).first()
+
     for page in range( int(meta) ,100):
         
         result_links , url_check  = scrape_page(city , keyword , str(page))
         last_page = page
-        print(result_links)
-        print(url_check)
+    
         
         try:
-                if url_check and len(result_links) is not 0 : # While Url_check returns True
+            if url_check and len(result_links) is not 0 : # While Url_check returns True
 
-                    for res in result_links:
+                for res in result_links:
 
-                        enc_link = hashlib.md5(str(res).encode('utf-8')).hexdigest() # Encodes the link
-                        check_one = db.session.query(contacts).filter_by(link_hash = enc_link) # Checks if encoded URL already exsists
-                        name , phone_no , phone_no_2 , address , website , tag = get_data(str(res)) 
-                        name = str(name)
-                        enc_data = hashlib.md5(str(phone_no).encode('utf-8') + str(phone_no_2).encode('utf-8')).hexdigest() # Encodes data into md5 hash
-                        new_data = model.contacts(business_name = name , contact_one = phone_no ,
-                                    contact_two = phone_no_2  , address = address , website = website,
-                                    tag = tag, link_hash = enc_link , data_hash = enc_data , url = str(res) , provider = "Justdial" , city = city , keyword = keyword)
-                        curr_proj_ins.contacts.append(new_data)
-                        try:
-                            if check_one.first():
-                                if check_one.filter_by(data_hash = enc_data).filter_by(link_hash = enc_link).first() is None :    
-                                    db.session.add(new_data)
-                                    db.session.commit()
-                                    print('okay done')
-                                else:
-                                    print('not done , already there')
-                                    pass
-
-                            else:
-                                print('okay very new')
-
+                    enc_link = hashlib.md5(str(res).encode('utf-8')).hexdigest() # Encodes the link
+                    check_one = db.session.query(contacts).filter_by(link_hash = enc_link) # Checks if encoded URL already exsists
+                    name , phone_no , phone_no_2 , address , website , tag = get_data(str(res)) 
+                    name = str(name)
+                    enc_data = hashlib.md5(str(phone_no).encode('utf-8') + str(phone_no_2).encode('utf-8')).hexdigest() # Encodes data into md5 hash
+                    new_data = model.contacts(business_name = name , contact_one = phone_no ,
+                                contact_two = phone_no_2  , address = address , website = website,
+                                tag = tag, link_hash = enc_link , data_hash = enc_data , url = str(res) , provider = "Justdial" , city = city , keyword = keyword)
+                    try:
+                        if check_one.first():
+                            if check_one.filter_by(data_hash = enc_data).filter_by(link_hash = enc_link).first() is None :    
                                 db.session.add(new_data)
+                                project_active.contact.append(new_data)
+
                                 db.session.commit()
-                        
-                        except:
-                            print('couldnt do shit')
-                            db.session.rollback()
-                else:
-                    break
+                                print('okay done')
+                            else:
+                                print('not done , already there')
+                                pass
+
+                        else:
+                            print('okay very new')
+
+                            db.session.add(new_data)
+                            project_active.contact.append(new_data)
+
+                            db.session.commit()
+                    
+                    except Exception as e:
+                        print('couldnt do shit' + str(e))
+                        db.session.rollback()
+            else:
+                break
         except :        
             task.meta = last_page
             db.session.commit()
