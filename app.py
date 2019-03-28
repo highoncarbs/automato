@@ -19,7 +19,7 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 from model import contacts, scrape_form, import_file, scrape_task, job_form, job_task, template, template_form, contact_search, contact_filter,\
-    LoginForm, Users, SignupForm,  project_form, Project, driver_path_form , contact_selector
+    LoginForm, Users, SignupForm,  project_form, Project, driver_path_form , contact_selector , job_group_form
 
 migrate = Migrate(app, db)
 
@@ -300,9 +300,13 @@ def jobs():
         print(get_projects())
         form.city.choices = [def_city] + [(r.city, r.city) for r in db.session.query(scrape_task)]
         project_curr = db.session.query(Project).filter_by(id = int(curr_project())).first()
+        form_group_job = job_group_form()
+        form_group_job.temp_select.choices =[(r.name, r.name) for r in project_curr.template]
+        # TODO create group contact assoc table for sending jobs to group
+        form_group_job.group_select.choices =[(r.name, r.name) for r in db.session.query(template)]
 
         form.keyword.choices= [(r.keyword, r.keyword) for r in db.session.query(scrape_task.keyword).distinct(scrape_task.keyword)]
-        form.campaign.choices= [(r.name, r.name) for r in db.session.query(template)]
+        form.campaign.choices= [(r.name, r.name) for r in project_curr.template]
         job_list = project_curr.jobs
         if form.validate_on_submit():
             city= form.city.data
@@ -324,7 +328,7 @@ def jobs():
                 return redirect('/jobs')
         else:
             print(form.errors)
-        return render_template('jobs.html', form= form, job_list = job_list, mssg = session['mssg'] , user_projects = get_projects()), 200
+        return render_template('jobs.html', form= form, job_list = job_list, mssg = session['mssg'] , user_projects = get_projects() , form_group_job = form_group_job), 200
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return redirect('projects')
@@ -478,10 +482,10 @@ def job_delete(job_id):
 def scraper_delete(task_id):
     try:
         project_active = Project.query.filter_by(id = int(curr_project())).first()
-        job = db.session.query(job_task).filter_by(id= int(task_id)).first()
+        job = db.session.query(scrape_task).filter_by(id= int(task_id)).first()
         project_active.scrapers.remove(job)
         db.session.commit()
-        session["mssg"] = "Scrape Task :  "+str(task_id)+" Deleted succesfully"
+        session["mssg"] = "Scrape Task :  "+str(task_id)+"   Deleted succesfully"
         return redirect(url_for('scraper'))
     except Exception as e :
         session["mssg"] = "We ran into an error : " + str(e)

@@ -195,7 +195,10 @@ class job_task(db.Model):
     project = db.Column(db.Integer, db.ForeignKey('project.id'))
 
 # Extra functionalities
-
+class job_group_form(FlaskForm):
+    group_select = SelectField('group_select' , validators=[InputRequired()])
+    temp_select = SelectField('temp_select' , validators=[InputRequired()])
+    submit = SubmitField('Submit')
 
 class import_file(FlaskForm):
     data_file = FileField('data_file', validators=[InputRequired()])
