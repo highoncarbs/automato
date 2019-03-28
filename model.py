@@ -64,6 +64,20 @@ contact_template_assoc = db.Table('contact_template_assoc',
                                             db.ForeignKey('template.id')),
                                   )
 
+contact_group_assoc = db.Table('contact_group_assoc',
+                                  db.Column('contact_id', db.Integer,
+                                            db.ForeignKey('contacts.id')),
+                                  db.Column('group_id', db.Integer,
+                                            db.ForeignKey('contact_group.id')),
+                                  )
+
+group_projects_assoc = db.Table('group_projects_assoc',
+                               db.Column('group_id', db.Integer,
+                                         db.ForeignKey('contact_group.id')),
+                               db.Column('project_id', db.Integer,
+                                         db.ForeignKey('project.id')),
+                               )
+
 user_projects_assoc = db.Table('user_projects_assoc',
                                db.Column('user_id', db.Integer,
                                          db.ForeignKey('users.id')),
@@ -167,6 +181,9 @@ class Project(db.Model):
     template = db.relationship('template', secondary=template_projects_assoc,
                                backref=db.backref("project", lazy='dynamic'))
 
+    group = db.relationship('contact_group', secondary=group_projects_assoc,
+                               backref=db.backref("project", lazy='dynamic'))
+
 
 # Tasks Model
 class scrape_task(db.Model):
@@ -193,6 +210,12 @@ class job_task(db.Model):
         'template', backref='job_task', lazy='dynamic')  # One to one mapping
     # Project id it belongs to one to many
     project = db.Column(db.Integer, db.ForeignKey('project.id'))
+
+class contact_group(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    contact = db.relationship(
+        'contacts', secondary=contact_group_assoc, backref=db.backref('group', lazy='dynamic'))
 
 # Extra functionalities
 class job_group_form(FlaskForm):
