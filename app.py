@@ -19,7 +19,7 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 from model import contacts, scrape_form, import_file, scrape_task, job_form, job_task, template, template_form, contact_search, contact_filter,\
-    LoginForm, Users, SignupForm,  project_form, Project, driver_path_form
+    LoginForm, Users, SignupForm,  project_form, Project, driver_path_form , contact_selector
 
 migrate = Migrate(app, db)
 
@@ -338,14 +338,14 @@ def user_settings():
 def contacts_call():
     # contacts_list = db.session.query(contacts).all()
     if (int(curr_project()) > 0):
-
+        form_contact_sel = contact_selector()
         form_search = contact_search()
         form_filter = contact_filter()
         form_filter_city =  set([x.city for x in db.session.query(scrape_task.city).all()])
         form_filter_keyword =  set([x.keyword for x in db.session.query(scrape_task.keyword).all()])
         form_filter_tags =  set([x.keyword for x in db.session.query(scrape_task.keyword).all()])
-
-        return render_template('contacts.html', form_search= form_search, form_filter = form_filter , form_filter_city = form_filter_city , form_filter_keyword = form_filter_keyword ,form_filter_tags = form_filter_tags), 200
+        contact_list = list(curr_proj_ins().contact)
+        return render_template('contacts.html', contacts_list = contact_list,form_search= form_search, form_filter = form_filter , form_filter_city = form_filter_city , form_filter_keyword = form_filter_keyword ,form_filter_tags = form_filter_tags , form_sel = form_contact_sel), 200
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return redirect('projects')
@@ -407,7 +407,7 @@ def push_scraper_to_queue(task_id):
     # Runs only one task a time
     try:
         task = db.session.query(scrape_task).filter_by(id = task_id).first()
-        search_data= {'city': task.city, 'keyword': task.keyword, 'page': task.meta, 'task_id': task_id}
+        search_data= {'city': task.city, 'keyword': task.keyword, 'page': task.meta, 'task_id': task_id, 'project' : int(curr_project())}
         q = get_scraper_queue()
         q.basic_publish(
             exchange = 'amq.direct',
@@ -418,6 +418,7 @@ def push_scraper_to_queue(task_id):
             )
         )
         task.status = 1
+        task.meta = 0
         db.session.commit()
         session['mssg'] = " 👷 Will start scraping {} for {} soon .".format()
 
@@ -438,7 +439,7 @@ def push_job_to_queue(task_id):
         template_set = db.session.query(template).filter_by(name =task.template).first()
         # some_result = db.session.query(template).filter_by(id=task.id).first().as_dict()
         customer_dict = dict((col, getattr(template_set, col)) for col in template_set.__table__.columns.keys())
-        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id , 'payload' : customer_dict} 
+        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id , 'payload' : customer_dict , 'project' : int(curr_project())} 
         print(job_data)
         m = get_mssg_queue()
         m.basic_publish(
