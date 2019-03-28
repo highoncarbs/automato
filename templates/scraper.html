@@ -81,13 +81,14 @@
       </thead>
       <tbody>
         {% for s in scraper_list %}
-        {% if s.status ==  1|string and s.meta != 0|string%}
+        {% if s.status ==  1|string%}
         <tr>
           <td>{{ s.provider }}</td>
           <td>{{ s.city }}</td>
           <td>{{ s.keyword }}</td>
           {% if s.status == 1|string and s.meta == 0|string %}
-          <td>Running</td>
+          <td> <img class=" icon icon-btn" src='{{url_for("static" ,filename= "images/ripple.svg" )}}'> Running 
+          </td>
           <td><a class=" button is-small rubik is-info" href="{{url_for('task_pause' , task_id = s.id )}}">Pause</a>
           </td>
           {% elif s.status ==  0|string %}
@@ -96,9 +97,9 @@
               href="{{url_for('push_scraper_to_queue' , task_id = s.id )}}">Run</a> </td>
           {% elif s.status ==  2|string %}
           <td>Finished</td>
-          <td><a class=" button is-small rubik is-success has-text-weight-bold is-static"><span
+          <td><a class=" button is-small rubik is-success is-static"><span
                 class="icon icon-btn-in"><i data-feather="check-circle"></i></span>Done</a> </td>
-          <td><a class=" button is-small has-text-weight-bold rubik is-warning" id="src-results-{{loop.index}}"><span
+          <td><a class=" button is-small rubik is-warning" id="src-results-{{loop.index}}"><span
                 class="icon icon-btn-in"><i data-feather="activity"></i></span> Results</a> </td>
 
           <div class="modal" id="modal-src-{{loop.index}}">
@@ -207,13 +208,13 @@
 
           <td>Stopped</td>
 
-          <td><a class=" button is-small rubik is-primary has-text-weight-bold" id="scrape-notice-{{loop.index}}"><span
+          <td><a class=" button is-small rubik is-primary " id="scrape-notice-{{loop.index}}"><span
                 class="icon icon-btn-in"><i data-feather="play-circle"></i></span>Run</a>
             <a href="{{url_for('scraper_delete' , task_id = s.id )}}"
-              class=" button is-small rubik is-danger has-text-weight-bold" id="src-results-{{loop.index}}"><span
+              class=" button is-small rubik is-danger " id="src-results-{{loop.index}}"><span
                 class="icon icon-btn-in"><i data-feather="trash"></i></span>Delete</a>
           </td>
-          <td><a disabled class=" button is-small has-text-weight-bold rubik is-warning " href=""><span
+          <td><a disabled class=" button is-small rubik is-warning " href=""><span
                 class="icon icon-btn-in"><i data-feather="activity"></i></span> Results</a> </td>
 
           <div class="modal" id="run-modal-confim-{{loop.index}}">
@@ -227,7 +228,7 @@
                 <p class="is-size-6 notification is-warning rubik has-text-weight-bold">Please check that you have a
                   steady internet connection.</p>
                 <br>
-                <a class=" button rubik is-primary has-text-weight-bold"
+                <a class=" button rubik is-primary "
                   href="{{url_for('push_scraper_to_queue' , task_id = s.id )}}"><span class="icon icon-btn-in"><i
                       data-feather="play-circle"></i></span>Run</a>
               </div>
@@ -361,9 +362,9 @@
           <td>{{ s.city }}</td>
           <td>{{ s.keyword }}</td>
           <td>Finished</td>
-          <td><a class=" button is-small rubik is-success has-text-weight-bold is-static"><span
+          <td><a class=" button is-small rubik is-success  is-static"><span
                 class="icon icon-btn-in"><i data-feather="check-circle"></i></span>Done</a> </td>
-          <td><a class=" button is-small has-text-weight-bold rubik is-warning" id="src-results-{{loop.index}}"><span
+          <td><a class=" button is-small   rubik is-warning" id="src-results-{{loop.index}}"><span
                 class="icon icon-btn-in"><i data-feather="activity"></i></span> Results</a> </td>
 
           <div class="modal" id="modal-src-{{loop.index}}">
