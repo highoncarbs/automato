@@ -168,63 +168,63 @@
                                             var modal = document.querySelector('#con_filter_modal');  // assuming you have only 1
                                             var html = document.querySelector('html');
 
-                                           
-                                                modal.classList.remove('is-active');
-                                                html.classList.remove('is-clipped');
-                                           
+
+                                            modal.classList.remove('is-active');
+                                            html.classList.remove('is-clipped');
+
                                         }
                                     });
 
                                 });
 
-                                    $(document).ready(function selectFilter(evt) {
-                                        var payload = {}
-                                        const btnsfltr = document.querySelectorAll('.selection .button');
-                                        for (const btn of btnsfltr) {
-                                            btn.addEventListener("click", function () {
-                                                $(this).toggleClass("is-black");
-                                            });
-                                        };
-                                    });
+                                $(document).ready(function selectFilter(evt) {
+                                    var payload = {}
+                                    const btnsfltr = document.querySelectorAll('.selection .button');
+                                    for (const btn of btnsfltr) {
+                                        btn.addEventListener("click", function () {
+                                            $(this).toggleClass("is-black");
+                                        });
+                                    };
+                                });
 
-                                    function openTab(evt, tabName) {
-                                        var i, x, tablinks;
-                                        x = document.getElementsByClassName("content-tab");
-                                        for (i = 0; i < x.length; i++) {
-                                            x[i].style.display = "none";
-                                        }
-                                        tablinks = document.getElementsByClassName("tab");
-                                        for (i = 0; i < x.length; i++) {
-                                            tablinks[i].className = tablinks[i].className.replace(" is-active", "");
-                                        }
-                                        document.getElementById(tabName).style.display = "block";
-                                        evt.currentTarget.className += " is-active";
+                                function openTab(evt, tabName) {
+                                    var i, x, tablinks;
+                                    x = document.getElementsByClassName("content-tab");
+                                    for (i = 0; i < x.length; i++) {
+                                        x[i].style.display = "none";
                                     }
+                                    tablinks = document.getElementsByClassName("tab");
+                                    for (i = 0; i < x.length; i++) {
+                                        tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+                                    }
+                                    document.getElementById(tabName).style.display = "block";
+                                    evt.currentTarget.className += " is-active";
+                                }
                             </script>
 
                             <script>
-                                    document.querySelector('#filter_btn').addEventListener('click', function (event) {
-                                        event.preventDefault();
-                                        var modal = document.querySelector('#con_filter_modal');  // assuming you have only 1
-                                        var html = document.querySelector('html');
-                                        modal.classList.add('is-active');
-                                        html.classList.add('is-clipped');
+                                document.querySelector('#filter_btn').addEventListener('click', function (event) {
+                                    event.preventDefault();
+                                    var modal = document.querySelector('#con_filter_modal');  // assuming you have only 1
+                                    var html = document.querySelector('html');
+                                    modal.classList.add('is-active');
+                                    html.classList.add('is-clipped');
 
-                                        document.querySelector('.modal-close').addEventListener('click', function (e) {
-                                            e.preventDefault();
-                                            modal.classList.remove('is-active');
-                                            html.classList.remove('is-clipped');
-                                        });
+                                    document.querySelector('.modal-close').addEventListener('click', function (e) {
+                                        e.preventDefault();
+                                        modal.classList.remove('is-active');
+                                        html.classList.remove('is-clipped');
+                                    });
 
-                                        modal.querySelector('.modal-background').addEventListener('click', function (e) {
-                                            e.preventDefault();
-                                            modal.classList.remove('is-active');
-                                            html.classList.remove('is-clipped');
+                                    modal.querySelector('.modal-background').addEventListener('click', function (e) {
+                                        e.preventDefault();
+                                        modal.classList.remove('is-active');
+                                        html.classList.remove('is-clipped');
 
-
-                                        });
 
                                     });
+
+                                });
                             </script>
                         </div>
                     </div>
@@ -239,17 +239,32 @@
 <br>
 
 {% if contacts_list %}
-<div class=" table-container">
-    <table class="table is-bordered is-fullwidth">
-        <thead>
-            <tr>
-                <th>Business Name</th>
-                <th>City</th>
-                <th>Ph #1</th>
-                <th>Ph #2</th>
-                <th>Address</th>
+<div class="notification is-warning">
+    <div class="level">
+        <div class="level-left">
+            <p class="level-item rubik has-text-weight-semibold">ACTION</p>
+        </div>
+        <div class="level-right">
+            <p class="level-item button rubik">Export</p>
+            <p class="level-item button rubik">Delete</p>
+            <p class="level-item button rubik">Group</p>
 
-            </tr>
+
+
+        </div>
+
+    </div>
+
+</div>
+<div class="contact-table table-container" id="contact-table">
+    <table class="table is-bordered is-fullwidth is-hoverable">
+        <thead>
+            <th>Business Name</th>
+            <th>City</th>
+            <th>Ph #1</th>
+            <th>Ph #2</th>
+            <th>Address</th>
+            <th>Action</th>
         </thead>
         <tbody>
             {% for c in contacts_list %}
@@ -260,12 +275,66 @@
                 <td>{{c.contact_two}}</td>
 
                 <td>{{c.address}}</td>
+                <td>
+                    <div class="buttons is-grouped-multiline">
+                        <button class="button is-light is-small rubik" id="edit_contact_{{c.id}}">Edit</button>
+                        <button class="button is-danger is-small rubik">Delete</button>
+                    </div>
+                </td>
 
+                <div class="modal" id="edit_contact_model_{{c.id}}">
+                        <div class="modal-background"></div>
+                        <div class="modal-content">
+                            <div class="box">/
+                                <p class="is-size-5 rubik">Edit Contact - <span class="has-text-grey">{{c.business_name}}</span> </p>
+                            </div>
+                        </div>
+                        <button class="modal-close is-large" aria-label="close"></button>
+                    </div>
+        
+                    <script>
+
+                            $(document).ready(function() {
+
+                                $('#contact-table tbody tr').click(function() {
+                                    var data = $(this).toggleClass('has-background-link has-text-white');
+                                    
+                                });
+                            
+                            });
+
+                            document.querySelector('#edit_contact_{{c.id}}').addEventListener('click', function (event) {
+                                event.preventDefault();
+                                var modal = document.querySelector('#edit_contact_model_{{c.id}}');  // assuming you have only 1
+                                var html = document.querySelector('html');
+                                modal.classList.add('is-active');
+                                html.classList.add('is-clipped');
+        
+                                document.querySelector('.modal-close').addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                    modal.classList.remove('is-active');
+                                    html.classList.remove('is-clipped');
+                                });
+        
+                                modal.querySelector('.modal-background').addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                    modal.classList.remove('is-active');
+                                    html.classList.remove('is-clipped');
+        
+        
+                                });
+        
+                            });
+                        </script>
             </tr>
+
+            
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+
 {% else %}
 <div class="notification is-light is-narrow">
     <p class="is-size-6 rubik" style="text-align: center">
@@ -280,6 +349,7 @@
     </p>
 </div>
 {% endif %}
-</div>
+
+
 </div>
 {% endblock %}
