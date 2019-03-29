@@ -34,6 +34,28 @@
                                         data-feather="filter"></i></span>Filter</button>
                             <button class="button is-black rubik"><span class="icon icon-btn-in"><i
                                         data-feather="refresh-cw"></i></span>Refresh</button>
+                            <button id="add_contact_btn" class="button is-black rubik"><span class="icon icon-btn-in"><i
+                                        data-feather="user-plus"></i></span>Add Contact</button>
+
+                            <div class="modal " id="con_add_modal">
+                                <div class="modal-background animated fadeIn"></div>
+                                <div class="modal-content animated slideInUp">
+                                    <div class="box ">
+                                        <p class="is-size-4 has-text-weight-bold has-text-centered">Add Contact</p>
+                                        <br>
+                                        <div class="contact_form">
+                                            <form action="" method="POST">
+                                                <div class="notification">
+                                                    
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="modal-close is-large" aria-label="close"></button>
+
+                            </div>
+
                             <div class="modal animated fadeIn" id="con_filter_modal">
                                 <div class="modal-background"></div>
                                 <div class="modal-content">
@@ -225,6 +247,29 @@
                                     });
 
                                 });
+
+                                document.querySelector('#add_contact_btn').addEventListener('click', function (event) {
+                                    event.preventDefault();
+                                    var modal = document.querySelector('#con_add_modal');  // assuming you have only 1
+                                    var html = document.querySelector('html');
+                                    modal.classList.add('is-active');
+                                    html.classList.add('is-clipped');
+
+                                    document.querySelector('.modal-close').addEventListener('click', function (e) {
+                                        e.preventDefault();
+                                        modal.classList.remove('is-active');
+                                        html.classList.remove('is-clipped');
+                                    });
+
+                                    modal.querySelector('.modal-background').addEventListener('click', function (e) {
+                                        e.preventDefault();
+                                        modal.classList.remove('is-active');
+                                        html.classList.remove('is-clipped');
+
+
+                                    });
+
+                                });
                             </script>
                         </div>
                     </div>
@@ -283,52 +328,55 @@
                 </td>
 
                 <div class="modal" id="edit_contact_model_{{c.id}}">
-                        <div class="modal-background"></div>
-                        <div class="modal-content">
-                            <div class="box">/
-                                <p class="is-size-5 rubik">Edit Contact - <span class="has-text-grey">{{c.business_name}}</span> </p>
-                            </div>
+                    <div class="modal-background"></div>
+                    <div class="modal-content">
+                        <div class="box">/
+                            <p class="is-size-5 rubik">Edit Contact - <span
+                                    class="has-text-grey">{{c.business_name}}</span> </p>
                         </div>
-                        <button class="modal-close is-large" aria-label="close"></button>
                     </div>
-        
-                    <script>
+                    <button class="modal-close is-large" aria-label="close"></button>
+                </div>
 
-                            $(document).ready(function() {
+                <script>
 
-                                $('#contact-table tbody tr').click(function() {
-                                    var data = $(this).toggleClass('has-background-link has-text-white');
-                                    
-                                });
-                            
-                            });
+                    $(document).ready(function () {
 
-                            document.querySelector('#edit_contact_{{c.id}}').addEventListener('click', function (event) {
-                                event.preventDefault();
-                                var modal = document.querySelector('#edit_contact_model_{{c.id}}');  // assuming you have only 1
-                                var html = document.querySelector('html');
-                                modal.classList.add('is-active');
-                                html.classList.add('is-clipped');
-        
-                                document.querySelector('.modal-close').addEventListener('click', function (e) {
-                                    e.preventDefault();
-                                    modal.classList.remove('is-active');
-                                    html.classList.remove('is-clipped');
-                                });
-        
-                                modal.querySelector('.modal-background').addEventListener('click', function (e) {
-                                    e.preventDefault();
-                                    modal.classList.remove('is-active');
-                                    html.classList.remove('is-clipped');
-        
-        
-                                });
-        
-                            });
-                        </script>
+                        $('#contact-table tbody tr').click(function () {
+                            var data = $(this).toggleClass('has-background-link has-text-white');
+
+                        });
+
+                    });
+
+                    document.querySelector('#edit_contact_{{c.id}}').addEventListener('click', function (event) {
+                        event.preventDefault();
+                        var modal = document.querySelector('#edit_contact_model_{{c.id}}');  // assuming you have only 1
+                        var html = document.querySelector('html');
+                        modal.classList.add('is-active');
+                        html.classList.add('is-clipped');
+
+                        document.querySelector('.modal-close').addEventListener('click', function (e) {
+                            e.preventDefault();
+                            modal.classList.remove('is-active');
+                            html.classList.remove('is-clipped');
+                            html.classList.add('animated fadeOut');
+
+                        });
+
+                        modal.querySelector('.modal-background').addEventListener('click', function (e) {
+                            e.preventDefault();
+                            modal.classList.remove('is-active');
+                            html.classList.remove('is-clipped');
+
+
+                        });
+
+                    });
+                </script>
             </tr>
 
-            
+
             {% endfor %}
         </tbody>
     </table>
@@ -336,7 +384,7 @@
 
 
 {% else %}
-<div class="notification is-light is-narrow">
+<div class="notification is-light is-narrow animated slideInUp">
     <p class="is-size-6 rubik" style="text-align: center">
         Please select either option<br>
         <span style="text-decoration: underline;"><i class="icon icon-btn" data-feather="info"></i> Selecting <span

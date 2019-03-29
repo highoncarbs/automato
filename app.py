@@ -19,7 +19,7 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 from model import contacts, scrape_form, import_file, scrape_task, job_form, job_task, template, template_form, contact_search, contact_filter,\
-    LoginForm, Users, SignupForm,  project_form, Project, driver_path_form , contact_selector , job_group_form
+    LoginForm, Users, SignupForm,  project_form, Project, driver_path_form , contact_selector , job_group_form , add_contact
 
 migrate = Migrate(app, db)
 
@@ -349,7 +349,9 @@ def contacts_call():
         form_filter_keyword =  set([x.keyword for x in db.session.query(scrape_task.keyword).all()])
         form_filter_tags =  set([x.keyword for x in db.session.query(scrape_task.keyword).all()])
         contact_list = list(curr_proj_ins().contact)
-        return render_template('contacts.html', contacts_list = contact_list,form_search= form_search, form_filter = form_filter , form_filter_city = form_filter_city , form_filter_keyword = form_filter_keyword ,form_filter_tags = form_filter_tags , form_sel = form_contact_sel), 200
+
+        form_add_contact = add_contact()
+        return render_template('contacts.html', contacts_list = contact_list,form_search= form_search, form_filter = form_filter , form_filter_city = form_filter_city , form_filter_keyword = form_filter_keyword ,form_filter_tags = form_filter_tags , form_sel = form_contact_sel , form_add_contact = form_add_contact), 200
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return redirect('projects')
@@ -531,7 +533,7 @@ def src_results(job_id , keyword):
 @app.route('/task_report/<job_id>' , methods = ['POST' , 'GET'])
 def task_report(job_id):
     # Endpoint for full report for JOB and TASK Results
-    # TO-DO for next release
+    # TODO for next release
     pass
 
 

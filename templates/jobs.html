@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <hr>
-<div class="notification is-light new-scraper">
+<div class="notification is-light new-scraper animated fadeInDown">
   <p class="has-text-weight-bold rubik is-size-5">RUN NEW JOB</p>
   <br>
   <form action="/jobs" method="POST">
@@ -82,7 +82,7 @@
     });
   </script>
 </div>
-<hr><div class="notification is-warning new-scraper-group">
+<hr><div class="notification is-warning new-scraper-group animated fadeInUp">
   <p class="has-text-weight-bold rubik is-size-5">RUN NEW JOB for GROUPS</p>
   <br>
   <form action="/jobs" method="POST">
@@ -150,7 +150,7 @@
   </script>
 </div>
 <br>
-<table class="table is-bordered table-container is-fullwidth">
+<table class="table is-bordered table-container is-fullwidth animated fadeInUp">
   <thead>
     <tr>
       <th>Platform</th>

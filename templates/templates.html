@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<nav class="navbar is-grouped-multiline">
+<nav class="navbar is-grouped-multiline animated fadeInDown">
     <div class="navbar-start">    
 <h3 class="is-size-5 has-text-weight-bold rubik">TEMPLATES</h3>
 </div>
@@ -20,10 +20,10 @@
 
 <!-- Add Template modal -->
 <div class="modal" id="temp-form">
-    <div class="modal-background"></div>
-    <div class="modal-content">
+    <div class="modal-background animated fadeIn"></div>
+    <div class="modal-content animated slideInUp">
       
-        <div class="box has-text-centered" style="margin-bottom : 0px;">
+        <div class="box has-text-centered " style="margin-bottom : 0px;">
             <p class=" is-size-4 has-text-weight-bold ">New Template</p>
             <p class=" subtitle has-text-grey rubik">The general template consists of a header image and 8 to 9 message lines. </p>
             <br>
@@ -213,27 +213,27 @@
 <!-- End Add template modal -->
 <br>
 <!-- Main content -->
-<div class="templates-list">
-    <div class="columns">
+<div class="templates-list" >
+    <div class="columns ">
         {% for temp in temps%}
 
-        <div class="column is-3">
-                <div class="card">
-                        <div class="card-image">
+        <div class="column is-3 ">
+                <div class="card ">
+                        <div class="card-image animated fadeIn">
                           <figure class="image">
                             <img src="{{url_for('static' , filename = 'images/uploads/'+temp.img_path)}}" alt="Placeholder image">
                           </figure>
                         </div>
-                        <div class="card-content">
+                        <div class="card-content ">
                           <div class="media">
                             <div class="media-content">
-                              <p class="title is-4 rubik">{{temp.name}}</p>
+                              <p class="title is-4 rubik animated slideInUp">{{temp.name}}</p>
                             </div>
                           </div>
                           <hr>
                           <div class="content is-size-6">
                             
-                                <p class="notification is-small is-info" style="border-radius: 10px;">{{temp.mssg_1}}
+                                <p class="notification is-small is-info animated fadeIn" style="border-radius: 10px;">{{temp.mssg_1}}
                                 <br>{{temp.mssg_2}}
                                 <br>{{temp.mssg_3}}
                                 <br>{{temp.mssg_4}}

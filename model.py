@@ -54,6 +54,17 @@ class template_form(FlaskForm):
     mssg_7 = StringField('mssg_7')
     mssg_8 = StringField('mssg_8')
 
+class add_contact(FlaskForm):
+    business_name = StringField('mssg_1')
+    contact_one = StringField('mssg_1')
+    contact_two = StringField('mssg_1')
+    address = StringField('mssg_1')
+    website = StringField('mssg_1')
+    tag = StringField('mssg_1')
+    city = StringField('mssg_1')
+    provider = StringField('mssg_1')
+    save = SubmitField('submit')
+
 ########## DB models ############
 
 
