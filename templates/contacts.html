@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
 <div class="contact-list">
     <nav class="navbar">
@@ -46,7 +47,7 @@
                                         <div class="contact_form">
                                             <form action="" method="POST">
                                                 <div class="notification">
-                                                    
+
                                                 </div>
                                             </form>
                                         </div>
@@ -284,35 +285,37 @@
 <br>
 
 {% if contacts_list %}
-<div class="notification is-warning">
+<div class="box action-box is-hidden " id="actionbox">
     <div class="level">
         <div class="level-left">
             <p class="level-item rubik has-text-weight-semibold">ACTION</p>
         </div>
-        <div class="level-right">
-            <p class="level-item button rubik">Export</p>
-            <p class="level-item button rubik">Delete</p>
-            <p class="level-item button rubik">Group</p>
+        <div class="level-right ">
+            <p class="level-item button is-black is-small rubik"><span class="icon icon-btn"><i
+                        data-feather="external-link"></i></span>Export</p>
+            <p class="level-item button is-black is-small rubik"><span class="icon icon-btn"><i
+                        data-feather="trash"></i></span>Delete</p>
+            <p class="level-item button is-black is-small rubik"><span class="icon icon-btn"><i
+                        data-feather="users"></i></span>Group</p>
 
 
 
         </div>
 
     </div>
-
 </div>
-<div class="contact-table table-container" id="contact-table">
-    <table class="table is-bordered is-fullwidth is-hoverable">
+<br>
+<div class="contact-table">
+    <table class="table is-fullwidth is-hoverable" id="contact-table">
         <thead>
             <th>Business Name</th>
             <th>City</th>
             <th>Ph #1</th>
             <th>Ph #2</th>
             <th>Address</th>
-            <th>Action</th>
         </thead>
         <tbody>
-            {% for c in contacts_list %}
+            <!-- {% for c in contacts_list %}
             <tr>
                 <td>{{c.business_name}}</td>
                 <td>{{c.city}}</td>
@@ -343,12 +346,15 @@
                     $(document).ready(function () {
 
                         $('#contact-table tbody tr').click(function () {
-                            var data = $(this).toggleClass('has-background-link has-text-white');
+                            var data = $(this).toggleClass('has-background-info has-text-white');
+                            var modal = $('.action-box').addClass('animated fadeInUp');
+                            $('.action-box').removeClass('is-hidden');
 
                         });
 
                     });
 
+                  
                     document.querySelector('#edit_contact_{{c.id}}').addEventListener('click', function (event) {
                         event.preventDefault();
                         var modal = document.querySelector('#edit_contact_model_{{c.id}}');  // assuming you have only 1
@@ -377,11 +383,23 @@
             </tr>
 
 
-            {% endfor %}
+            {% endfor %} -->
         </tbody>
     </table>
 </div>
-
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+        var table = $('#contact-table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "select": {
+                "style": 'multi'
+            },
+            "ajax": "{{ url_for('data') }}"
+        });
+    });
+</script>
 
 {% else %}
 <div class="notification is-light is-narrow animated slideInUp">
@@ -398,6 +416,98 @@
 </div>
 {% endif %}
 
-
+<script>
+    (function (b) {
+        "function" === typeof define && define.amd ? define(["jquery", "datatables.net"], function (a) {
+            return b(a, window, document)
+        }) : "object" === typeof exports ? module.exports = function (a, d) {
+            a || (a = window);
+            if (!d || !d.fn.dataTable) d = require("datatables.net")(a, d).$;
+            return b(d, a, a.document)
+        } : b(jQuery, window, document)
+    })(function (b, a, d) {
+        var f = b.fn.dataTable;
+        b.extend(!0, f.defaults, {
+            dom: "<'columns'<'column is-6'l><'column is-6'f>><'columns'<'column is-12'tr>><'columns'<'column is-5'i><'column is-7'p>>",
+            renderer: "bulma"
+        });
+        b.extend(f.ext.classes, {
+            sWrapper: "dataTables_wrapper dt-bulma",
+            sFilterInput: "input is-small",
+            sLengthSelect: "input is-small",
+            sProcessing: "dataTables_processing panel",
+            sPageButton: "pagination-link",
+            sPagePrevious: "pagination-previous",
+            sPageNext: "pagination-next",
+            sPageButtonActive: "is-current"
+        });
+        f.ext.renderer.pageButton.bulma = function (a, h, r, m, j, n) {
+            var o = new f.Api(a),
+                s = a.oClasses,
+                k = a.oLanguage.oPaginate,
+                t = a.oLanguage.oAria.paginate || {},
+                e, g, p = 0,
+                q = function (d, f) {
+                    var l, h, i, c, m = function (a) {
+                        a.preventDefault();
+                        (!b(a.currentTarget).is("[disabled]") && !b(a.currentTarget).is("#table_ellipsis")) && o.page() != a.data.action && o.page(a.data.action).draw("page")
+                    };
+                    l = 0;
+                    for (h = f.length; l < h; l++)
+                        if (c = f[l], b.isArray(c)) q(d, c);
+                        else {
+                            g = e = "";
+                            dd = false;
+                            switch (c) {
+                                case "ellipsis":
+                                    e = "&#x2026;";
+                                    dd = true;
+                                    break;
+                                case "first":
+                                    e = k.sFirst;
+                                    dd = c + (0 < j ? false : true);
+                                    break;
+                                case "previous":
+                                    e = k.sPrevious;
+                                    dd = 0 < j ? false : true;
+                                    break;
+                                case "next":
+                                    e = k.sNext;
+                                    dd = j < n - 1 ? false : true;
+                                    break;
+                                case "last":
+                                    e = k.sLast;
+                                    dd = c + (j < n - 1 ? false : true);
+                                    break;
+                                default:
+                                    e = c + 1, g = j === c ? " is-current" : "";
+                                    dd = false;
+                            }
+                            e && (i = b("<li>", {
+                                id: 0 === r && "string" === typeof c ? a.sTableId + "_" + c : null
+                            }).append(b("<a>", {
+                                "class": s.sPageButton + " " + g,
+                                href: "#",
+                                "aria-controls": a.sTableId,
+                                "aria-label": t[c],
+                                "data-dt-idx": p,
+                                tabindex: a.iTabIndex,
+                                disabled: dd
+                            }).html(e)).appendTo(d), a.oApi._fnBindAction(i, {
+                                action: c
+                            }, m), p++)
+                        }
+                },
+                i;
+            try {
+                i = b(h).find(d.activeElement).data("dt-idx")
+            } catch (u) { }
+            q(b(h).empty().html('<ul class="pagination-list"/>').children("ul"), m);
+            i && b(h).find("[data-dt-idx=" + i + "]").focus()
+        };
+        return f
+    });
+</script>
 </div>
+
 {% endblock %}

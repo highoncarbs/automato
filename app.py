@@ -8,9 +8,10 @@ from werkzeug import secure_filename
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from datatables import ColumnDT, DataTables
 # from flask.ext.migrate import Migrate, MigrateCommand
-
 # from whoosh.analysis import StemmingAnalyzer
+
 import datetime
 
 app = Flask(__name__)
@@ -355,6 +356,30 @@ def contacts_call():
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return redirect('projects')
+
+@app.route('/data')
+def data():
+    """Return server side data."""
+    # defining columns
+    columns = [
+        ColumnDT(contacts.business_name),
+        ColumnDT(contacts.city),
+        ColumnDT(contacts.contact_one),
+        ColumnDT(contacts.contact_two),
+        ColumnDT(contacts.address),
+    ]
+
+    # defining the initial query depending on your purpose
+    query = db.session.query().select_from(contacts)
+
+    # GET parameters
+    params = request.args.to_dict()
+
+    # instantiating a DataTable for the query and table needed
+    rowTable = DataTables(params, query, columns)
+
+    # returns what is needed by DataTable
+    return jsonify(rowTable.output_result())
 
 @login_required
 @app.route('/contacts_filter' , methods = ['POST'])
