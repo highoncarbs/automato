@@ -388,11 +388,13 @@
     </table>
 </div>
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css"></script>
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function () {
         var table = $('#contact-table').DataTable({
             "processing": true,
             "serverSide": true,
+            
             "select": {
                 "style": 'multi'
             },

@@ -141,19 +141,19 @@ table.dataTable.nowrap th, table.dataTable.nowrap td {
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
     opacity: 0.2;
-    content: "\f0dc";
+    content: url("https://unpkg.com/feather-icons@2.4.0/icons/arrows/arrow-down.svg");
   }
   
   table.dataTable thead .sorting_asc:after {
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    content: "\f0de";
+    content:  url("https://unpkg.com/feather-icons@2.4.0/icons/arrows/arrow-up.svg");
   }
   
   table.dataTable thead .sorting_desc:after {
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    content: "\f0dd";
+    content:  url("https://unpkg.com/feather-icons@2.4.0/icons/arrows/arrow-down.svg");
   }
   
   table.dataTable thead .sorting_asc_disabled:after, table.dataTable thead .sorting_desc_disabled:after {
