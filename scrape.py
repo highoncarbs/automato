@@ -14,7 +14,7 @@ import model
 import threading
 import functools
 from model import contacts , scrape_task , Project
-from app import curr_project
+from app import curr_project , current_user , json
 
 RABBITMQ_HOST = 'localhost'
 _DELIVERY_MODE_PERSISTENT=2
@@ -23,7 +23,8 @@ chrome_options = Options()
 chrome_options.add_argument("--disable-popup-blocking")   # Doesn't seem to work!
 
 chrome_path = r"C:\Users\padam\Downloads\chromedriver_win32\chromedriver.exe"
-
+cp = json.loads(current_user.meta('path'))
+print(cp)
 credentials = pika.PlainCredentials('guest' , 'guest')
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost' , credentials = credentials))
