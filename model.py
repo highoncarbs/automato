@@ -207,7 +207,7 @@ class scrape_task(db.Model):
     meta = db.Column(db.String(500))
     # Project id it belongs to one to many
     project = db.Column(db.Integer, db.ForeignKey('project.id'))
-
+    user_id = db.Column(db.Integer , db.ForeignKey('users.id'))
 
 class job_task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
