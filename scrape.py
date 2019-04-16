@@ -14,7 +14,7 @@ import model
 import threading
 import functools
 from model import contacts , scrape_task , Project
-from app import curr_project , current_user , json
+from app import curr_project , json , g
 
 RABBITMQ_HOST = 'localhost'
 _DELIVERY_MODE_PERSISTENT=2
@@ -22,9 +22,12 @@ _DELIVERY_MODE_PERSISTENT=2
 chrome_options = Options()  
 chrome_options.add_argument("--disable-popup-blocking")   # Doesn't seem to work!
 
-chrome_path = r"C:\Users\padam\Downloads\chromedriver_win32\chromedriver.exe"
-cp = json.loads(current_user.meta('path'))
-print(cp)
+
+global chrome_path 
+# Store current user in Scrape task , fetch the user driver path from there
+# Update the chrome_path with that.
+
+
 credentials = pika.PlainCredentials('guest' , 'guest')
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost' , credentials = credentials))
@@ -151,12 +154,16 @@ def data_is_extracted(connection, channel , delivery_tag , body):
     #  at a time , save last page scraped 
     thread_id = threading.get_ident()
     fmt1 = 'Thread id: {} Delivery Tag: {} Message body: {}'
-    driver_init()
     search_data = json.loads(body)
     city = search_data['city']
     keyword = search_data['keyword']
     meta = search_data['page']
     task_id = search_data['task_id']
+    global chrome_path
+    chrome_path = search_data['user_path']
+    print("--------------------------------"+chrome_path)
+    driver_init()
+
     last_page = 0
     project_active  = Project.query.filter_by(id = int(search_data['project'])).first()
     task = db.session.query(scrape_task).filter_by(id = task_id).first()
