@@ -263,15 +263,17 @@ def home():
             src_fin = db.session.query(scrape_task).filter_by(status = str(2)).count()
             src_unfin = db.session.query(scrape_task).filter_by(status = str(0)).count()
             src_run = db.session.query(scrape_task).filter_by(status = str(1)).count()
-
+            src_curr_run = db.session.query(scrape_task).filter_by(status = str(1)).all()
             job_len = len(project_active.jobs)
             job_fin = db.session.query(job_task).filter_by(status = str(2)).count()
             job_unfin = db.session.query(job_task).filter_by(status = str(3)).count()
             job_run = db.session.query(job_task).filter_by(status = str(1)).count()
+            job_curr_run = db.session.query(job_task).filter_by(status = str(1)).all()
+
 
             return render_template('dash.html', con_len = con_len, city_len = city_len, src_len = src_len, src_fin = src_fin,\
                 src_unfin = src_unfin, src_run = src_run, job_len = job_len, job_fin = job_fin,\
-                job_unfin = job_unfin, job_run = job_run, mssg = session['mssg'], p_list = user_projects), 200
+                job_unfin = job_unfin, job_run = job_run, mssg = session['mssg'], p_list = user_projects , src_curr_run = src_curr_run), 200
         else:
             session['mssg'] = "No project selected . Redirecting to Projects page."
             return redirect('projects'), 200
@@ -312,12 +314,12 @@ def jobs():
             city= form.city.data
             keyword= form.keyword.data
             provider = "Whatsapp"
-            campaign = form.campaign.data
+            campaign = db.session.query(template).filter_by(name = form.campaign.data).first()
             print(campaign)
             # Check if the city and keyword already exsists ?
             check_one = db.session.query(job_task).filter_by(city = city, provider = provider, keyword = keyword).first()
             if check_one is None:
-                new_job= job_task(city = city, provider = provider, status = str(0), meta = str(''), keyword = keyword, template = campaign)
+                new_job= job_task(city = city, provider = provider, status = str(0), meta = str(1), keyword = keyword, template = campaign ,project_jo = project_curr)
                 project_curr.jobs.append(new_job)
                 db.session.add(new_job)
                 db.session.commit()
@@ -467,10 +469,10 @@ def push_job_to_queue(task_id):
     # Runs only one task a time 
     try:
         task = db.session.query(job_task).filter_by(id = task_id).first()
-        template_set = db.session.query(template).filter_by(name =task.template).first()
+        template_set = db.session.query(template).filter_by(name =task.template.name).first()
         # some_result = db.session.query(template).filter_by(id=task.id).first().as_dict()
         customer_dict = dict((col, getattr(template_set, col)) for col in template_set.__table__.columns.keys())
-        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id , 'payload' : customer_dict , 'project' : int(curr_project())} 
+        job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id , 'payload' : customer_dict , 'project' : int(curr_project()), 'user_path' : current_user.meta} 
         print(job_data)
         m = get_mssg_queue()
         m.basic_publish(
