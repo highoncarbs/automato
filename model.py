@@ -142,7 +142,8 @@ class template(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     img_path = db.Column(db.String(200))
-    job_id = db.Column(db.Integer, db.ForeignKey('job_task.id'))
+    job = db.relationship(
+        'job_task', backref='template', lazy='dynamic')  # One to one mapping
     mssg_1 = db.Column(db.String(200), default="Hi ,")
     mssg_2 = db.Column(db.String(
         200), default="We are Mfg. of exclusive Hand Block Printed Dress Materials , Dupatta ,Stole ,Sarees , Kurties ,Fabrics , Skirts & much more .")
@@ -217,8 +218,8 @@ class job_task(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     keyword = db.Column(db.String(50))
     meta = db.Column(db.String(500), default=str(0))
-    template = db.relationship(
-        'template', backref='job_task', lazy='dynamic')  # One to one mapping
+    template_id = db.Column(db.Integer, db.ForeignKey('template.id'))
+
     # Project id it belongs to one to many
     project = db.Column(db.Integer, db.ForeignKey('project.id'))
 
