@@ -42,7 +42,9 @@ chrome_options.add_argument("--disable-popup-blocking")
     
 
 
-chrome_path = r"C:\Users\padam\Downloads\chromedriver_win32\chromedriver.exe"
+global chrome_path
+global task_id_g
+global num_g
 global first_run_check
 first_run_check = 0
 
@@ -189,15 +191,18 @@ def send_messages(connection , channel , delivery_tag , body):
             
     thread_id = threading.get_ident() 
     fmt = 'Thread id: {} Delivery Tag: {} Message body: {}'
-    driver_init()
     mssg_data = json.loads(body)
     city = mssg_data['city']
     task_id = mssg_data['task_id']
+    global task_id_g
+    task_id_g = task_id
     meta = mssg_data['meta'] 
     payload = mssg_data['payload']
-    
+    global chrome_path
+    chrome_path = mssg_data['user_path']
     # Template loaded from JSON payload via RabbitMQ
-    
+    driver_init()
+
     mssg_1 = payload["mssg_1"]
 
     job = db.session.query(job_task).filter_by(id= task_id).first()
@@ -238,6 +243,8 @@ def send_messages(connection , channel , delivery_tag , body):
 
         for num in numbers[:100]:
             check_sent = db.session.query(contacts).filter_by(contact_one = str(num)).first()
+            global num_g
+            num_g = num
             # if check_sent.wp_cnt != str(1) or str(-2) :     
             if is_connected():
                 wp_sent = db.session.query(contacts).filter_by(contact_one = str(num)).first()
@@ -294,8 +301,14 @@ try:
     print("consuming" )
     channel.start_consuming()
    
-except KeyboardInterrupt:
-    channel.stop_consuming()
+except Exception as e:
+    cb = functools.partial(ack_message , channel , delivery_tag)
+    connection.add_callback_threadsafe(cb)
+    task = db.session.query(scrape_task).filter_by(id = int(task_id_g)).first()
+    task.status = 2
+    task.meta = num_g
+    db.session.commit()
+    driver.close()
 
 for thread in threads:
     thread.join()

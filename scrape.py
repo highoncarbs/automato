@@ -14,7 +14,7 @@ import model
 import threading
 import functools
 from model import contacts , scrape_task , Project
-from app import curr_project , json , g
+from app import curr_project , json 
 
 RABBITMQ_HOST = 'localhost'
 _DELIVERY_MODE_PERSISTENT=2
@@ -23,7 +23,10 @@ chrome_options = Options()
 chrome_options.add_argument("--disable-popup-blocking")   # Doesn't seem to work!
 
 
-global chrome_path 
+global chrome_path
+global task_id_g
+global last_page_g
+
 # Store current user in Scrape task , fetch the user driver path from there
 # Update the chrome_path with that.
 
@@ -149,6 +152,7 @@ def get_data(list_url):
 
     return name ,phone_final, phone_final_2 ,address , website , tag
 
+
 def data_is_extracted(connection, channel , delivery_tag , body):
     # Run scrape with city and key word with pages 5 pages
     #  at a time , save last page scraped 
@@ -159,6 +163,8 @@ def data_is_extracted(connection, channel , delivery_tag , body):
     keyword = search_data['keyword']
     meta = search_data['page']
     task_id = search_data['task_id']
+    global task_id_g
+    task_id_g = task_id
     global chrome_path
     chrome_path = search_data['user_path']
     print("--------------------------------"+chrome_path)
@@ -171,7 +177,10 @@ def data_is_extracted(connection, channel , delivery_tag , body):
     for page in range( int(meta) ,100):
         
         result_links , url_check  = scrape_page(city , keyword , str(page))
+        global last_page_g
+        last_page_g = page
         last_page = page
+
     
         
         try:
@@ -255,8 +264,15 @@ channel.basic_consume(on_message_callback , queue='scraper_queue')
 
 try:
     channel.start_consuming()
-except KeyboardInterrupt:
-    channel.stop_consuming()
+except Exception as e:
+    cb = functools.partial(ack_message , channel , delivery_tag)
+    connection.add_callback_threadsafe(cb)
+    task = db.session.query(scrape_task).filter_by(id = int(task_id_g)).first()
+    task.status = 1
+    task.meta = last_page_g
+    db.session.commit()
+    driver.close()
+
 
 for thread in threads:
     thread.join()
