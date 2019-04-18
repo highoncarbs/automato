@@ -190,6 +190,20 @@
             <p class="rubik has-text-weight-bold is-size-5">Ready . Set . Go!</p>
             <img src="{{url_for('static' , filename = 'images/scanwp.gif' )}}" />
             <br>
+            <br>
+            <p class="is-size-5 rubik has-text-weight-bold">Keep your smartphone ready for a Whatsapp Web Scan. Follow
+              the steps below :</p>
+            <br>
+            <div class="content has-text-left">
+              <ul class="is-size-5">
+                <li>Open Whatsapp on your Phone</li>
+                <li>Tap <span class="has-text-weight-bold">menu</span> or <span
+                    class="has-text-weight-bold">settings</span> and select <span class="has-text-weight-bold">Whatsapp
+                    Web</span></li>
+                <li>Point your phone to the whatsapp webpage that'll open soon.</li>
+                <li>That's it !</li>
+              </ul>
+            </div>
             <a class=" button rubik is-primary has-text-weight-bold"
               href="{{url_for('push_job_to_queue' , task_id = j.id )}}"><span class="icon icon-btn-in"><i
                   data-feather="play-circle"></i></span>Resume</a>
