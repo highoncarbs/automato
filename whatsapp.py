@@ -20,6 +20,7 @@ import MySQLdb
 import json
 from app import db
 from model import contacts , job_task
+import os
 
 chrome_options = Options()
 chrome_options.add_argument("--disable-popup-blocking")
@@ -48,9 +49,13 @@ global num_g
 global first_run_check
 first_run_check = 0
 
-credentials = pika.PlainCredentials('guest' , 'guest')
+J_RABBITMQ_HOST = os.environ.get('JOB_HOST')
+J_AMPQ_USER = os.environ.get('JOB_USER')
+J_AMPQ_PASS = os.environ.get('JOB_PASS')
+
+credentials = pika.PlainCredentials(J_AMPQ_USER ,J_AMPQ_PASS)
 connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host = 'localhost' , credentials = credentials))
+    pika.ConnectionParameters(host = J_RABBITMQ_HOST , credentials = credentials))
 channel = connection.channel()
 channel.queue_declare(queue='mssg_queue' , durable= True)
 channel.basic_qos(prefetch_count = 1)
