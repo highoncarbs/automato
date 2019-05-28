@@ -157,10 +157,10 @@
                 </div>
                 <div class="navbar-end buttons">
                     <button class="button is-black is-right"><span class="icon icon-btn-in"><i
-                                data-feather="play"></i></span>
+                                data-feather="play-circle"></i></span>
                         Start</button>
                     <button class="button is-danger is-right"><span class="icon icon-btn-in"><i
-                                data-feather="pause"></i></span>
+                                data-feather="pause-circle"></i></span>
                         Stop</button>
                 </div>
             </nav><br>
@@ -171,16 +171,21 @@
                 <p class="has-text-centered">No scrapes currently running.<br>Start one now from Scrapers page.</p>
             </div>
             {% else %}
-                {% for src in src_curr_run %}
-                <div class="level box">
-                        <div class="level-left">
-                            <div class=" is-size-6 level-item"><span class="rubik ">{{src}}</div>
-                        </div>
-                        <div class="level-right">
-                            <p class="is-size-6 rubik has-text-weight-bold tag is-normal">{{job_unfin}}</p>
-                        </div>
+            {% for src in src_curr_run %}
+            <div class="level box">
+                    <div class="level-left">
+                        <div class="rubik is-primary level-item tag"><span class="rubik ">{{src.timestamp.strftime('%Y-%m-%d')}}</div>
+                            <p class="is-size-6 level-item">{{src.city}}</p>
+                            
+
                     </div>
-                {% endfor %}
+                    <div class="level-right">
+                            <div class="rubik level-item tag is-black"><span class="rubik ">via {{src.provider}}</div>
+                            <div class="rubik level-item tag"><span class="rubik ">{{src.keyword}}</div>
+                            <a class="level-item"><span class="icon icon-btn-in"><i data-feather="pause-circle"></i></span></a>
+                    </div>
+                </div>
+            {% endfor %}
             {% endif %}
         </div>
     </div>
@@ -194,10 +199,10 @@
                             </div>
                             <div class="navbar-end buttons">
                                 <button class="button is-black is-right"><span class="icon icon-btn-in"><i
-                                            data-feather="play"></i></span>
+                                            data-feather="play-circle"></i></span>
                                     Start</button>
                                 <button class="button is-danger is-right"><span class="icon icon-btn-in"><i
-                                            data-feather="pause"></i></span>
+                                            data-feather="pause-circle"></i></span>
                                     Stop</button>
                             </div>
                         </nav><br>
@@ -211,10 +216,16 @@
                 {% for src in job_curr_run %}
                 <div class="level box">
                         <div class="level-left">
-                            <div class=" is-size-6 level-item"><span class="rubik ">{{src}}</div>
+                            <div class="rubik is-primary level-item tag"><span class="rubik ">{{src.timestamp.strftime('%Y-%m-%d')}}</div>
+                                <p class="is-size-6 level-item">{{src.city}}</p>
+                                
+
                         </div>
                         <div class="level-right">
-                            <p class="is-size-6 rubik has-text-weight-bold tag is-normal">{{job_unfin}}</p>
+                                <div class="rubik level-item tag is-black"><span class="rubik ">via {{src.provider}}</div>
+                                <div class="rubik level-item tag"><span class="rubik ">{{src.keyword}}</div>
+                                <a class="level-item "><span class="icon icon-btn-in btnbtn"><i data-feather="stop-circle"></i></span></a>
+
                         </div>
                     </div>
                 {% endfor %}

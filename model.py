@@ -252,3 +252,8 @@ class contact_selector(FlaskForm):
     submit_filter = SubmitField(submit_value)
     submit_value2 = Markup('<span class="icon icon-btn"><i data-feather="user"></i></span>')
     submit_filter2 = SubmitField(submit_value2)
+
+class job_test_form(FlaskForm):
+    phone_no = StringField('phone_no')
+    campaign = SelectField('campaign', coerce=str)
+

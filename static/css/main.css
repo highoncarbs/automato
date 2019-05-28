@@ -86,3 +86,20 @@ body{
         margin-bottom:1rem;
     width:100%;
 }
+
+.btnbtn{
+    border-radius: 50%;
+    background-color: crimson;
+    color:white;
+    padding: 1px;
+}
+
+.btnbtn:hover{
+    opacity:0.7;
+    transition: 0.2s all ease-in;
+}
+
+.btnbtn:focus{
+    opacity:0.7;
+    transition: 0.2s all ease-in;
+}

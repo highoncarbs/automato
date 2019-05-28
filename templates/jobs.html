@@ -2,7 +2,40 @@
 {% block content %}
 <hr>
 <div class="notification is-light new-scraper animated fadeInDown">
-  <p class="has-text-weight-bold rubik is-size-5">RUN NEW JOB</p>
+  <div class="level">
+    <div class="level-left">
+      <p class="level-item has-text-weight-bold rubik is-size-5">RUN NEW JOB</p>
+    </div>
+    <div class="level-right">
+      <p class="level-item rubik ">
+        or run a test job    <a class="button" style="margin-left:1rem;" id="test_job_btn"><span class="icon icon-btn-in"><i data-feather="cloud-lightning"></i></span> Test Job</a>
+    </div>
+  </div>
+
+  <!-- Test run modal -->
+
+  <div class="modal" id="job_test_modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="box has-text-centered" style="margin-bottom : 0px;">
+          <p class="rubik has-text-weight-bold is-size-5">Whatsapp Test Job</p>
+          <br>
+          <p>Enter a single phone number and template for which you'd like a test run.</p>
+          <br>
+          {{ job_test_form.hidden_tag() }}
+          <div class="field">
+            {{ job_test_form.phone_no( class="input")}}
+          </div>
+          
+          <a class=" button rubik is-primary has-text-weight-bold"
+            href=""><span class="icon icon-btn-in"><i
+                data-feather="play-circle"></i></span>Resume</a>
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+      </div>
+    </div>
+
+  <!-- End test run modal -->
   <br>
   <form action="/jobs" method="POST">
     {{form.hidden_tag()}}
@@ -465,6 +498,29 @@
         document.querySelector('#job-results-{{loop.index}}').addEventListener('click', function (event) {
           event.preventDefault();
           var modal = document.querySelector('#modal-job-{{loop.index}}');  // assuming you have only 1
+          var html = document.querySelector('html');
+          modal.classList.add('is-active');
+          html.classList.add('is-clipped');
+
+          document.querySelector('.modal-close').addEventListener('click', function (e) {
+            e.preventDefault();
+            modal.classList.remove('is-active');
+            html.classList.remove('is-clipped');
+          });
+
+          modal.querySelector('.modal-background').addEventListener('click', function (e) {
+            e.preventDefault();
+            modal.classList.remove('is-active');
+            html.classList.remove('is-clipped');
+
+
+          });
+
+        });
+
+        document.querySelector('#test_job_btn').addEventListener('click', function (event) {
+          event.preventDefault();
+          var modal = document.querySelector('#job_test_modal');  // assuming you have only 1
           var html = document.querySelector('html');
           modal.classList.add('is-active');
           html.classList.add('is-clipped');

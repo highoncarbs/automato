@@ -20,7 +20,7 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 
 from model import contacts, scrape_form, import_file, scrape_task, job_form, job_task, template, template_form, contact_search, contact_filter,\
-    LoginForm, Users, SignupForm,  project_form, Project, driver_path_form , contact_selector , job_group_form , add_contact
+    LoginForm, Users, SignupForm,  project_form, Project, driver_path_form , contact_selector , job_group_form , add_contact , job_test_form
 
 migrate = Migrate(app, db)
 
@@ -273,7 +273,7 @@ def home():
 
             return render_template('dash.html', con_len = con_len, city_len = city_len, src_len = src_len, src_fin = src_fin,\
                 src_unfin = src_unfin, src_run = src_run, job_len = job_len, job_fin = job_fin,\
-                job_unfin = job_unfin, job_run = job_run, mssg = session['mssg'], p_list = user_projects , src_curr_run = src_curr_run), 200
+                job_unfin = job_unfin, job_run = job_run, mssg = session['mssg'], p_list = user_projects , src_curr_run = src_curr_run ,  job_curr_run = job_curr_run), 200
         else:
             session['mssg'] = "No project selected . Redirecting to Projects page."
             return redirect('projects'), 200
@@ -296,8 +296,12 @@ def scheduler():
 @login_required
 @app.route('/jobs', methods = ['GET', 'POST'])
 def jobs():
+
+
     if (int(curr_project()) > 0):
         form = job_form()
+        job_t_form = job_test_form()
+
         def_city= ('0', 'Select City')
         print(get_projects())
         form.city.choices = [def_city] + [(r.city, r.city) for r in db.session.query(scrape_task)]
@@ -319,7 +323,7 @@ def jobs():
             # Check if the city and keyword already exsists ?
             check_one = db.session.query(job_task).filter_by(city = city, provider = provider, keyword = keyword).first()
             if check_one is None:
-                new_job= job_task(city = city, provider = provider, status = str(0), meta = str(1), keyword = keyword, template = campaign ,project_jo = project_curr)
+                new_job= job_task(city = city, provider = provider, status = str(0), meta = str(1), keyword = keyword, template = campaign ,project_jo = project_curr ,job_test_form =job_t_form)
                 project_curr.jobs.append(new_job)
                 db.session.add(new_job)
                 db.session.commit()
@@ -330,10 +334,19 @@ def jobs():
                 return redirect('/jobs')
         else:
             print(form.errors)
-        return render_template('jobs.html', form= form, job_list = job_list, mssg = session['mssg'] , user_projects = get_projects() , form_group_job = form_group_job), 200
+            return render_template('jobs.html', form= form, job_list = job_list, mssg = session['mssg'] , user_projects = get_projects() , form_group_job = form_group_job , job_test_form= job_t_form), 200
+    
+        if job_t_form.validate_on_submit():
+            pass
+        else:
+            print(job_t_form.errors)
+            return render_template('jobs.html', form= form, job_list = job_list, mssg = session['mssg'] , user_projects = get_projects() , form_group_job = form_group_job , job_test_form= job_test_form), 200
+
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return redirect('projects')
+
+
 @login_required
 @app.route('/user-settings', methods = ['GET', 'POST'])
 def user_settings():

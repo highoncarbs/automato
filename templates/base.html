@@ -235,7 +235,7 @@
 
             <aside class="menu is-fixed-bottom">
                 <p class="menu-label">
-                    User - {{ current_user.username }}
+                    User - <span class="tag is-light has-text-weight-bold">{{ current_user.username }}</span> 
                 </p>
                 <ul class="menu-list is-size-5  has-text-weight-bold roboto">
                     <li><a href="{{url_for('user_settings')}}"><span class="icon icon-btn"><i
