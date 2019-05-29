@@ -237,8 +237,8 @@ def load_user(user_id):
     return Users.query.get(int(user_id))
 
 
-@login_required
 @app.route('/', methods = ['GET', 'POST'])
+@login_required
 def home():
 
 
