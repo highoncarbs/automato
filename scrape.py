@@ -18,8 +18,7 @@ from app import curr_project , json
 import os 
 
 S_RABBITMQ_HOST = os.environ.get('SCRAPER_HOST')
-S_AMPQ_USER = os.environ.get('SCRAPER_USER')
-S_AMPQ_PASS = os.environ.get('SCRAPER_PASS')
+
 _DELIVERY_MODE_PERSISTENT=2
 
 chrome_options = Options()  
@@ -34,9 +33,8 @@ global last_page_g
 # Update the chrome_path with that.
 
 
-credentials = pika.PlainCredentials(S_AMPQ_USER , S_AMPQ_PASS)
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host= S_RABBITMQ_HOST , credentials = credentials))
+params = pika.URLParameters(S_RABBITMQ_HOST)
+connection = pika.BlockingConnection(params)
 
 channel = connection.channel()
 channel.queue_declare(queue='scraper_queue', durable=True)

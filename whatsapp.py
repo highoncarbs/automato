@@ -50,12 +50,9 @@ global first_run_check
 first_run_check = 0
 
 J_RABBITMQ_HOST = os.environ.get('JOB_HOST')
-J_AMPQ_USER = os.environ.get('JOB_USER')
-J_AMPQ_PASS = os.environ.get('JOB_PASS')
 
-credentials = pika.PlainCredentials(J_AMPQ_USER ,J_AMPQ_PASS)
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host = J_RABBITMQ_HOST , credentials = credentials))
+params = pika.URLParameters(J_RABBITMQ_HOST)
+connection = pika.BlockingConnection(params)
 channel = connection.channel()
 channel.queue_declare(queue='mssg_queue' , durable= True)
 channel.basic_qos(prefetch_count = 1)
