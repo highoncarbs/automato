@@ -174,8 +174,8 @@ def projects():
             return redirect('projects')
     return render_template('projects.html', form=form, projects=user_projects, mssg=session['mssg'], path_form=path_form), 200
 
-@login_required
 @app.route('/del_project/<id>' , methods=['POST' , 'GET'])
+@login_required
 def del_project(id):
     project_active = Project.query.filter_by( id = int(curr_project())).first()
     current_user.projects.remove(project_active)
@@ -282,19 +282,20 @@ def home():
 def inject_project():
     return dict(curr_project = curr_project(), curr_project_ins = curr_proj_ins(), current_user = current_user , user_projects = get_projects())
 
-@login_required
+
 @app.route('/update_project/<id>', methods= ['GET', 'POST'])
+@login_required
 def update_project_and_route(id):
     set_curr_project(id)
     return redirect(url_for('home'))
 
-@login_required
 @app.route('/scheduler', methods = ['GET', 'POST'])
+@login_required
 def scheduler():
     return render_template('scheduler.html'), 200
 
-@login_required
 @app.route('/jobs', methods = ['GET', 'POST'])
+@login_required
 def jobs():
 
 
@@ -347,13 +348,13 @@ def jobs():
         return redirect('projects')
 
 
-@login_required
 @app.route('/user-settings', methods = ['GET', 'POST'])
+@login_required
 def user_settings():
     return render_template('settings.html'), 200
 
-@login_required
 @app.route('/contacts', methods = ['GET', 'POST'])
+@login_required
 def contacts_call():
     # contacts_list = db.session.query(contacts).all()
     if (int(curr_project()) > 0):
@@ -395,8 +396,8 @@ def data():
     # returns what is needed by DataTable
     return jsonify(rowTable.output_result())
 
-@login_required
 @app.route('/contacts_filter' , methods = ['POST'])
+@login_required
 def contact_filter():
     if (int(curr_project()) > 0):
         return jsonify({ 'mssg' : "Okay recireved "+ str(request.json)})
@@ -404,16 +405,16 @@ def contact_filter():
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return jsonify({ 'mssg' : "Else gone"+ str(request.json)})
 
-@login_required
 @app.route('/task_pause', methods = ['POST'])
+@login_required
 def task_pause(task_id):
     # Destroys the queue and the message
     # TODO implement empty queue and save last page to meta
     pass
 
 
-@login_required
 @app.route('/scraper', methods = ['GET', 'POST'])
+@login_required
 def scraper():
     form = scrape_form()
     c_p = curr_project()
@@ -444,8 +445,8 @@ def scraper():
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return redirect('projects')
 
-@login_required
 @app.route('/push_scraper_to_queue/<task_id>', methods = ['POST', 'GET'])
+@login_required
 def push_scraper_to_queue(task_id):
 
     # Pushes the task to scraper run queue
@@ -474,8 +475,8 @@ def push_scraper_to_queue(task_id):
         print(mssg)
         return redirect('/scraper')
 
-@login_required
 @app.route('/push_job_to_queue/<task_id>' , methods = ['POST' , 'GET'])
+@login_required
 def push_job_to_queue(task_id):
 
     # Pushes the task to scraper run queue 
@@ -504,8 +505,8 @@ def push_job_to_queue(task_id):
         print(mssg)
         return redirect('/jobs')
 
-@login_required
 @app.route('/job/delete/<job_id>' , methods=["POST" , "GET"])
+@login_required
 def job_delete(job_id):
     try:
         project_active = Project.query.filter_by(id = int(curr_project())).first()
@@ -519,8 +520,8 @@ def job_delete(job_id):
         session["mssg"]
         return redirect('/jobs')
 
-@login_required
 @app.route('/scraper/delete/<task_id>' , methods=["POST" , "GET"])
+@login_required
 def scraper_delete(task_id):
     try:
         project_active = Project.query.filter_by(id = int(curr_project())).first()
@@ -533,8 +534,8 @@ def scraper_delete(task_id):
         session["mssg"] = "We ran into an error : " + str(e)
         return redirect(url_for('scraper'))
  
-@login_required
 @app.route('/job_results/<job_id>' , methods= ['POST' , 'GET'])
+@login_required
 def job_results(job_id):
     try:
         job_city = db.session.query(job_task).filter_by(id = str(job_id)).first().city
@@ -553,8 +554,9 @@ def job_results(job_id):
         pass
         return "Naah" + str(e)
 
-@login_required
+
 @app.route('/src_results/<job_id>/<keyword>' , methods= ['POST' , 'GET'])
+@login_required
 def src_results(job_id , keyword):
     try:
         src_city = db.session.query(scrape_task).filter_by(id = str(job_id)).first().city
@@ -569,8 +571,9 @@ def src_results(job_id , keyword):
         pass
         return "Naah" + str(e)
 
-@login_required
+
 @app.route('/task_report/<job_id>' , methods = ['POST' , 'GET'])
+@login_required
 def task_report(job_id):
     # Endpoint for full report for JOB and TASK Results
     # TODO for next release
@@ -585,8 +588,9 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-@login_required
+
 @app.route('/templates' , methods = ['POST' , 'GET'])
+@login_required
 def templates():
     if (int(curr_project()) > 0):
 
@@ -633,8 +637,9 @@ def templates():
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return redirect('projects')
 
-@login_required
+
 @app.route('/del_temp/<id>' , methods=['POST' , 'GET'])
+@login_required
 def del_temp(id):
     try:
         temp = db.session.query(template).filter_by(id = id).first()
@@ -649,22 +654,24 @@ def del_temp(id):
         return redirect(url_for('templates')) , 200
 
 
-@login_required
+
 @app.route('/jobcombo/<city>' , methods = ['POST' , 'GET'])
+@login_required
 def jobcombo(city):
     job_city = city
     keyword = [r.keyword for r in db.session.query(scrape_task.keyword).distinct(scrape_task.keyword).filter((scrape_task.city == str(city))).all()]
     print(keyword)
     return jsonify({'options' : keyword})
 
-@login_required
+
 @app.route('/message/session' , methods=['POST'])
+@login_required
 def mssg_del():
     session['mssg'] = ""
     return jsonify({'mssg' :'Emptying session mssg' })
 
-@login_required
 @app.route('/export/all' , methods=['POST' , 'GET'])
+@login_required
 def export_all():
 
     backup_folder = os.path.abspath('./backups')
@@ -721,8 +728,9 @@ def export_all():
         return redirect(url_for('settings')) , 200
 
 
-@login_required
+
 @app.route('/settings' , methods=['POST' , 'GET'])
+@login_required
 def settings():
     if (int(curr_project()) > 0):
 
