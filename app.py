@@ -279,6 +279,8 @@ def home():
 
 @app.context_processor
 def inject_project():
+    if session.get('project') is None:
+        session['project'] = 0
     return dict(curr_project = curr_project(), curr_project_ins = curr_proj_ins(), current_user = current_user , user_projects = get_projects())
 
 
