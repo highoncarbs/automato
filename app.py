@@ -211,7 +211,7 @@ def set_curr_project(setProject):
         project = 0
     return int(project)
 
-
+@login_required
 def curr_project():
     return int(project)
 
