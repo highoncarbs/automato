@@ -34,11 +34,13 @@ visit = 0
 global project
 project = 0
 
+RABBITMQ_HOST = os.environ.get('AMPQ_HOST')
+
 
 def connect_queue():
     if not hasattr(g, 'rabbitmq'):
-        g.rabbitmq = pika.BlockingConnection(
-            pika.ConnectionParameters('localhost'))
+        params = pika.URLParameters(RABBITMQ_HOST)
+        g.rabbitmq = pika.BlockingConnection(params)
     return g.rabbitmq
 
 

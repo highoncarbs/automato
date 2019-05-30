@@ -49,9 +49,9 @@ global num_g
 global first_run_check
 first_run_check = 0
 
-J_RABBITMQ_HOST = os.environ.get('JOB_HOST')
+RABBITMQ_HOST = os.environ.get('AMPQ_HOST')
 
-params = pika.URLParameters(J_RABBITMQ_HOST)
+params = pika.URLParameters(RABBITMQ_HOST)
 connection = pika.BlockingConnection(params)
 channel = connection.channel()
 channel.queue_declare(queue='mssg_queue' , durable= True)

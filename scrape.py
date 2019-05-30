@@ -17,7 +17,7 @@ from model import contacts , scrape_task , Project
 from app import curr_project , json 
 import os 
 
-S_RABBITMQ_HOST = os.environ.get('SCRAPER_HOST')
+RABBITMQ_HOST = os.environ.get('AMPQ_HOST')
 
 _DELIVERY_MODE_PERSISTENT=2
 
@@ -33,7 +33,7 @@ global last_page_g
 # Update the chrome_path with that.
 
 
-params = pika.URLParameters(S_RABBITMQ_HOST)
+params = pika.URLParameters(RABBITMQ_HOST)
 connection = pika.BlockingConnection(params)
 
 channel = connection.channel()
