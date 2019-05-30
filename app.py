@@ -31,7 +31,6 @@ login_manager.login_view = 'login'
 global visit
 visit = 0
 
-g.project = 0
 
 RABBITMQ_HOST = os.environ.get('AMPQ_HOST')
 
@@ -204,19 +203,19 @@ def user():
 def set_curr_project(setProject):
 
     if setProject:
-        g.project = setProject
+        session['project'] = setProject
     else:
-        g.project = 0
-    return int(g.project)
+        sesion['project'] = 0
+    return int(session['project'])
 
 @login_required
 def curr_project():
-    return int(g.project)
+    return int(session['project'])
 
 
 @login_required
 def curr_proj_ins():
-    return Project.query.filter_by(id=int(g.project)).first()
+    return Project.query.filter_by(id=int(session['project'])).first()
 
 
 @login_required
