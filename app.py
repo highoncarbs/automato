@@ -453,7 +453,8 @@ def push_scraper_to_queue(task_id):
 
     # Pushes the task to scraper run queue
     # Runs only one task a time
-    
+    q = get_scraper_queue()
+    print(q)
     try:
         task = db.session.query(scrape_task).filter_by(id = task_id).first()
         search_data= {'city': task.city, 'keyword': task.keyword, 'page': task.meta, 'task_id': task_id, 'project' : int(curr_project()) , 'user_path' : current_user.meta}
