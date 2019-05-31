@@ -38,6 +38,7 @@ RABBITMQ_HOST = os.environ.get('AMPQ_HOST')
 def connect_queue():
     if not hasattr(g, 'rabbitmq'):
         params = pika.URLParameters(RABBITMQ_HOST)
+        params.socket_timeout = 5
         g.rabbitmq = pika.BlockingConnection(params)
     return g.rabbitmq
 
