@@ -4,7 +4,6 @@
 
 from selenium import webdriver 
 import time 
-import MySQLdb
 from app import db
 import hashlib 
 from selenium.webdriver.chrome.options import Options  
