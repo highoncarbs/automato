@@ -14,8 +14,8 @@
 
  * Scrape business data from Justdial , Google Businesses (WIP)
  * Send whatsapp messages automatically to contact groups
- * Manage and edit contact/business 
- * Import / Export Data out of Automato
+ * Manage and edit contact/business (WIP)
+ * Import (WIP) / Export Data out of Automato
  * Setup templates for campaigns
  * More to come ...
 
@@ -24,7 +24,8 @@
 
 *NOTE:* You'll need to use python3. 
 
-To install only requirements :
+To install requirements :
+
 > pip install -r requirements.txt
 
 Automato requires the following softwares to work  , please follow the setup from the offical docs.
@@ -33,11 +34,25 @@ Automato requires the following softwares to work  , please follow the setup fro
 * [RabbitMQ](https://www.rabbitmq.com/#getstarted) as message broker
 * [MySQL](https://www.mysql.com/downloads/) as backend database 
 
+Automato needs 3 scripts to work  run.py  ,  scrape.py , whatsapp.py .
+
+> python ./run.py
+Runs the flask web application 
+
+>python scrape.py 
+Starts the scraper consumer
+
+>python whatsapp.py 
+Starts the whatsapp consumer
+
+For a fully end to end connected system , you can contact me for a custom install . Which will include running these scripts from a single source - flask app. Controlling of the scripts straight from the interface. Full windows support.
+
+## Issues and Requests
+For any issue or requests , kindly use Github Issues.
 
 ## Projects Used
 * [Bulma CSS](http://getskeleton.com)
 * Flask
-* Whoosh
 * SQLAlchemy
 * WTForms
 * Albemic
