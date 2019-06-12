@@ -14,9 +14,16 @@ import threading
 import functools
 from model import contacts , scrape_task , Project
 from app import curr_project , json 
-import os 
+import os , logging
 
-RABBITMQ_HOST = os.environ.get('AMPQ_HOST')
+logging.basicConfig(
+    filename='automato-scraper.log',
+    level=logging.DEBUG,
+    format='[automato-scraper] %(levelname)-7.7s %(message)s'
+)
+
+RABBITMQ_HOST = 'localhost'
+credentials = pika.PlainCredentials('guest' , 'guest')
 
 _DELIVERY_MODE_PERSISTENT=2
 
@@ -32,8 +39,7 @@ global last_page_g
 # Update the chrome_path with that.
 
 
-params = pika.URLParameters(RABBITMQ_HOST)
-connection = pika.BlockingConnection(params)
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost' , credentials = credentials))
 
 channel = connection.channel()
 channel.queue_declare(queue='scraper_queue', durable=True)
@@ -46,10 +52,8 @@ def driver_init():
 
 def scrape_page(city , search_term , page_no):
     driver.get("https://www.justdial.com/" + str(city) + "/" + str(search_term) + "/page-" + str(page_no))
-    
     current_url = driver.current_url
-    print(current_url)
-
+    logging.info('SCRAPING : ' + current_url)
     if 'rloop' not in str(current_url) and str(city) in str(current_url):
         
         SCROLL_PAUSE_TIME = 1.5
@@ -96,9 +100,7 @@ def get_data(list_url):
     name = driver.find_elements_by_xpath('//*[@id="setbackfix"]/div[1]/div/div[1]/div[2]/div/div/h1/span/span')
     name = name[0].text #result
     
-    #Phone Details
-    # contact_numbers = driver.find_elements_by_class_name('#comp-contact > span.telnowpr > a')
-    # print(len(contact_numbers))
+    # Phone Details
     mobile = driver.find_elements_by_css_selector('#comp-contact > span.telnowpr > a.tel.mtel')
     mobile_2 = driver.find_elements_by_css_selector('#comp-contact > span.telnowpr > a.tel.ttel')
 
@@ -109,27 +111,25 @@ def get_data(list_url):
             phone_no = []
             for index in range(1 , 14):
                 x = driver.execute_script("return window.getComputedStyle(document.querySelector('#comp-contact > span.telnowpr > a.tel.mtel > span:nth-child("+str(index)+")'),'::before').getPropertyValue('content')")
-                # print(phone_keys[ str(repr(x))[7:12]])
                 phone_no.append(phone_keys[ str(repr(x))[7:12] ])
                 phone_final = ''.join(map(str ,phone_no))
         else:
             phone_final = ""
     except:
-        phone_final = ""
-
+        logging.error("Somethig happened when scraping for Contact_1:" + str(e))
     try :
 
         if len(mobile_2) is not 0:
             phone_no_2 = []
             for index in range(1 , 14):
                 x_2 = driver.execute_script("return window.getComputedStyle(document.querySelector('#comp-contact > span.telnowpr > a.tel.ttel > span:nth-child("+str(index)+")'),'::before').getPropertyValue('content')")
-                # print(phone_keys[ str(repr(x))[7:12]])
                 phone_no_2.append(phone_keys[ str(repr(x_2))[7:12] ])
                 phone_final_2 = ''.join(map(str ,phone_no_2))
         else:
             phone_final_2 = ""            
     except:
-        phone_final_2 = ""
+        logging.error("Somethig happened when scraping for Contact_2:" + str(e))
+
 
     #Address
     address = driver.find_elements_by_xpath('//*[@id="fulladdress"]/span/span')
@@ -142,6 +142,7 @@ def get_data(list_url):
         tag = str(tags[0].text).replace('\n' , ' ') # result
     except:
         tag = None
+    
     #website
     website = driver.find_elements_by_xpath('//*[@id="comp-contact"]/li[3]/span/a')
     
@@ -154,8 +155,10 @@ def get_data(list_url):
 
 
 def data_is_extracted(connection, channel , delivery_tag , body):
+    
     # Run scrape with city and key word with pages 5 pages
     #  at a time , save last page scraped 
+    
     thread_id = threading.get_ident()
     fmt1 = 'Thread id: {} Delivery Tag: {} Message body: {}'
     search_data = json.loads(body)
@@ -163,11 +166,12 @@ def data_is_extracted(connection, channel , delivery_tag , body):
     keyword = search_data['keyword']
     meta = search_data['page']
     task_id = search_data['task_id']
+    
     global task_id_g
     task_id_g = task_id
+    
     global chrome_path
     chrome_path = search_data['user_path']
-    print("--------------------------------"+chrome_path)
     driver_init()
 
     last_page = 0
@@ -181,8 +185,6 @@ def data_is_extracted(connection, channel , delivery_tag , body):
         last_page_g = page
         last_page = page
 
-    
-        
         try:
             if url_check and len(result_links) is not 0 : # While Url_check returns True
 
@@ -203,21 +205,16 @@ def data_is_extracted(connection, channel , delivery_tag , body):
                                 project_active.contact.append(new_data)
 
                                 db.session.commit()
-                                print('okay done')
                             else:
-                                print('not done , already there')
                                 pass
 
                         else:
-                            print('okay very new')
-
                             db.session.add(new_data)
                             project_active.contact.append(new_data)
-
                             db.session.commit()
                     
                     except Exception as e:
-                        print('couldnt do shit' + str(e))
+                        logging.error("Somethig happened when saving contact:" + str(e))
                         db.session.rollback()
             else:
                 break
@@ -234,9 +231,9 @@ def data_is_extracted(connection, channel , delivery_tag , body):
         task.meta = last_page
         db.session.commit()
         driver.close()
-        print("Task Done")
+        logging.info("Task Done" + str(task.name))
     except Exception as e:
-        print("Somethign Happeded - " + str(e))
+        logging.error("Uh Oh! - " + str(e))
 
 def ack_message(channel , delivery_tag):
     if channel.is_open:
@@ -263,6 +260,7 @@ on_message_callback = functools.partial(on_message , args=(connection , threads)
 channel.basic_consume(on_message_callback , queue='scraper_queue')
 
 try:
+    logging.info('Started Consuming for Scraper Tasks')
     channel.start_consuming()
 except Exception as e:
     cb = functools.partial(ack_message , channel , delivery_tag)
