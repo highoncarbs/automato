@@ -9,6 +9,7 @@
 </p>
 
 <p align="center">Web Application to automate sending Whatsapp Messages , SMS &amp; Email campaigns.</p>
+<img align="center" src="./assets/herohero.png">
 
 ## Features
 
@@ -37,12 +38,15 @@ Automato requires the following softwares to work  , please follow the setup fro
 Automato needs 3 scripts to work  run.py  ,  scrape.py , whatsapp.py .
 
 > python ./run.py
+
 Runs the flask web application 
 
 >python scrape.py 
+
 Starts the scraper consumer
 
 >python whatsapp.py 
+
 Starts the whatsapp consumer
 
 For a fully end to end connected system , you can contact me for a custom install . Which will include running these scripts from a single source - flask app. Controlling of the scripts straight from the interface. Full windows support.
