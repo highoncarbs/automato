@@ -279,7 +279,7 @@ on_message_callback = functools.partial(on_message , args=(connection , threads)
 channel.basic_consume(on_message_callback , queue='mssg_queue')
 
 try:
-    with open("../wp_run_dat.txt" , "w") as f:
+    with open("wp_run_dat.txt" , "w") as f:
         f.write('1')
     logging.info("Whatsapp Consumer Started")
     channel.start_consuming()

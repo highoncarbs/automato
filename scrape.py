@@ -260,9 +260,13 @@ on_message_callback = functools.partial(on_message , args=(connection , threads)
 channel.basic_consume(on_message_callback , queue='scraper_queue')
 
 try:
+    with open("sc_run_dat.txt" , "w") as f:
+        f.write('1')
     logging.info('Started Consuming for Scraper Tasks')
     channel.start_consuming()
 except Exception as e:
+    with open("sc_run_dat.txt" , "w") as fw:
+        fw.write('0')
     cb = functools.partial(ack_message , channel , delivery_tag)
     connection.add_callback_threadsafe(cb)
     task = db.session.query(scrape_task).filter_by(id = int(task_id_g)).first()

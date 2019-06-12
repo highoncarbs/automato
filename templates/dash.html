@@ -12,9 +12,9 @@
                         Scrapers</p>
                 </div>
                 <div class="navbar-end">
-                    <button class="button is-black is-right"><span class="icon icon-btn-in"><i
+                    <a href="{{url_for('scraper')}}" class="button is-black is-right"><span class="icon icon-btn-in"><i
                                 data-feather="eye"></i></span>
-                        View</button>
+                        View</a>
             </nav>
             <br>
 
@@ -67,9 +67,9 @@
                         Jobs</p>
                 </div>
                 <div class="navbar-end">
-                    <button class="button is-black is-right"><span class="icon icon-btn-in"><i
+                    <a href="{{url_for('jobs')}}" class="button is-black is-right"><span class="icon icon-btn-in"><i
                                 data-feather="eye"></i></span>
-                        View</button>
+                        View</a>
             </nav><br>
             <div class="level box">
                 <div class="level-left">
@@ -118,9 +118,9 @@
                         Contacts</p>
                 </div>
                 <div class="navbar-end">
-                    <button class="button is-black is-right"><span class="icon icon-btn-in"><i
-                                data-feather="eye"></i></span>
-                        View</button>
+                    <a href="{{url_for('contacts_call')}}" class="button is-black is-right"><span
+                            class="icon icon-btn-in"><i data-feather="eye"></i></span>
+                        View</a>
             </nav><br>
             <div class="level box">
                 <div class="level-left">
@@ -156,12 +156,18 @@
                         Running Scrapers</p>
                 </div>
                 <div class="navbar-end buttons">
-                    <button class="button is-black is-right"><span class="icon icon-btn-in"><i
-                                data-feather="play-circle"></i></span>
-                        Start</button>
-                    <button class="button is-danger is-right"><span class="icon icon-btn-in"><i
-                                data-feather="pause-circle"></i></span>
-                        Stop</button>
+                    
+                    {% if sc_status == "Running" %}
+
+                    <button class="button is-text is-right"><span class="icon icon-btn-in"><i
+                                data-feather="wind"></i></span>{{sc_status}}</button>
+                    <p class="tag is-info is-medium">Close the service from console.</p>
+                    {% else %}
+                    <button class="button is-text is-right"><span class="icon icon-btn-in"><i
+                        data-feather="slash"></i></span>{{sc_status}}</button>
+                        <p class="tag is-black is-medium">Run the service from your desktop.</p>
+
+                    {% endif %}
                 </div>
             </nav><br>
             {% if src_curr_run|length == 0 %}
@@ -171,66 +177,93 @@
                 <p class="has-text-centered">No scrapes currently running.<br>Start one now from Scrapers page.</p>
             </div>
             {% else %}
+            {% if sc_status != "Running" %}
+            <div class="is-info is-centered notification">
+                <p>The Scraper service doesn't seem to be running. Please start it to run scrapers.</p>
+            </div>
+            
+            
+            {% endif %}
             {% for src in src_curr_run %}
             <div class="level box">
-                    <div class="level-left">
-                        <div class="rubik is-primary level-item tag"><span class="rubik ">{{src.timestamp.strftime('%Y-%m-%d')}}</div>
-                            <p class="is-size-6 level-item">{{src.city}}</p>
-                            
+                <div class="level-left">
+                    <div class="rubik is-primary level-item tag"><span
+                            class="rubik ">{{src.timestamp.strftime('%Y-%m-%d')}}</div>
+                    <p class="is-size-6 level-item">{{src.city}}</p>
 
-                    </div>
-                    <div class="level-right">
-                            <div class="rubik level-item tag is-black"><span class="rubik ">via {{src.provider}}</div>
-                            <div class="rubik level-item tag"><span class="rubik ">{{src.keyword}}</div>
-                            <a class="level-item"><span class="icon icon-btn-in"><i data-feather="pause-circle"></i></span></a>
-                    </div>
+
                 </div>
+                <div class="level-right">
+                    <div class="rubik level-item tag is-black"><span class="rubik ">via {{src.provider}}</div>
+                    <div class="rubik level-item tag"><span class="rubik ">{{src.keyword}}</div>
+                    <a class="level-item"><span class="icon icon-btn-in"><i data-feather="pause-circle"></i></span></a>
+                </div>
+            </div>
             {% endfor %}
             {% endif %}
         </div>
     </div>
-        <div class="column">
-            <div class="notification is-light">
-                    <nav class="navbar">
-                            <div class="navbar-start">
-                                <p class="is-size-5 has-text-weight-bold"><span class="icon icon-btn"><i
-                                            data-feather="zap"></i></span>
-                                    Running Jobs</p>
-                            </div>
-                            <div class="navbar-end buttons">
-                                <button class="button is-black is-right"><span class="icon icon-btn-in"><i
-                                            data-feather="play-circle"></i></span>
-                                    Start</button>
-                                <button class="button is-danger is-right"><span class="icon icon-btn-in"><i
-                                            data-feather="pause-circle"></i></span>
-                                    Stop</button>
-                            </div>
-                        </nav><br>
-                        {% if job_curr_run|length == 0 %}
+    <div class="column">
+        <div class="notification is-light">
+            <nav class="navbar">
+                <div class="navbar-start">
+                    <p class="is-size-5 has-text-weight-bold"><span class="icon icon-btn"><i
+                                data-feather="zap"></i></span>
+                        Running Jobs</p>
+                </div>
+
+
+
+                <div class="navbar-end buttons">
+                    {% if jb_status == "Running" %}
+
+                    <button class="button is-text is-right"><span class="icon icon-btn-in"><i
+                                data-feather="wind"></i></span>{{jb_status}}</button>
+                    <p class="tag is-info is-medium">Close the service from console.</p>
+                    {% else %}
+                    <button class="button is-text is-right"><span class="icon icon-btn-in"><i
+                        data-feather="slash"></i></span>{{jb_status}}</button>
+                        <p class="tag is-black is-medium">Run the service from your desktop.</p>
+
+                    {% endif %}
+
+                </div>
+            </nav><br>
+            {% if job_curr_run|length == 0 %}
             <div class="box rubik">
                 <p class="has-text-centered"><span class="icon icon-btn"><i data-feather="info"></i></span></p>
                 <br>
                 <p class="has-text-centered">No Jobs currently running.<br>Start one now from Jobs page.</p>
             </div>
             {% else %}
-                {% for src in job_curr_run %}
-                <div class="level box">
-                        <div class="level-left">
-                            <div class="rubik is-primary level-item tag"><span class="rubik ">{{src.timestamp.strftime('%Y-%m-%d')}}</div>
-                                <p class="is-size-6 level-item">{{src.city}}</p>
-                                
-
-                        </div>
-                        <div class="level-right">
-                                <div class="rubik level-item tag is-black"><span class="rubik ">via {{src.provider}}</div>
-                                <div class="rubik level-item tag"><span class="rubik ">{{src.keyword}}</div>
-                                <a class="level-item "><span class="icon icon-btn-in btnbtn"><i data-feather="stop-circle"></i></span></a>
-
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
+            {% if jb_status != "Running" %}
+            <div class="is-info is-centered notification">
+                <p>The Job service doesn't seem to be running. Please start it to run the job.</p>
             </div>
+            
+            
+            {% endif %}
+            {% for src in job_curr_run %}
+           
+            <div class="level box">
+                <div class="level-left">
+                    <div class="rubik is-primary level-item tag"><span
+                            class="rubik ">{{src.timestamp.strftime('%Y-%m-%d')}}</div>
+                    <p class="is-size-6 level-item">{{src.city}}</p>
+
+
+                </div>
+                <div class="level-right">
+                    <div class="rubik level-item tag is-black"><span class="rubik ">via {{src.provider}}</div>
+                    <div class="rubik level-item tag"><span class="rubik ">{{src.keyword}}</div>
+                    <a class="level-item "><span class="icon icon-btn-in btnbtn"><i
+                                data-feather="stop-circle"></i></span></a>
+
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
         </div>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}

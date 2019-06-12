@@ -9,9 +9,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datatables import ColumnDT, DataTables
-# from flask.ext.migrate import Migrate, MigrateCommand
-# from whoosh.analysis import StemmingAnalyzer
-
+import logging
 import datetime
 
 app = Flask(__name__)
@@ -30,6 +28,12 @@ login_manager.login_view = 'login'
 
 global visit
 visit = 0
+
+logging.basicConfig(
+    filename='automato.log',
+    level=logging.DEBUG,
+    format='[automato] %(levelname)-7.7s %(message)s'
+)
 
 
 RABBITMQ_HOST = os.environ.get('AMPQ_HOST')
@@ -57,7 +61,7 @@ def destroy_scraper_queue():
     if hasattr(g, 'task_queue'):
         g.task_queue.queue_delete(queue="scraper_queue")
     else:
-        print("Scraper Queue not available")
+        logging.info("Scraper Queue not available")
 
 
 def get_mssg_queue():
@@ -140,9 +144,7 @@ def projects():
     path_form = driver_path_form()
     project_list = Project.query.all()
     user_projects = set([x for x in project_list if user in x.users ])
-    print(user_projects)
-    print("Okay")
-    
+       
     if path_form.validate() and path_form.submit2.data:
         path = path_form.path.data
         current_user.meta = path
@@ -153,11 +155,9 @@ def projects():
         return render_template('projects.html', form=form, projects=user_projects, mssg=session['mssg'], show_setup=True, path_form=path_form), 200
     
     if form.validate() and form.submit1.data:
-        print("Imd inside")
         try:
             check_proj = Project.query.filter_by(
                 name=form.name.data).filter_by().first()
-            print(check_proj , form.name.data)
             if(check_proj and user in check_proj.users.all()):
                 session['mssg'] = "Project {} canot be created. You already have a project with that name.".format(
                     form.name.data)
@@ -245,7 +245,6 @@ def home():
         project_list = Project.query.all()
         user_projects = list([x for x in project_list if current_user in x.users ])
         c_p = curr_project()
-        print(c_p)
         if (int(c_p) > 0):
             project_active = Project.query.filter_by(id = int(c_p)).first()
             global visit
@@ -254,8 +253,8 @@ def home():
                 session['mssg'] = " 👋   Hello there !"
             else:
                 session['mssg'] = ""
+            
             # Show only for the current project
-
             con_len = len(project_active.contact)
             city_len = len(set([x.city for x in project_active.scrapers ]))
 
@@ -270,10 +269,12 @@ def home():
             job_run = db.session.query(job_task).filter_by(status = str(1)).count()
             job_curr_run = db.session.query(job_task).filter_by(status = str(1)).all()
 
+            sc_status = check_scraper_status()
+            jb_status = check_job_status()
 
             return render_template('dash.html', con_len = con_len, city_len = city_len, src_len = src_len, src_fin = src_fin,\
                 src_unfin = src_unfin, src_run = src_run, job_len = job_len, job_fin = job_fin,\
-                job_unfin = job_unfin, job_run = job_run, mssg = session['mssg'], p_list = user_projects , src_curr_run = src_curr_run ,  job_curr_run = job_curr_run), 200
+                job_unfin = job_unfin, job_run = job_run, mssg = session['mssg'], p_list = user_projects , src_curr_run = src_curr_run ,  job_curr_run = job_curr_run , sc_status = sc_status , jb_status = jb_status), 200
         else:
             session['mssg'] = "No project selected . Redirecting to Projects page."
             return redirect('projects'), 200
@@ -306,11 +307,11 @@ def jobs():
         job_t_form = job_test_form()
 
         def_city= ('0', 'Select City')
-        print(get_projects())
         form.city.choices = [def_city] + [(r.city, r.city) for r in db.session.query(scrape_task)]
         project_curr = db.session.query(Project).filter_by(id = int(curr_project())).first()
         form_group_job = job_group_form()
         form_group_job.temp_select.choices =[(r.name, r.name) for r in project_curr.template]
+
         # TODO create group contact assoc table for sending jobs to group
         form_group_job.group_select.choices =[(r.name, r.name) for r in db.session.query(template)]
 
@@ -322,7 +323,7 @@ def jobs():
             keyword= form.keyword.data
             provider = "Whatsapp"
             campaign = db.session.query(template).filter_by(name = form.campaign.data).first()
-            print(campaign)
+
             # Check if the city and keyword already exsists ?
             check_one = db.session.query(job_task).filter_by(city = city, provider = provider, keyword = keyword).first()
             if check_one is None:
@@ -336,13 +337,13 @@ def jobs():
                 session['mssg'] = " 🙃 Job already exsists. You can re-run the job from the list below , or run a new job with different parameters."
                 return redirect('/jobs')
         else:
-            print(form.errors)
+            logging.error( 'Job Form submission error : '+   str(form.errors))
             return render_template('jobs.html', form= form, job_list = job_list, mssg = session['mssg'] , user_projects = get_projects() , form_group_job = form_group_job , job_test_form= job_t_form), 200
     
         if job_t_form.validate_on_submit():
             pass
         else:
-            print(job_t_form.errors)
+            logging.error( 'Job Form submission error : '+   str(job_t_form.errors))
             return render_template('jobs.html', form= form, job_list = job_list, mssg = session['mssg'] , user_projects = get_projects() , form_group_job = form_group_job , job_test_form= job_test_form), 200
 
     else:
@@ -358,7 +359,7 @@ def user_settings():
 @app.route('/contacts', methods = ['GET', 'POST'])
 @login_required
 def contacts_call():
-    # contacts_list = db.session.query(contacts).all()
+
     if (int(curr_project()) > 0):
         form_contact_sel = contact_selector()
         form_search = contact_search()
@@ -422,7 +423,6 @@ def scraper():
     c_p = curr_project()
     project_curr = db.session.query(Project).filter_by(id = int(c_p)).first()
     scraper_list = list(project_curr.scrapers)
-    print(scraper_list)
     if (int(curr_project()) > 0):
 
         if form.validate_on_submit():
@@ -454,7 +454,6 @@ def push_scraper_to_queue(task_id):
     # Pushes the task to scraper run queue
     # Runs only one task a time
     q = get_scraper_queue()
-    print(q)
     try:
         task = db.session.query(scrape_task).filter_by(id = task_id).first()
         search_data= {'city': task.city, 'keyword': task.keyword, 'page': task.meta, 'task_id': task_id, 'project' : int(curr_project()) , 'user_path' : current_user.meta}
@@ -474,8 +473,7 @@ def push_scraper_to_queue(task_id):
 
         return redirect('/scraper')
     except Exception as e:
-        mssg = "We ran into an error : " + str(e)
-        print(mssg)
+        logging.error('Error pushing scraper to queue : ' + str(e))
         return redirect('/scraper')
 
 @app.route('/push_job_to_queue/<task_id>' , methods = ['POST' , 'GET'])
@@ -487,10 +485,8 @@ def push_job_to_queue(task_id):
     try:
         task = db.session.query(job_task).filter_by(id = task_id).first()
         template_set = db.session.query(template).filter_by(name =task.template.name).first()
-        # some_result = db.session.query(template).filter_by(id=task.id).first().as_dict()
         customer_dict = dict((col, getattr(template_set, col)) for col in template_set.__table__.columns.keys())
         job_data = {'city' : task.city ,'meta' : task.meta , 'task_id' : task_id , 'payload' : customer_dict , 'project' : int(curr_project()), 'user_path' : current_user.meta} 
-        print(job_data)
         m = get_mssg_queue()
         m.basic_publish(
             exchange='amq.direct',
@@ -504,8 +500,7 @@ def push_job_to_queue(task_id):
         db.session.commit()
         return redirect('/jobs')
     except Exception as e:
-        mssg = "We ran into an error : " + str(e)
-        print(mssg)
+        logging.error('Error pushing Job to queue : ' + str(e))
         return redirect('/jobs')
 
 @app.route('/job/delete/<job_id>' , methods=["POST" , "GET"])
@@ -520,6 +515,7 @@ def job_delete(job_id):
         return redirect('/jobs')
     except Exception as e :
         mssg = "We ran into an error : " + str(e)
+        logging.error('Error deleting Job : ' + str(e))
         session["mssg"]
         return redirect('/jobs')
 
@@ -534,6 +530,7 @@ def scraper_delete(task_id):
         session["mssg"] = "Scrape Task :  "+str(task_id)+"   Deleted succesfully"
         return redirect(url_for('scraper'))
     except Exception as e :
+        logging.error('Error deleting Scraper : ' + str(e))
         session["mssg"] = "We ran into an error : " + str(e)
         return redirect(url_for('scraper'))
  
@@ -547,15 +544,10 @@ def job_results(job_id):
         jdnum_all = db.session.query(contacts).filter_by(city = job_city).filter((contacts.wp_cnt == 0)).all()
         unable_all = db.session.query(contacts).filter_by(city = job_city).filter((contacts.wp_cnt == -1)).all()
 
-        # success_sent = [x if x.wp_cnt is 1 else None for x in contacts]
-        # invalid_sent = [x if x.wp_cnt is -2 else None for x in contacts]
-        # jd_number = [x if x.wp_cnt is 0 else None for x in contacts]
-        # unable_Sent = [x if x.wp_cnt is -1 else None for x in contacts]
-        
         return jsonify({'success_all' : len(success_all) , 'invalid_all' : len(invalid_all)})
     except Exception as e:
+        logging.error('Error fetching Job Results : ' + str(e))
         pass
-        return "Naah" + str(e)
 
 
 @app.route('/src_results/<job_id>/<keyword>' , methods= ['POST' , 'GET'])
@@ -564,15 +556,11 @@ def src_results(job_id , keyword):
     try:
         src_city = db.session.query(scrape_task).filter_by(id = str(job_id)).first().city
         success_all = db.session.query(contacts).filter_by(city = src_city).filter_by(keyword = keyword).all()
-        # success_sent = [x if x.wp_cnt is 1 else None for x in contacts]
-        # invalid_sent = [x if x.wp_cnt is -2 else None for x in contacts]
-        # jd_number = [x if x.wp_cnt is 0 else None for x in contacts]
-        # unable_Sent = [x if x.wp_cnt is -1 else None for x in contacts]
-        
+    
         return jsonify({'con_all' : len(success_all)})
     except Exception as e:
+        logging.error('Error fetching Scraper Results : ' + str(e))
         pass
-        return "Naah" + str(e)
 
 
 @app.route('/task_report/<job_id>' , methods = ['POST' , 'GET'])
@@ -631,10 +619,9 @@ def templates():
                         db.session.add(new_temp)
                         db.session.commit()
                         mssg = "Template successfully added"
-                        print(mssg)
                         return redirect(url_for('templates'))
                 except Exception as e:
-                    print(str(e))
+                    logging.error('Template Saving Error : ' + str(e))
         return render_template('templates.html' , form = form ,temps = temps) , 200
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
@@ -653,7 +640,7 @@ def del_temp(id):
         mssg = "Template Deleted Successfully"
         return redirect(url_for('templates'))
     except Exception as e:
-        print(str(e))
+        logging.error('Error Deleting Template : ' + str(e))
         return redirect(url_for('templates')) , 200
 
 
@@ -663,7 +650,6 @@ def del_temp(id):
 def jobcombo(city):
     job_city = city
     keyword = [r.keyword for r in db.session.query(scrape_task.keyword).distinct(scrape_task.keyword).filter((scrape_task.city == str(city))).all()]
-    print(keyword)
     return jsonify({'options' : keyword})
 
 
@@ -745,11 +731,9 @@ def settings():
                 img_temp = os.path.join(UPLOAD_FOLDER, 'temp',filename) 
                 file.save(img_temp)
                 if 'contact' in request.form['import-con']:
-                    print("in")
                     with open(img_temp, 'r') as csv_file:
                         rea = csv.reader(csv_file)
                         header = next(rea)
-                        print(rea)
                         session['mssg'] = header
                 else:
                     session['mssg'] = "OFF pa"
@@ -757,3 +741,28 @@ def settings():
     else:
         session['mssg'] = "No project selected . Redirecting to Projects page."
         return redirect('projects')
+
+@login_required
+def check_job_status():
+    try:
+        with open("wp_run_dat.txt" , "r") as f:
+            print('Output from file')
+            st = str(f.read())
+            if st is '1':
+                return "Running"
+            else:
+                return "Not Running"
+    except:
+        return "Not Running"
+@login_required
+def check_scraper_status():
+    try:
+        with open("sc_run_dat.txt" , "r") as f:
+            print('Output from file')
+            st = str(f.read())
+            if st is '1':
+                return "Running"
+            else:
+                return "Not Running"
+    except:
+        return "Not Running"

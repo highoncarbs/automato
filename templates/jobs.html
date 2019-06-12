@@ -8,32 +8,32 @@
     </div>
     <div class="level-right">
       <p class="level-item rubik ">
-        or run a test job    <a class="button" style="margin-left:1rem;" id="test_job_btn"><span class="icon icon-btn-in"><i data-feather="cloud-lightning"></i></span> Test Job</a>
+        or run a test job <a class="button" style="margin-left:1rem;" id="test_job_btn"><span
+            class="icon icon-btn-in"><i data-feather="cloud-lightning"></i></span> Test Job</a>
     </div>
   </div>
 
   <!-- Test run modal -->
 
   <div class="modal" id="job_test_modal">
-      <div class="modal-background"></div>
-      <div class="modal-content">
-        <div class="box has-text-centered" style="margin-bottom : 0px;">
-          <p class="rubik has-text-weight-bold is-size-5">Whatsapp Test Job</p>
-          <br>
-          <p>Enter a single phone number and template for which you'd like a test run.</p>
-          <br>
-          {{ job_test_form.hidden_tag() }}
-          <div class="field">
-            {{ job_test_form.phone_no( class="input")}}
-          </div>
-          
-          <a class=" button rubik is-primary has-text-weight-bold"
-            href=""><span class="icon icon-btn-in"><i
-                data-feather="play-circle"></i></span>Resume</a>
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box has-text-centered" style="margin-bottom : 0px;">
+        <p class="rubik has-text-weight-bold is-size-5">Whatsapp Test Job</p>
+        <br>
+        <p>Enter a single phone number and template for which you'd like a test run.</p>
+        <br>
+        {{ job_test_form.hidden_tag() }}
+        <div class="field">
+          {{ job_test_form.phone_no( class="input")}}
         </div>
-        <button class="modal-close is-large" aria-label="close"></button>
+
+        <a class=" button rubik is-primary has-text-weight-bold" href=""><span class="icon icon-btn-in"><i
+              data-feather="play-circle"></i></span>Resume</a>
       </div>
+      <button class="modal-close is-large" aria-label="close"></button>
     </div>
+  </div>
 
   <!-- End test run modal -->
   <br>
@@ -115,14 +115,15 @@
     });
   </script>
 </div>
-<hr><div class="notification is-warning new-scraper-group animated fadeInUp">
+<hr>
+<div class="notification is-warning new-scraper-group animated fadeInUp">
   <p class="has-text-weight-bold rubik is-size-5">RUN NEW JOB for GROUPS</p>
   <br>
   <form action="/jobs" method="POST">
     {{form_group_job.hidden_tag()}}
     <div class="field is-horizontal">
       <div class="field-body">
-       
+
         <div class="field">
           <p class="control is-expanded has-icons-left has-icons-right">
             {{ form_group_job.group_select(placeholder="Select Group" , class="input") }}
@@ -227,6 +228,19 @@
             <p class="is-size-5 rubik has-text-weight-bold">Keep your smartphone ready for a Whatsapp Web Scan. Follow
               the steps below :</p>
             <br>
+            <div class="notification is-light" id="timer_grp">
+              Select timer according to your network and device. Fast Networks and newer devices require less time.
+              <br>
+              <br>
+              <div class="buttons  is-centered">
+                <span class="button">20</span>
+                <span class="is-black button">25</span>
+                <span class="button">30</span>
+                <span class="button">35</span>
+                <span class="button">40</span>
+              </div>
+            </div>
+
             <div class="content has-text-left">
               <ul class="is-size-5">
                 <li>Open Whatsapp on your Phone</li>
@@ -237,9 +251,24 @@
                 <li>That's it !</li>
               </ul>
             </div>
-            <a class=" button rubik is-primary has-text-weight-bold"
-              href="{{url_for('push_job_to_queue' , task_id = j.id )}}"><span class="icon icon-btn-in"><i
+            <a class=" button rubik is-primary has-text-weight-bold" id="job_run_btn"><span class="icon icon-btn-in"><i
                   data-feather="play-circle"></i></span>Resume</a>
+            <script>
+
+              $("#timer_grp > .buttons > .button").click(function () {
+                $("#timer_grp > .buttons > .button").removeClass("is-black");
+                $(this).addClass("is-black");
+                var get_timer = $("#timer_grp > .buttons > .button.is-black").html();
+                var task_id = {{j.id}}
+                $('#job_run_btn').click(function () {
+                  window.location.href = "/push_job_to_queue/"+task_id+"/"+get_timer;
+                });
+              });
+
+                      // var get_timer = 25;
+
+
+            </script>
           </div>
           <button class="modal-close is-large" aria-label="close"></button>
         </div>
@@ -284,6 +313,20 @@
             <p class="is-size-5 rubik has-text-weight-bold">Keep your smartphone ready for a Whatsapp Web Scan. Follow
               the steps below :</p>
             <br>
+            <br>
+            <div class="notification is-light" id="res_timer_grp">
+                Select timer according to your network and device. Fast Networks and newer devices require less time.
+                <br>
+                <br>
+                <div class="buttons  is-centered">
+                  <span class="button">20s</span>
+                  <span class="is-black button">25s</span>
+                  <span class="button">30s</span>
+                  <span class="button">35s</span>
+                  <span class="button">40s</span>
+                </div>
+              
+            </div>
             <div class="content has-text-left">
               <ul class="is-size-5">
                 <li>Open Whatsapp on your Phone</li>
@@ -295,8 +338,24 @@
               </ul>
             </div>
             <a class=" button rubik is-primary has-text-weight-bold"
-              href="{{url_for('push_job_to_queue' , task_id = j.id )}}"><span class="icon icon-btn-in"><i
+             id="job_res_btn"><span class="icon icon-btn-in"><i
                   data-feather="play-circle"></i></span>Resume</a>
+                  <script>
+
+                      $("#res_timer_grp > .buttons > .button").click(function () {
+                        $("#res_timer_grp > .buttons > .button").removeClass("is-black");
+                        $(this).addClass("is-black");
+                        var get_timer = $("#timer_grp > .buttons > .button.is-black").html();
+                        var task_id = {{j.id}}
+                        $('#job_res_btn').click(function () {
+                          window.location.href = "/push_job_to_queue/"+task_id+"/"+get_timer;
+                        });
+                      });
+        
+                              // var get_timer = 25;
+        
+        
+                    </script>
           </div>
           <button class="modal-close is-large" aria-label="close"></button>
         </div>
