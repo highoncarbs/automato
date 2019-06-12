@@ -49,7 +49,7 @@ Starts the scraper consumer
 
 Starts the whatsapp consumer
 
-For a fully end to end connected system , you can contact me for a custom install . Which will include running these scripts from a single source - flask app. Controlling of the scripts straight from the interface. Full windows support.
+**For a fully end to end connected system , you can contact me for a custom install . Which will include running these scripts from a single source - flask app. Controlling of the scripts straight from the interface. Full windows support.**
 
 ## Issues and Requests
 For any issue or requests , kindly use Github Issues.
