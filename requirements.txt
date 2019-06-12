@@ -26,7 +26,7 @@ selenium==3.141.0
 six==1.12.0
 SQLAlchemy==1.3.3
 sqlalchemy-datatables==2.0.1
-urllib3==1.24.1
+urllib3==1.24.2
 uWSGI==2.0.18
 Werkzeug==0.14.1
 WTForms==2.2.1
