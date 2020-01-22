@@ -184,6 +184,8 @@ typings/
 # Nuxt generate
 dist
 
+.front/node_modules
+
 # vuepress build output
 .vuepress/dist
 
