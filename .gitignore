@@ -110,6 +110,7 @@ venv.bak/
 
 user-data
 
+static/uploads/
 
 # dependencies
 node_modules
