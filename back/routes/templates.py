@@ -13,7 +13,6 @@ def get_template():
     
 @app.route('/add/template', methods=['POST'])
 def add_template():
-    payload = request.json
     payload = json.loads(request.form['data'])
     file = request.files
     if payload :

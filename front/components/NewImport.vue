@@ -60,7 +60,7 @@
               </b-taginput>
             </div>
           </div>
-          <br>
+          <br />
           <div class="file has-name is-fullwidth">
             <label class="file-label">
               <input
@@ -111,10 +111,9 @@ export default {
     return {
       form: {
         file: null,
-        tags: [],
-
+        tags: []
       },
-    filename: "data.csv",
+      filename: "data.csv",
       data_tag: [],
       tagList: [],
 
@@ -157,6 +156,66 @@ export default {
       });
     },
 
+    showAddData(val) {
+      let self = this;
+      this.$buefy.dialog.prompt({
+        message: `<b>Add Data</b> `,
+        inputAttrs: {
+          placeholder: "e.g. Data",
+          maxlength: 100,
+          value: this.name
+        },
+        confirmText: "Add",
+        onConfirm: value => {
+          let formdata = { name: value };
+          this.$axios
+            .post("/add/" + String(val), formdata)
+            .then(function(response) {
+              console.log(response.data);
+              if (response.data.success) {
+                switch (val) {
+                  case "city":
+                    self.data_city.push(response.data.data);
+                    break;
+                  case "tag":
+                    self.tagList.push(response.data.data);
+                    break;
+                  default:
+                    break;
+                }
+                self.$buefy.snackbar.open({
+                  duration: 4000,
+                  message: response.data.success,
+                  type: "is-light",
+                  position: "is-top-right",
+                  actionText: "Close",
+                  queue: true,
+                  onAction: () => {
+                    this.isActive = false;
+                  }
+                });
+              } else {
+                if (response.data.message) {
+                  self.$buefy.snackbar.open({
+                    duration: 4000,
+                    message: response.data.message,
+                    type: "is-light",
+                    position: "is-top-right",
+                    actionText: "Close",
+                    queue: true,
+                    onAction: () => {
+                      this.isActive = false;
+                    }
+                  });
+                }
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }
+      });
+    },
     closeModal() {
       this.form.file = null;
       this.form.filename = "data.csv";
@@ -164,13 +223,14 @@ export default {
     },
     onSelectFile() {
       const input = this.$refs.fileInput;
-      console.log(input.files);
-      this.form.filename = input.files[0].name;
+      this.form.file = input.files[0]
+      this.filename = input.files[0].name;
     },
     submit() {
       let self = this;
       let formData = new FormData();
       formData.append("file", this.form.file);
+      formData.append("data", JSON.stringify(this.form.tags));
       this.$axios
         .post("/upload/contacts", formData, {
           headers: {

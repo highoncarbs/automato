@@ -5,7 +5,7 @@
         <p class="title">Groups</p>
       </div>
       <div class="level-right">
-        <button class="button" @click="addModal = !addModal">
+        <button class="button level-item" @click="addModal = !addModal">
           <span class="icon icon-btn">
             <feather type="plus" size="1.3rem"></feather>
           </span>
