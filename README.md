@@ -19,24 +19,28 @@
  * Setup templates for campaigns
  * Send Whatsapp and SMS campaigns without any extra cost
 
-## Installation (WIP)
+## Installation & Setup
 
 
 *NOTE:* You'll need to use python3. 
 
 To install requirements :
 
-> pip install -r requirements.txt
+> Clone or download https://github.com/padamsethia/automato
+
+> Run pip install -r requirements.txt in automato/back
+
+> npm run dev to run the frontend at automato/front
+
+> python run.py to run the backend at automato/back
+
+> python huey-consumer.py tasks.huey to run the consumer at automato/back
 
 Automato requires the following softwares to work  , please follow the setup from the offical docs.
 
 * [Selenium](https://www.seleniumhq.org/)
-* [RabbitMQ](https://www.rabbitmq.com/#getstarted) as message broker
 * [MySQL](https://www.mysql.com/downloads/) as backend database 
 
-Automato needs 3 scripts to work  run.py  ,  scrape.py , whatsapp.py .
-
-> python ./run.py
 
 ## Issues and Requests
 For any issue or requests , kindly use Github Issues.
