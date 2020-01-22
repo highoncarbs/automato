@@ -1,0 +1,40 @@
+{
+  "name": "front",
+  "version": "1.0.0",
+  "description": "Front end for Automato",
+  "author": "Padam Sethia",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": "plugin:vue/recommended",
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.9.0",
+    "@nuxtjs/bulma": "^1.2.6",
+    "babel-loader": "^8.0.6",
+    "buefy": "^0.8.9",
+    "feather-icons": "^4.25.0",
+    "nuxt": "^2.11.0",
+    "nuxt-buefy": "^0.3.20",
+    "typeface-inter": "^3.11.2",
+    "typeface-libre-baskerville": "0.0.72",
+    "vue-feather": "^1.0.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/style-resources": "^1.0.0",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^8.0.0"
+  }
+}
