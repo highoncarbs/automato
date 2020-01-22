@@ -1,6 +1,6 @@
 
 <p align="center">
-<img align="center" src="./assets/logo.png">
+<img align="center" src="./assets/header.png">
    <br><br>
 <img align="center" src="https://img.shields.io/badge/WORK%20-IN%20PROGRESS-yellow.svg"/>
 <img align="center" src="https://img.shields.io/badge/License-MIT-blue.svg"/>
@@ -8,17 +8,17 @@
 <br>
 </p>
 
-<p align="center">Web Application to automate sending Whatsapp Messages , SMS &amp; Email campaigns.</p>
+<p align="center">Web Application to automate sending Whatsapp Messages , SMS &amp; Email campaigns( WIP ).</p>
 <img align="center" src="./assets/herohero.png">
 
 ## Features
 
- * Scrape business data from Justdial , Google Businesses (WIP)
- * Send whatsapp messages automatically to contact groups
- * Manage and edit contact/business (WIP)
- * Import (WIP) / Export Data out of Automato
+ * Scrape business data from Google Maps , IndiaMart ( more coming soon )
+ * Mange your contacts , tag them to send specialized campaigns.  
+ * Manage and edit contact/business .
+ * Import/ Export Data ( WIP ) out of Automato
  * Setup templates for campaigns
- * More to come ...
+ * Send Whatsapp and SMS campaigns without any extra cost
 
 ## Installation (WIP)
 
@@ -39,26 +39,15 @@ Automato needs 3 scripts to work  run.py  ,  scrape.py , whatsapp.py .
 
 > python ./run.py
 
-Runs the flask web application 
-
->python scrape.py 
-
-Starts the scraper consumer
-
->python whatsapp.py 
-
-Starts the whatsapp consumer
-
-**For a fully end to end connected system , you can contact me for a custom install . Which will include running these scripts from a single source - flask app. Controlling of the scripts straight from the interface. Full windows support.**
-
 ## Issues and Requests
 For any issue or requests , kindly use Github Issues.
 
 ## Projects Used
 * [Bulma CSS](http://getskeleton.com)
 * Flask
-* SQLAlchemy
-* WTForms
+* Buefy
+* Vue.js
+* SQLAlchemy 
 * Albemic
 
 ## License
