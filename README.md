@@ -30,6 +30,8 @@ To install requirements :
 
 > Run pip install -r requirements.txt in automato/back
 
+> Run npm install in automato/front
+
 > npm run dev to run the frontend at automato/front
 
 > python run.py to run the backend at automato/back
