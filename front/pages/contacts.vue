@@ -53,7 +53,8 @@
             label="Contact #1"
             sortable
           >{{ props.row.contact_one }}</b-table-column>
-          <b-table-column field="city" label="City">{{ props.row.city[0].name }}</b-table-column>
+          <b-table-column field="city" label="City" v-if="props.row.city.length != 0">{{ props.row.city[0].name }}</b-table-column>
+          <b-table-column field="city" label="City" v-if="props.row.city.length == 0">None</b-table-column>
           <b-table-column field="action" label="Action">
             <div class="buttons">
               <button class="button is-small" @click="addItem(props.row.id)">
@@ -210,7 +211,7 @@ export default {
               message: response.message,
               type: "is-light",
               position: "is-top-right",
-              actionText: "Close",
+              actionText: "Close", 
               queue: true,
               onAction: () => {
                 self.isActive = false;

@@ -108,7 +108,7 @@ venv.bak/
 .vscode
 
 
-user-data
+back/user-data-wp/
 
 static/uploads/
 

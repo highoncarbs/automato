@@ -3,7 +3,7 @@ from app import db
 from model import  Contact , City , Tag
 from sqlalchemy.exc import IntegrityError
 
-file_json = r"C:\Users\Padam\Desktop\indimart.json"
+file_json = r"C:\Users\Padam\Desktop\inmart.txt"
 
 path = os.path.abspath(file_json)
 with open(path) as f:
@@ -17,7 +17,8 @@ def check(string, sub_str):
 
 
 for item in data:
-
+    if item['contacts_company'] is None:
+        item['contacts_company'] = ""
     name = item['contacts_name'] + '-' + item['contacts_company'] 
     contact = str(item['contact_ph_country']) + str(item['contacts_mobile1'])
     city = item['contact_city']

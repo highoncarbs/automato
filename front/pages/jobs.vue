@@ -19,11 +19,13 @@
         </button>
       </div>
     </div>
-    <div class="level">
-      <div class="level-left"></div>
-      <div class="level-right"></div>
-    </div>
-    <br />
+   <div class="notification is-warning is-small is-narrow has-text-weight-medium">
+     <span class="icon icon-btn">
+       <feather type="info" size="1.3rem" />
+     </span>
+     We advise you to run a Whatsapp job only once per device a day ( Limited to 100 Messages/day )
+   </div>
+    
     <div class="box">
       <b-table :data="data">
         <template slot-scope="props">
@@ -51,6 +53,7 @@
           </b-table-column>
 
           <b-table-column field="Ttimestamp" label="Timestamp">{{ props.row.timestamp | date }}</b-table-column>
+          <b-table-column field="Last Run" label="Last Run">{{ getLast(props.row.meta)}}</b-table-column>
 
           <b-table-column field="action" label="Action">
             <div class="buttons">
@@ -209,6 +212,14 @@ export default {
         return "whatsapp";
       }
     },
+    getLast(val) {
+      let data = JSON.parse(val);
+      if (data.hasOwnProperty("last")) {
+        return data["last"];
+      } else {
+        return 0;
+      }
+    },
     startItem(id) {
       this.runModal = !this.runModal;
       this.current_id = parseInt(id);
@@ -229,7 +240,7 @@ export default {
               position: "is-top-right",
               actionText: "Close",
               queue: true,
-              onAction: () => {
+              onAction: () => { 
                 self.isActive = false;
               }
             });

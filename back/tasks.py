@@ -180,7 +180,6 @@ def whatsapp(id):
         start_range = int(0)
 
     end_range = start_range + 100
-    
     for contact in contacts[start_range:end_range]:
         try:
             num = contact['contact_one']
@@ -212,29 +211,30 @@ def driver_init():
     return driver
 
 def send_mssg(driver , message):
-    
-    # line_break =  # ActionChain init
-    try:
-        element = driver.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[2]/div/div[2]') # Selecting Input Box
-        time.sleep(random.randint(2,4)+round(random.random(),2)) # Wait before sending mssg
-        
-        message_list = message.split('\n')
-        for mssg in message_list:
-            element.send_keys(str(mssg))
-            ActionChains(driver).key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).perform()
-            
-        time.sleep(random.randint(2,3)+round(random.random(),2)) # Wait before sending mssg
-        driver.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[3]/button').click() #send mssg
-    except Exception as e:
-        print(str(e))
+    if (message == ""):
         pass
+    else:
+        # line_break =  # ActionChain init
+        try:
+            element = driver.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[2]/div/div[2]') # Selecting Input Box
+            time.sleep(random.randint(2,4)+round(random.random(),2)) # Wait before sending mssg
+            
+            message_list = message.split('\n')
+            for mssg in message_list:
+                element.send_keys(str(mssg))
+                ActionChains(driver).key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.ENTER).key_up(Keys.SHIFT).perform()
+            time.sleep(random.randint(2, 3) + round(random.random(), 2))  # Wait before sending mssg
+            driver.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[3]/button').click() #send mssg
+        except Exception as e:
+            print(str(e))
+            pass
 
 def send_photo(driver , path):
     
     try:
     # Check for Number Not Valid Popup
         attach = WebDriverWait(driver , 20).until(
-            EC.element_to_be_clickable((By.XPATH , '//*[@id="main"]/header/div[3]/div/div[2]'))
+            EC.element_to_be_clickable((By.XPATH , '//*[@id="main"]/footer/div[1]/div[1]/div[2]/div/div'))
             )
 
         attach.click()
@@ -242,9 +242,10 @@ def send_photo(driver , path):
         time.sleep(random.randint(2,5)+round(random.random(),2))
         
         img_abs_path = path
-        photo = driver.find_element_by_css_selector('#main > header > div._2kYeZ > div > div._3j8Pd.GPmgf > span > div > div > ul > li:nth-child(1) > button > input[type=file]').send_keys(img_abs_path)
-        time.sleep(random.randint(3,5)+round(random.random(),2))
-        photo_send = driver.find_element_by_css_selector("span[data-icon='send-light']").click()
+        photo = driver.find_element_by_css_selector('#main > footer > div._3ee1T._1LkpH.copyable-area > div._1JNuk._1qLcF > div._295He > div > span > div > div > ul > li:nth-child(1) > button > input[type=file]').send_keys(img_abs_path)
+        time.sleep(random.randint(3, 5) + round(random.random(), 2))
+        
+        photo_send = driver.find_element_by_css_selector("#app > div > div > div.YD4Yw > div._1-iDe.Wu52Z > span > div > span > div > div > div._2wPpw._1E3Yq > span > div > div").click()
     except Exception as e:
         print(str(e))
         pass
@@ -260,11 +261,9 @@ def whatsapp_send(driver , num , timer , path , message):
     driver.get('https://web.whatsapp.com/send?phone='+num+'')
     first_check = int(first_run_check())
 
-    if first_check == int(0):
-        print("Running First Check")
-        time.sleep(random.randint(10, 15) + round(random.random(), 2))
-        first_run_check(1) 
-    
+    time.sleep(random.randint(10, 15) + round(random.random(), 2))
+    # first_run_check(1) 
+
     # Time sleep for Mobile Device
     time.sleep(int(timer))
 
@@ -272,8 +271,7 @@ def whatsapp_send(driver , num , timer , path , message):
         send_photo(driver , path)
         send_mssg(driver , message)
         time.sleep(random.randint(6,10)+round(random.random(),2)) # setup for Leave page alert
-    else:
-        
+    else:        
         print("Unable to send to "+num) 
 
  
@@ -319,10 +317,8 @@ def messages(id):
         
 
     # Nuber needs 0 before +91 for local indian numbers
-    print(contacts)
-    print(clubs)
+    
     for contact in contacts:
-        print(contact)
         try:
             num = contact['contact_one']
             # Replace Message with Name

@@ -159,12 +159,13 @@ def upload_contact():
                     contact_one = str(item[6])
                     contact_two = str(item[7])
                     address = str(item[2])
-                    city = item[3].lower()
+                    city = ''.join(i for i in item[3] if not i.isdigit()).lower().strip()
+                            
                     state = item[4]
                     country = item[5]
                     email = item[8]
                     tag = tags
-                    city = city.split('-')[0].split('(')[0]
+                    city = city.split('-')[0].split('(')[0].split(',')[0].title()
 
 
 
@@ -173,11 +174,10 @@ def upload_contact():
 
                     if city == "":
                         if state == "":
-                            city = country
+                            city = country.title()
                         else:
-                            city = state
+                            city = state.title()
 
-                    # Checks for empty values
                     if item[0] is not "":
                     
                         try:
@@ -199,7 +199,6 @@ def upload_contact():
                                 if tag_obj:
                                     pass
                                 else:
-                                    pass
                                     tag_obj = Tag(str(item['name']))
                                     db.session.add(tag_obj)
 
@@ -207,14 +206,34 @@ def upload_contact():
                             db.session.commit()
                         except IntegrityError as e:
                             db.session.rollback()
-                            print('Duplicate ----- '+ name , city  )
-                            pass    
+
+                            try:
+                                con_obj = Contact.query.filter_by(contact_one=contact_one).first()
+                                con_obj.city = []
+                                db.session.commit()
+                                con_obj.city.append(city_obj)
+                                con_obj.name = name
+                                con_obj.address = address
+                                con_obj.email = email
+                                for item in tag:
+                                    tag_obj = Tag.query.filter_by(
+                                        name=item['name']).first()
+                                    if tag_obj:
+                                        pass
+                                    else:
+                                        tag_obj = Tag(str(item['name']))
+                                        db.session.add(tag_obj)
+
+                                    con_obj.tag_contact.append(tag_obj)
+                                db.session.commit()
+                                
+                            except Exception as f:
+                                db.session.rollback()
+                            
                         except Exception as e:
                             db.session.rollback()
-                            print('Oh No ---------' , name, city  )
-                            pass
-                    else:
-                        pass
+                            
+                    
                     
         return jsonify({'success': 'Data Added'})
 

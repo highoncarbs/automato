@@ -22,7 +22,26 @@
           <input type="text" placeholder="Webdriver path" class="input" />
         </div>
       </div>
-
+      <div class="field">
+        <label class="label">
+          <p class="is-size-4">Google Places API</p>
+          <p class="is-size-6 has-text-grey has-text-weight-semibold">
+            Add your API key here - 
+            <a href="https://developers.google.com/places/web-service/get-api-key"
+              class="has-text-weight-bold"
+            >Get API Key -></a>
+          </p>
+        </label>
+        <div class="control">
+          <input type="text" placeholder="Enter API Key" class="input" />
+        </div>
+      </div>
+      <button class="button is-info">
+        <span class="icon icon-btn">
+          <feather type="check" size="1.3rem" />
+        </span>
+        Save
+      </button>
       <hr />
       <div class="notification is-danger-light">
         <div class="field">

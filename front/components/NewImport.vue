@@ -81,13 +81,15 @@
           </div>
         </div>
         <footer class="card-footer">
-          <a class="card-footer-item has-text-info" @click="submit">
+          <a class="card-footer-item has-text-info" @click="submit" :class="{ 'is-disabled': loader }">
             <span class="icon icon-btn">
-              <feather type="check" size="1.3rem"></feather>
+              <feather type="check" v-if="!loader" size="1.3rem"></feather>
+              <feather type="rotate-cw" animation="spin" v-if="loader" size="1.3rem"></feather>
             </span>
-            Save
+            <span v-if="!loader">Save</span>
+            <span v-if="loader">Uploading</span>
           </a>
-          <p class="card-footer-item">
+          <p class="card-footer-item" :class="{ 'is-disabled': loader }">
             <span class="icon icon-btn">
               <feather type="x" size="1.3rem"></feather>
             </span>
@@ -116,7 +118,7 @@ export default {
       filename: "data.csv",
       data_tag: [],
       tagList: [],
-
+    loader : false,
       query_tag: ""
     };
   },
@@ -229,6 +231,7 @@ export default {
     submit() {
       let self = this;
       let formData = new FormData();
+      this.loader = true
       formData.append("file", this.form.file);
       formData.append("data", JSON.stringify(this.form.tags));
       this.$axios
@@ -239,6 +242,7 @@ export default {
         })
         .then(function(response) {
           if (response.data.success) {
+            self.loader = false
             self.closeModal();
             self.$buefy.snackbar.open({
               duration: 4000,
@@ -252,6 +256,7 @@ export default {
               }
             });
           } else {
+            self.loader = false
             self.$buefy.snackbar.open({
               duration: 4000,
               message: response.data.message,
